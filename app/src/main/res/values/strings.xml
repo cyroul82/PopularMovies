@@ -1,0 +1,42 @@
+<resources>
+
+    <string name="app_name">Popular Movies</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_detail_movie">Movie Detail</string>
+
+    //Connectivity
+    <string name="connectivity">You are offline, please connect to Internet !</string>
+
+    //Original Title
+    <string name="originalTitleTextView">Original Title : </string>
+    //Overview
+    <string name="overviewText">Overview : </string>
+
+    <string name="sort_by">Sort By</string>
+    <string name="pref_movies_popular" translatable="false">popular</string>
+    <string name="pref_movies_sorting_key" translatable="false">sortby</string>
+
+    //Sorting choice array
+    <string-array name="sorting_choice_entries">
+        <item>Popular</item>
+        <item>Top Rated</item>
+        <item>Upcoming</item>
+        <item>This week</item>
+    </string-array>
+
+    <string-array name="sorting_choice_values">
+        <item>popular</item>
+        <item>top_rated</item>
+        <item>upcoming</item>
+        <item>now_playing</item>
+    </string-array>
+
+    <string name="title_activity_settings">Settings</string>
+
+    <!--MoviesList key for SaveInstance MainActivity -->
+    <string name="key_movies_list" translatable="false">moviesList</string>
+
+    <!--Movie key for SaveInstance for DetailMovieMainActivity -->
+    <string name="key_movie">movie</string>
+
+</resources>
