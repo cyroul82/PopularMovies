@@ -5,10 +5,12 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.griffin.popularmovies.BuildConfig;
+import com.griffin.popularmovies.MainActivity;
 import com.griffin.popularmovies.Movie;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
@@ -192,10 +194,39 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
 
     @Override
     public List<Movie> loadInBackground() {
-
-
         try{
-            final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/" + Utilities.getSortOrder(getContext()) + "?";
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        int spinnerValue = sharedPrefs.getInt(MainActivity.USER_CHOICE, MainActivity.POPULAR_CHOICE);
+        String choice;
+        System.out.println("dans loadinback : " + spinnerValue + "...."  ) ;
+        switch(spinnerValue){
+            case MainActivity.POPULAR_CHOICE: {
+                choice = getContext().getString(R.string.pref_movies_popular);
+                break;
+            }
+            case MainActivity.UPCOMING_CHOICE: {
+                choice = getContext().getString(R.string.pref_movies_upcoming);
+                break;
+            }
+            case MainActivity.TOP_RATED_CHOICE: {
+                choice = getContext().getString(R.string.pref_movies_upcoming);
+                break;
+            }
+            case MainActivity.NOW_PLAYING_CHOICE: {
+                choice = getContext().getString(R.string.pref_movies_now_playing);
+                break;
+            }
+            case MainActivity.FAVORITE_CHOICE: {
+                choice = getContext().getString(R.string.pref_movies_favorite);
+                break;
+            }
+            default :
+                choice = getContext().getString(R.string.pref_movies_popular);
+        }
+
+
+            final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/" + choice + "?";
             final String APPID_PARAM = "api_key";
             final String LANGUAGE = "language";
 

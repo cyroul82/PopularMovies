@@ -27,26 +27,35 @@ public class Utilities {
         return movie;
     }
 
-    public static String getSortBy(Context context){
-        // Gets back the choice selected by the user to sort the movies
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String sort_by = sharedPrefs.getString(context.getString(R.string.pref_movies_sorting_key),
-                context.getString(R.string.pref_movies_popular));
-        return sort_by;
-    }
 
-    public static String getSortOrder(Context context){
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String sort_by = sharedPrefs.getString(context.getString(R.string.pref_movies_sorting_key),
-                context.getString(R.string.key_movies_popular));
-        return sort_by;
-    }
 
-    public static void setSortOrder(Context context, String sortOrder){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(context.getString(R.string.pref_movies_sorting_key), sortOrder);
-        editor.commit();
+
+
+    public static String getOrder(Context context, int spinnerChoice){
+
+        switch (spinnerChoice){
+            case 0: {
+                return context.getString(R.string.pref_movies_popular);
+
+            }
+            case 1 : {
+                return context.getString(R.string.pref_movies_top_rated);
+            }
+            case 2 : {
+                return context.getString(R.string.pref_movies_upcoming);
+
+            }
+            case 3 : {
+                return context.getString(R.string.pref_movies_now_playing);
+
+            }
+            case 4 : {
+                return context.getString(R.string.pref_movies_favorite);
+            }
+            default:
+                return context.getString(R.string.pref_movies_popular);
+        }
+
     }
 
 }

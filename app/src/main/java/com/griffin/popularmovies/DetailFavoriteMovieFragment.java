@@ -128,6 +128,7 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor movieCursor) {
         if (movieCursor != null && movieCursor.moveToFirst()) {
+            System.out.println("dans onLoadFinished : " + movieCursor.getCount());
             String urlPicture = movieCursor.getString(COL_FAVORITE_MOVIE_PICTURE);
             Picasso.with(getActivity())
                     .load(urlPicture)

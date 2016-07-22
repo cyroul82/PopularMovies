@@ -73,6 +73,7 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
             mMovie = arguments.getParcelable(DetailMovieFragment.DETAIL_MOVIE);
         }
 
+
         View rootView = inflater.inflate(R.layout.detail_movie_fragment, container, false);
 
         titleTextView = (TextView) rootView.findViewById(R.id.titleTextView);
