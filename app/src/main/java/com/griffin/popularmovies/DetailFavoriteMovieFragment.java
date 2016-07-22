@@ -1,7 +1,5 @@
 package com.griffin.popularmovies;
 
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.griffin.popularmovies.data.MovieContract;
-import com.griffin.popularmovies.task.FetchDetailMovieTask;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -121,8 +118,8 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
         if ( null != mUriMovie ) {
             // Now create and return a CursorLoader that will take care of
             // creating a Cursor for the data being displayed.
-            CursorLoader cl = new CursorLoader(getActivity(), mUriMovie, DETAIL_COLUMNS, null, new String[]{Integer.toString(COL_FAVORITE_MOVIE_ID)
-            }, null);
+
+            CursorLoader cl = new CursorLoader(getActivity(), mUriMovie, DETAIL_COLUMNS, null, null, null);
             return cl;
         }
         return null;

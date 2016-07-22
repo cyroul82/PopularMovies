@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteMovieFrag
     private static final String MOVIELISTFRAGMENT_TAG = "MLFTAG";
     private static final String FAVORITEMOVIEFRAGMENT_TAG = "FMFTAG";
 
+    private static final String STACK="STACK";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,26 +164,26 @@ public class MainActivity extends AppCompatActivity implements FavoriteMovieFrag
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String selected = (String) parent.getItemAtPosition(position);
-        if (selected == getString(R.string.key_movies_popular)) {
+        if (selected.equals(getString(R.string.key_movies_popular))) {
             Utilities.setSortOrder(this, getString(R.string.pref_movies_popular));
             setMovieListFragment();
         }
 
-        if (selected == getString(R.string.key_movies_upcoming)) {
+        if (selected.equals(getString(R.string.key_movies_upcoming))) {
             Utilities.setSortOrder(this, getString(R.string.pref_movies_upcoming));
             setMovieListFragment();
         }
-        if (selected == getString(R.string.key_movies_top_rated)) {
+        if (selected.equals(getString(R.string.key_movies_top_rated))) {
             Utilities.setSortOrder(this, getString(R.string.pref_movies_top_rated));
             setMovieListFragment();
         }
 
-        if (selected == getString(R.string.key_movies_now_playing)) {
+        if (selected.equals(getString(R.string.key_movies_now_playing))) {
             Utilities.setSortOrder(this, getString(R.string.pref_movies_now_playing));
             setMovieListFragment();
         }
 
-        if (selected == getString(R.string.key_movies_favorite)) {
+        if (selected.equals(getString(R.string.key_movies_favorite))) {
             Utilities.setSortOrder(this, getString(R.string.pref_movies_favorite));
             setFavoriteListFragment();
         }

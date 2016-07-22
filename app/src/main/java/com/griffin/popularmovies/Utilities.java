@@ -3,7 +3,10 @@ package com.griffin.popularmovies;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * Created by griffin on 18/07/16.
@@ -12,7 +15,7 @@ public class Utilities {
 
     public static Movie getMovieFromCursor(Cursor cursor){
       Movie movie = new Movie();
-/*
+
         movie.setId(Integer.parseInt(cursor.getString(FavoriteMovieFragment.COLUMN_MOVIE_ID)));
         movie.setTitle(cursor.getString(FavoriteMovieFragment.COLUMN_MOVIE_TITLE));
         movie.setUrl(cursor.getString(FavoriteMovieFragment.COLUMN_MOVIE_PICTURE));
@@ -20,7 +23,6 @@ public class Utilities {
         movie.setOverview(cursor.getString(FavoriteMovieFragment.COLUMN_MOVIE_OVERVIEW));
         movie.setMovieDate(cursor.getString(FavoriteMovieFragment.COLUMN_MOVIE_DATE));
         movie.setMovieRating(cursor.getString(FavoriteMovieFragment.COLUMN_MOVIE_RATING));
-*/
 
         return movie;
     }
@@ -41,11 +43,10 @@ public class Utilities {
     }
 
     public static void setSortOrder(Context context, String sortOrder){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(context.getString(R.string.pref_movies_sorting_key), sortOrder);
         editor.commit();
     }
-
 
 }
