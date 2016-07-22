@@ -210,7 +210,7 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
                 break;
             }
             case MainActivity.TOP_RATED_CHOICE: {
-                choice = getContext().getString(R.string.pref_movies_upcoming);
+                choice = getContext().getString(R.string.pref_movies_top_rated);
                 break;
             }
             case MainActivity.NOW_PLAYING_CHOICE: {
