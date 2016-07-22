@@ -6,7 +6,7 @@ import android.os.Parcelable;
 /**
  * Created by griffin on 08/07/16.
  */
-public class Movie implements Parcelable {
+public class Movie extends DetailMovie implements Parcelable {
 
     private int id = 0;
     private String title = null;
@@ -15,6 +15,7 @@ public class Movie implements Parcelable {
     private String originalTitle = null;
     private String movieDate = null;
     private String movieRating = null;
+
 
     public Movie(){
 
@@ -97,6 +98,7 @@ public class Movie implements Parcelable {
     }
 
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -111,6 +113,9 @@ public class Movie implements Parcelable {
         dest.writeString(originalTitle);
         dest.writeString(movieDate);
         dest.writeString(movieRating);
+        dest.writeList(getActors());
+        dest.writeArray(getGenre());
+
     }
 
 

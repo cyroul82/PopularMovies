@@ -1,4 +1,4 @@
-package com.griffin.popularmovies;
+package com.griffin.popularmovies.adapter;
 
 import android.content.Context;
 import android.view.View;
@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import com.griffin.popularmovies.Movie;
+import com.griffin.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -15,8 +17,10 @@ import java.util.List;
  */
 public class PopularMoviesAdapter extends ArrayAdapter<Movie> {
 
-    Context mContext;
-    List<Movie> mMoviesList;
+
+
+    private Context mContext;
+    private List<Movie> mMoviesList;
 
     public PopularMoviesAdapter(Context context, int layoutResource, int idResource, List<Movie> moviesList) {
         super(context, layoutResource, idResource, moviesList);
@@ -31,7 +35,7 @@ public class PopularMoviesAdapter extends ArrayAdapter<Movie> {
         ViewHolder viewHolder;
 
         if (view == null) {
-            view= View.inflate(getContext(), R.layout.movie_item_picture, null);
+            view= View.inflate(mContext, R.layout.movie_item_picture, null);
             viewHolder = new ViewHolder(view);
             view.setTag(viewHolder);
         }
@@ -45,10 +49,16 @@ public class PopularMoviesAdapter extends ArrayAdapter<Movie> {
         return view;
     }
 
+    @Override
+    public int getCount() {
+        return mMoviesList.size();
+    }
+
     static class ViewHolder {
         ImageView popularMoviePicture;
         public ViewHolder(View v) {
             popularMoviePicture = (ImageView) v.findViewById(R.id.movieItemPictureImageView);
         }
     }
+
 }

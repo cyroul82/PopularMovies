@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Films </string>
+    <string name="action_settings">Paramètres</string>
+    <string name="title_activity_detail_movie">Détail du Film</string>
+
+    //Connectivity
+    <string name="connectivity">Vous n\'etes connectés à aucun réseau, merci de vous connecter !</string>
+
+    //Original Title
+    <string name="originalTitleTextView">Titre Original : </string>
+    //Overview
+    <string name="overviewText">Synopsis : </string>
+
+    <string name="sort_by">Sort By</string>
+    <string name="title_activity_settings">Paramètres</string>
+
+
+
+    <string name="my_favorite_add_button">Enregistrer dans mes favoris</string>
+    <string name="my_favorite_remove_button">Supprimer</string>
+
+    <string name="action_share">Partager</string>
+
+    <string name="key_movies_popular">Populaires</string>
+    <string name="key_movies_top_rated">Meilleurs Votes</string>
+    <string name="key_movies_upcoming">A Venir</string>
+    <string name="key_movies_now_playing">Cette semaine</string>
+    <string name="key_movies_favorite">Mes Favoris</string>
+</resources>

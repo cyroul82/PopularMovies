@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">Popular Movies</string>
+    <string name="app_name">Movies </string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_detail_movie">Movie Detail</string>
 
@@ -13,23 +13,39 @@
     <string name="overviewText">Overview : </string>
 
     <string name="sort_by">Sort By</string>
+
     <string name="pref_movies_popular" translatable="false">popular</string>
+    <string name="pref_movies_top_rated" translatable="false">top_rated</string>
+    <string name="pref_movies_upcoming" translatable="false">upcoming</string>
+    <string name="pref_movies_now_playing" translatable="false">now_playing</string>
+    <string name="pref_movies_favorite" translatable="false">favorite</string>
+
     <string name="pref_movies_sorting_key" translatable="false">sortby</string>
+    <string name="pref_movies_sorting_favorite_key" translatable="false">favorite</string>
+
+    <string name="key_movies_popular">Popular</string>
+    <string name="key_movies_top_rated">Top Rated</string>
+    <string name="key_movies_upcoming">Upcoming</string>
+    <string name="key_movies_now_playing">This Week</string>
+    <string name="key_movies_favorite">My Favorites</string>
 
     //Sorting choice array
-    <string-array name="sorting_choice_entries">
-        <item>Popular</item>
-        <item>Top Rated</item>
-        <item>Upcoming</item>
-        <item>This week</item>
+    <string-array name="sorting_choice_entries" >
+        <item>@string/key_movies_popular</item>
+        <item>@string/key_movies_top_rated</item>
+        <item>@string/key_movies_upcoming</item>
+        <item>@string/key_movies_now_playing</item>
+        <item>@string/key_movies_favorite</item>
     </string-array>
 
-    <string-array name="sorting_choice_values">
+    <string-array name="sorting_choice_values" translatable="false">
         <item>popular</item>
         <item>top_rated</item>
         <item>upcoming</item>
         <item>now_playing</item>
+        <item>favorite</item>
     </string-array>
+
 
     <string name="title_activity_settings">Settings</string>
 
@@ -37,6 +53,10 @@
     <string name="key_movies_list" translatable="false">moviesList</string>
 
     <!--Movie key for SaveInstance for DetailMovieMainActivity -->
-    <string name="key_movie">movie</string>
+    <string name="key_movie" translatable="false">movie</string>
 
+    <string name="my_favorite_add_button">Mark as favorite</string>
+    <string name="my_favorite_remove_button">Remove from favorite</string>
+
+    <string name="action_share">Share</string>
 </resources>
