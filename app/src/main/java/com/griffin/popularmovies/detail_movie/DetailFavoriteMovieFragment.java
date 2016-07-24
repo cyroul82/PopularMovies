@@ -17,16 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.adapter.ActorAdapter;
 import com.griffin.popularmovies.data.MovieContract;
+import com.griffin.popularmovies.movie_list.Movie;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
 
 /**
  * Created by griffin on 22/07/16.
@@ -35,13 +31,15 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
 
     private final String RATING_OUT_OF_TEN = "/10";
     public static final String DETAIL_URI = "FAVORITEMOVIE";
+    public static final String EXTRA_DETAIL_MOVIE="EXTRAMOVIE";
     private Uri mUriMovie;
+    private Movie mMovie;
     private ShareActionProvider mShareActionProvider;
 
-    private ActorAdapter mActorAdapter;
-    private ArrayList<ActorMovie> mActorList;
 
     private static final int DETAIL_LOADER = 1;
+
+    private final int mNumberMaxDisplayedActors = 3;
 
     private static final String[] DETAIL_COLUMNS = {
             MovieContract.FavoriteMoviesEntry.TABLE_NAME + "." + MovieContract.FavoriteMoviesEntry._ID,
@@ -72,8 +70,11 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
     private TextView mTextViewOriginalTitle;
     private TextView mTextViewOverview;
     private TextView mTextViewMovieRating;
-    private ListView mListViewActor;
-    private LinearLayout linearLayoutActor;
+    private TextView mTextViewActor;
+    private TextView mTextViewGenre;
+
+    private CreditsMovie mCreditsMovie;
+
 
     public DetailFavoriteMovieFragment() {
         setHasOptionsMenu(true);
@@ -84,14 +85,19 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Creates a new List of movies if no previous state
-        if(savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.key_actor_list))){
-            mActorList = new ArrayList<>();
+        if(savedInstanceState == null || !savedInstanceState.containsKey(EXTRA_DETAIL_MOVIE)){
+            mMovie = null;
         }
         //restore the previous state
         else {
-
+            mCreditsMovie = (CreditsMovie)savedInstanceState.getParcelable(EXTRA_DETAIL_MOVIE);
         }
+    }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(EXTRA_DETAIL_MOVIE, mCreditsMovie);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -123,15 +129,11 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
         mTextViewOriginalTitle = (TextView) rootView.findViewById(R.id.originalTitleTextView);
         mTextViewOverview = (TextView) rootView.findViewById(R.id.overviewMovieTextView);
         mTextViewMovieRating = (TextView) rootView.findViewById(R.id.movieRatingTextView);
-
-       // linearLayoutActor = (LinearLayout)rootView.findViewById(R.id.linearLayout_actor);
-
-        mListViewActor = (ListView) rootView.findViewById(R.id.listView_actor);
-        mActorAdapter = new ActorAdapter(getActivity(), mActorList );
-        mListViewActor.setAdapter(mActorAdapter);
+        mTextViewActor = (TextView) rootView.findViewById(R.id.textView_actor);
+        mTextViewGenre = (TextView) rootView.findViewById(R.id.textView_genre);
 
         Button buttonFavorite = (Button) rootView.findViewById(R.id.markAsFavoriteButton);
-        buttonFavorite.setVisibility(View.INVISIBLE);
+        buttonFavorite.setVisibility(View.GONE);
 
 
         return rootView;
@@ -147,16 +149,16 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if ( null != mUriMovie ) {
+        if ( mUriMovie != null) {
             // Now create and return a CursorLoader that will take care of
             // creating a Cursor for the data being displayed.
 
-            CursorLoader cl = new CursorLoader(getActivity(),
+            return new CursorLoader(getActivity(),
                     mUriMovie,
                     DETAIL_COLUMNS,
                     null,
                     null, null);
-            return cl;
+
         }
         return null;
     }
@@ -190,6 +192,31 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    private void setExtraDetail(){
+        mMovie.setActors(mCreditsMovie.getActors());
+        int maxActors;
+        if(mCreditsMovie.getActors().size() > mNumberMaxDisplayedActors ){
+            maxActors = mNumberMaxDisplayedActors;
+        }
+        else maxActors = mCreditsMovie.getActors().size();
+
+        for (int i=0 ; i < maxActors  ; i++){
+            StringBuilder sb = new StringBuilder();
+            sb.append(mMovie.getActors().get(i).getName()).append("  (").append(mMovie.getActors().get(i).getCharacter()).append(")\n");
+            mTextViewActor.append(sb.toString());
+        }
+
+        mMovie.setGenre(mCreditsMovie.getGenre());
+        String[] genres = mMovie.getGenre();
+        for (int i = 0 ; i < genres.length ; i++){
+            StringBuilder sb = new StringBuilder();
+            mTextViewGenre.append(genres[i]);
+            if(i != genres.length-1){
+                mTextViewGenre.append(" / ");
+            }
+        }
     }
 
 }

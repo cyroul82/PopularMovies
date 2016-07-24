@@ -16,7 +16,6 @@ public class CreditsMovie implements Parcelable{
     private List<ActorMovie> actors;
 
     public CreditsMovie(){
-        actors = new ArrayList<>();
 
     }
 
