@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -261,8 +262,11 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
         mMovie.setTrailers(mExtraDetailMovie.getTrailers());
         for(final TrailerMovie trailerMovie : mMovie.getTrailers()){
             Button buttonName  = new Button(getActivity());
-            buttonName.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
+            LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams
+                    .WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            buttonName.setLayoutParams(buttonLayoutParams);
+            buttonLayoutParams.setMargins(0,0,0,10);
             buttonName.setText(trailerMovie.getNameTrailer());
             buttonName.setBackgroundColor(getResources().getColor(R.color.colorBackgoundTitle));
             buttonName.setPadding(10, 10, 10, 10);// in pixels (left, top, right, bottom)
