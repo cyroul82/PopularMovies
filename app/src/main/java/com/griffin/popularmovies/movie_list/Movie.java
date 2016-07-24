@@ -1,12 +1,14 @@
-package com.griffin.popularmovies;
+package com.griffin.popularmovies.movie_list;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.griffin.popularmovies.detail_movie.CreditsMovie;
+
 /**
  * Created by griffin on 08/07/16.
  */
-public class Movie extends DetailMovie implements Parcelable {
+public class Movie extends CreditsMovie implements Parcelable {
 
     private int id = 0;
     private String title = null;
@@ -15,6 +17,7 @@ public class Movie extends DetailMovie implements Parcelable {
     private String originalTitle = null;
     private String movieDate = null;
     private String movieRating = null;
+    private String[] genre;
 
 
     public Movie(){
@@ -39,6 +42,7 @@ public class Movie extends DetailMovie implements Parcelable {
         originalTitle = in.readString();
         movieDate = in.readString();
         movieRating = in.readString();
+
     }
 
     public void setId(int id) {
@@ -113,9 +117,8 @@ public class Movie extends DetailMovie implements Parcelable {
         dest.writeString(originalTitle);
         dest.writeString(movieDate);
         dest.writeString(movieRating);
-        dest.writeList(getActors());
-        dest.writeArray(getGenre());
-
+       /* dest.writeList(getActors());
+        dest.writeStringArray(getGenre());*/
     }
 
 

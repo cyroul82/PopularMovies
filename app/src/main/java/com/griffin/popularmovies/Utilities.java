@@ -1,12 +1,10 @@
 package com.griffin.popularmovies;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.preference.PreferenceManager;
 
-import java.io.ByteArrayOutputStream;
+import com.griffin.popularmovies.movie_list.FavoriteMovieFragment;
+import com.griffin.popularmovies.movie_list.Movie;
 
 /**
  * Created by griffin on 18/07/16.

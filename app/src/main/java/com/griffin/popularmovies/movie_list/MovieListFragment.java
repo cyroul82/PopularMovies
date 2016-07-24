@@ -1,11 +1,9 @@
-package com.griffin.popularmovies;
+package com.griffin.popularmovies.movie_list;
 
-import android.content.ContentProvider;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -13,10 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.adapter.PopularMoviesAdapter;
 import com.griffin.popularmovies.task.FetchMoviesTask;
 

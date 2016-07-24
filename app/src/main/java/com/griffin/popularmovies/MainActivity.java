@@ -13,10 +13,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
-import com.griffin.popularmovies.task.FetchDetailMovieTask;
-import com.griffin.popularmovies.task.FetchMoviesTask;
-
-import java.util.Locale;
+import com.griffin.popularmovies.detail_movie.DetailFavoriteMovieActivity;
+import com.griffin.popularmovies.detail_movie.DetailFavoriteMovieFragment;
+import com.griffin.popularmovies.detail_movie.DetailMovieActivity;
+import com.griffin.popularmovies.detail_movie.DetailMovieFragment;
+import com.griffin.popularmovies.movie_list.FavoriteMovieFragment;
+import com.griffin.popularmovies.movie_list.Movie;
+import com.griffin.popularmovies.movie_list.MovieListFragment;
 
 
 public class MainActivity extends AppCompatActivity implements FavoriteMovieFragment.Callback, MovieListFragment.Callback, AdapterView.OnItemSelectedListener {
@@ -31,8 +34,8 @@ public class MainActivity extends AppCompatActivity implements FavoriteMovieFrag
 
     private Spinner spinner;
     public static final int POPULAR_CHOICE = 1;
-    public static final int UPCOMING_CHOICE = 2;
-    public static final int TOP_RATED_CHOICE = 3;
+    public static final int TOP_RATED_CHOICE = 2;
+    public static final int UPCOMING_CHOICE = 3;
     public static final int NOW_PLAYING_CHOICE = 4;
     public static final int FAVORITE_CHOICE = 5;
     public static final String USER_CHOICE= "user_choice";
@@ -65,16 +68,18 @@ public class MainActivity extends AppCompatActivity implements FavoriteMovieFrag
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.detail_movie_container, new DetailMovieFragment(), DETAILFRAGMENT_TAG)
                         .commit();
+                setMovieListFragment();
+
             }
-            else if (savedInstanceState == null && spinnerValue != FAVORITE_CHOICE) {
+            else if (savedInstanceState == null && spinnerValue == FAVORITE_CHOICE) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.detail_movie_container, new DetailFavoriteMovieFragment(), FAVORITEMOVIEFRAGMENT_TAG)
                         .commit();
+                setFavoriteListFragment();
             }
         } else {
             mTwoPane = false;
         }
-        setFragmentOnSharedPreferences();
     }
 
     @Override

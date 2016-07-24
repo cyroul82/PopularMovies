@@ -1,4 +1,4 @@
-package com.griffin.popularmovies;
+package com.griffin.popularmovies.detail_movie;
 
 import android.database.Cursor;
 import android.net.Uri;
@@ -17,10 +17,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.griffin.popularmovies.R;
+import com.griffin.popularmovies.adapter.ActorAdapter;
 import com.griffin.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 /**
  * Created by griffin on 22/07/16.
@@ -28,9 +34,12 @@ import com.squareup.picasso.Picasso;
 public class DetailFavoriteMovieFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private final String RATING_OUT_OF_TEN = "/10";
-    static final String DETAIL_URI = "FAVORITEMOVIE";
+    public static final String DETAIL_URI = "FAVORITEMOVIE";
     private Uri mUriMovie;
     private ShareActionProvider mShareActionProvider;
+
+    private ActorAdapter mActorAdapter;
+    private ArrayList<ActorMovie> mActorList;
 
     private static final int DETAIL_LOADER = 1;
 
@@ -57,15 +66,31 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
     public static final int COL_FAVORITE_MOVIE_RATING = 7;
 
 
-    private TextView titleTextView;
-    private ImageView imageViewMoviePicture;
-    private TextView textViewMovieYear;
-    private TextView textViewOriginalTitle;
-    private TextView textViewOverview;
-    private TextView textViewMovieRating;
+    private TextView mTitleTextView;
+    private ImageView mImageViewMoviePicture;
+    private TextView mTextViewMovieYear;
+    private TextView mTextViewOriginalTitle;
+    private TextView mTextViewOverview;
+    private TextView mTextViewMovieRating;
+    private ListView mListViewActor;
+    private LinearLayout linearLayoutActor;
 
     public DetailFavoriteMovieFragment() {
         setHasOptionsMenu(true);
+
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Creates a new List of movies if no previous state
+        if(savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.key_actor_list))){
+            mActorList = new ArrayList<>();
+        }
+        //restore the previous state
+        else {
+
+        }
 
     }
 
@@ -92,12 +117,19 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
 
         View rootView = inflater.inflate(R.layout.detail_movie_fragment, container, false);
 
-        titleTextView = (TextView) rootView.findViewById(R.id.titleTextView);
-        imageViewMoviePicture = (ImageView) rootView.findViewById(R.id.moviePictureImageView);
-        textViewMovieYear = (TextView) rootView.findViewById(R.id.movieYearTextView);
-        textViewOriginalTitle = (TextView) rootView.findViewById(R.id.originalTitleTextView);
-        textViewOverview = (TextView) rootView.findViewById(R.id.overviewMovieTextView);
-        textViewMovieRating = (TextView) rootView.findViewById(R.id.movieRatingTextView);
+        mTitleTextView = (TextView) rootView.findViewById(R.id.titleTextView);
+        mImageViewMoviePicture = (ImageView) rootView.findViewById(R.id.moviePictureImageView);
+        mTextViewMovieYear = (TextView) rootView.findViewById(R.id.movieYearTextView);
+        mTextViewOriginalTitle = (TextView) rootView.findViewById(R.id.originalTitleTextView);
+        mTextViewOverview = (TextView) rootView.findViewById(R.id.overviewMovieTextView);
+        mTextViewMovieRating = (TextView) rootView.findViewById(R.id.movieRatingTextView);
+
+       // linearLayoutActor = (LinearLayout)rootView.findViewById(R.id.linearLayout_actor);
+
+        mListViewActor = (ListView) rootView.findViewById(R.id.listView_actor);
+        mActorAdapter = new ActorAdapter(getActivity(), mActorList );
+        mListViewActor.setAdapter(mActorAdapter);
+
         Button buttonFavorite = (Button) rootView.findViewById(R.id.markAsFavoriteButton);
         buttonFavorite.setVisibility(View.INVISIBLE);
 
@@ -119,7 +151,11 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
             // Now create and return a CursorLoader that will take care of
             // creating a Cursor for the data being displayed.
 
-            CursorLoader cl = new CursorLoader(getActivity(), mUriMovie, DETAIL_COLUMNS, null, null, null);
+            CursorLoader cl = new CursorLoader(getActivity(),
+                    mUriMovie,
+                    DETAIL_COLUMNS,
+                    null,
+                    null, null);
             return cl;
         }
         return null;
@@ -128,26 +164,25 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor movieCursor) {
         if (movieCursor != null && movieCursor.moveToFirst()) {
-            System.out.println("dans onLoadFinished : " + movieCursor.getCount());
             String urlPicture = movieCursor.getString(COL_FAVORITE_MOVIE_PICTURE);
             Picasso.with(getActivity())
                     .load(urlPicture)
-                    .into(imageViewMoviePicture);
+                    .into(mImageViewMoviePicture);
 
             String date = movieCursor.getString(COL_FAVORITE_MOVIE_DATE);
-            textViewMovieYear.setText(date);
+            mTextViewMovieYear.setText(date);
 
             String title = movieCursor.getString(COL_FAVORITE_MOVIE_TITLE);
-            titleTextView.setText(title);
+            mTitleTextView.setText(title);
 
             String originalTitle = movieCursor.getString(COL_FAVORITE_MOVIE_ORIGINAL_TITLE);
-            textViewOriginalTitle.setText(originalTitle);
+            mTextViewOriginalTitle.setText(originalTitle);
 
             String overview = movieCursor.getString(COL_FAVORITE_MOVIE_OVERVIEW);
-            textViewOverview.setText(overview);
+            mTextViewOverview.setText(overview);
 
             String rating = movieCursor.getString(COL_FAVORITE_MOVIE_RATING);
-            textViewMovieRating.setText(rating + RATING_OUT_OF_TEN);
+            mTextViewMovieRating.setText(rating + RATING_OUT_OF_TEN);
 
         }
     }

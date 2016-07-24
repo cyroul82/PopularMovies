@@ -1,4 +1,4 @@
-package com.griffin.popularmovies;
+package com.griffin.popularmovies.movie_list;
 
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.adapter.FavoriteMoviesAdapter;
 import com.griffin.popularmovies.data.MovieContract;
 

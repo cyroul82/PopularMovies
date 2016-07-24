@@ -52,6 +52,9 @@
     <!--MoviesList key for SaveInstance MainActivity -->
     <string name="key_movies_list" translatable="false">moviesList</string>
 
+    <!--ActorList key for SaveInstance MainActivity -->
+    <string name="key_actor_list" translatable="false">actorList</string>
+
     <!--Movie key for SaveInstance for DetailMovieMainActivity -->
     <string name="key_movie" translatable="false">movie</string>
 
@@ -59,4 +62,6 @@
     <string name="my_favorite_remove_button">Remove from favorite</string>
 
     <string name="action_share">Share</string>
+
+    <string name="user_choice" translatable="false">user choice</string>
 </resources>

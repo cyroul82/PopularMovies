@@ -1,10 +1,12 @@
-package com.griffin.popularmovies;
+package com.griffin.popularmovies.detail_movie;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-public class DetailFavoriteMovieActivity extends AppCompatActivity {
+import com.griffin.popularmovies.R;
+
+public class DetailMovieActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,10 +21,16 @@ public class DetailFavoriteMovieActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
 
-            Bundle arguments = new Bundle();
-            arguments.putParcelable(DetailFavoriteMovieFragment.DETAIL_URI, getIntent().getData());
+            /*
+                Create a bundle
+                Get the back the intent
+                Get back the movie from the Intent
 
-            DetailFavoriteMovieFragment fragment = new DetailFavoriteMovieFragment();
+            */
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(DetailMovieFragment.DETAIL_MOVIE, getIntent().getParcelableExtra(getString(R.string.key_movies_list)));
+
+            DetailMovieFragment fragment = new DetailMovieFragment();
             fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()

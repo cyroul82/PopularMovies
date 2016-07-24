@@ -2,19 +2,15 @@ package com.griffin.popularmovies.task;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.griffin.popularmovies.BuildConfig;
 import com.griffin.popularmovies.MainActivity;
-import com.griffin.popularmovies.Movie;
+import com.griffin.popularmovies.movie_list.Movie;
 import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.Utilities;
-import com.griffin.popularmovies.adapter.PopularMoviesAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -199,7 +195,6 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         int spinnerValue = sharedPrefs.getInt(MainActivity.USER_CHOICE, MainActivity.POPULAR_CHOICE);
         String choice;
-        System.out.println("dans loadinback : " + spinnerValue + "...."  ) ;
         switch(spinnerValue){
             case MainActivity.POPULAR_CHOICE: {
                 choice = getContext().getString(R.string.pref_movies_popular);
@@ -217,10 +212,7 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
                 choice = getContext().getString(R.string.pref_movies_now_playing);
                 break;
             }
-            case MainActivity.FAVORITE_CHOICE: {
-                choice = getContext().getString(R.string.pref_movies_favorite);
-                break;
-            }
+
             default :
                 choice = getContext().getString(R.string.pref_movies_popular);
         }

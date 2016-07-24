@@ -17,7 +17,7 @@
 
 
 
-    <string name="my_favorite_add_button">Enregistrer dans mes favoris</string>
+    <string name="my_favorite_add_button">Ajouter à mes favoris</string>
     <string name="my_favorite_remove_button">Supprimer</string>
 
     <string name="action_share">Partager</string>

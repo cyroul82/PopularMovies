@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DetailMovieActivity"
+            android:name=".detail_movie.DetailMovieActivity"
             android:label="@string/title_activity_detail_movie"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -31,7 +31,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".DetailFavoriteMovieActivity"
+            android:name=".detail_movie.DetailFavoriteMovieActivity"
             android:label="@string/title_activity_detail_movie"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">

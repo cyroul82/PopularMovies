@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
-import com.griffin.popularmovies.Movie;
+import com.griffin.popularmovies.movie_list.Movie;
 import com.griffin.popularmovies.R;
 import com.squareup.picasso.Picasso;
 

@@ -1,19 +1,16 @@
-package com.griffin.popularmovies;
+package com.griffin.popularmovies.detail_movie;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.annotation.Nullable;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,34 +19,65 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.griffin.popularmovies.movie_list.Movie;
+import com.griffin.popularmovies.R;
+import com.griffin.popularmovies.adapter.ActorAdapter;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.task.FetchDetailMovieTask;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailMovieFragment extends Fragment implements LoaderManager.LoaderCallbacks<Movie> {
+public class DetailMovieFragment extends Fragment implements LoaderManager.LoaderCallbacks<CreditsMovie> {
 
     private final String RATING_OUT_OF_TEN = "/10";
-    static final String DETAIL_MOVIE = "MOVIE";
+    public static final String DETAIL_MOVIE = "MOVIE";
     private Movie mMovie;
     private ShareActionProvider mShareActionProvider;
 
     private static final int DETAIL_LOADER = 0;
 
-    private TextView titleTextView;
-    private ImageView imageViewMoviePicture;
-    private TextView textViewMovieYear;
-    private TextView textViewOriginalTitle;
-    private TextView textViewOverview;
-    private TextView textViewMovieRating;
+    private TextView mTitleTextView;
+    private ImageView mImageViewMoviePicture;
+    private TextView mTextViewMovieYear;
+    private TextView mTextViewOriginalTitle;
+    private TextView mTextViewOverview;
+    private TextView mTextViewMovieRating;
+    private ListView mListViewActor;
+
+    private ActorAdapter mActorAdapter;
+    private ArrayList<ActorMovie> mActorList;
+
 
     public DetailMovieFragment() {
         setHasOptionsMenu(true);
 
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Creates a new List of movies if no previous state
+        if(savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.key_actor_list))){
+            mActorList = new ArrayList<>();
+        }
+        //restore the previous state
+        else {
+            mActorList = savedInstanceState.getParcelableArrayList(getString(R.string.key_actor_list));
+        }
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(getString(R.string.key_actor_list), mActorList);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -76,12 +104,18 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
 
         View rootView = inflater.inflate(R.layout.detail_movie_fragment, container, false);
 
-        titleTextView = (TextView) rootView.findViewById(R.id.titleTextView);
-        imageViewMoviePicture = (ImageView) rootView.findViewById(R.id.moviePictureImageView);
-        textViewMovieYear = (TextView) rootView.findViewById(R.id.movieYearTextView);
-        textViewOriginalTitle = (TextView) rootView.findViewById(R.id.originalTitleTextView);
-        textViewOverview = (TextView) rootView.findViewById(R.id.overviewMovieTextView);
-        textViewMovieRating = (TextView) rootView.findViewById(R.id.movieRatingTextView);
+        mTitleTextView = (TextView) rootView.findViewById(R.id.titleTextView);
+        mImageViewMoviePicture = (ImageView) rootView.findViewById(R.id.moviePictureImageView);
+        mTextViewMovieYear = (TextView) rootView.findViewById(R.id.movieYearTextView);
+        mTextViewOriginalTitle = (TextView) rootView.findViewById(R.id.originalTitleTextView);
+        mTextViewOverview = (TextView) rootView.findViewById(R.id.overviewMovieTextView);
+        mTextViewMovieRating = (TextView) rootView.findViewById(R.id.movieRatingTextView);
+
+
+        mListViewActor = (ListView) rootView.findViewById(R.id.listView_actor);
+        mActorAdapter = new ActorAdapter(getActivity(), mActorList );
+        mListViewActor.setAdapter(mActorAdapter);
+
 
         Button buttonMarkAsFavorite = (Button) rootView.findViewById(R.id.markAsFavoriteButton);
         buttonMarkAsFavorite.setOnClickListener(new View.OnClickListener() {
@@ -150,44 +184,56 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
     }
 
     @Override
-    public Loader<Movie> onCreateLoader(int id, Bundle args) {
-        if ( null != mMovie ) {
-            // Now create and return a CursorLoader that will take care of
-            // creating a Cursor for the data being displayed.
+    public Loader<CreditsMovie> onCreateLoader(int id, Bundle args) {
             return new FetchDetailMovieTask(getActivity(), mMovie);
-        }
-        return null;
+
     }
 
     @Override
-    public void onLoadFinished(Loader<Movie> loader, Movie movie) {
-        if (movie != null) {
+    public void onLoadFinished(Loader<CreditsMovie> loader, CreditsMovie creditsMovie) {
+        if (creditsMovie != null) {
 
-            String urlPicture = movie.getUrl();
+            for (int i=0 ; i < creditsMovie.getActors().size() ; i++){
+                System.out.println("dan son load finish : \n "  + creditsMovie.getActors().get(i).getName());
+                mActorList.add(creditsMovie.getActors().get(i));
+            }
+            mMovie.setActors(creditsMovie.getActors());
+            mActorAdapter.clear();
+            for (ActorMovie actorMovie : creditsMovie.getActors()) {
+                mActorAdapter.add(actorMovie);
+            }
+        }
+
+            String urlPicture = mMovie.getUrl();
             Picasso.with(getActivity())
                     .load(urlPicture)
-                    .into(imageViewMoviePicture);
+                    .into(mImageViewMoviePicture);
 
-            String date = movie.getMovieDate();
-            textViewMovieYear.setText(date);
+            String date = mMovie.getMovieDate();
+            mTextViewMovieYear.setText(date);
 
-            String title = movie.getTitle();
-            titleTextView.setText(title);
+            String title = mMovie.getTitle();
+            mTitleTextView.setText(title);
 
-            String originalTitle = movie.getOriginalTitle();
-            textViewOriginalTitle.setText(originalTitle);
+            String originalTitle = mMovie.getOriginalTitle();
+            mTextViewOriginalTitle.setText(originalTitle);
 
-            String overview = movie.getOverview();
-            textViewOverview.setText(overview);
+            String overview = mMovie.getOverview();
+            mTextViewOverview.setText(overview);
 
-            String rating = movie.getMovieRating();
-            textViewMovieRating.setText(rating + RATING_OUT_OF_TEN);
+            String rating = mMovie.getMovieRating();
+            mTextViewMovieRating.setText(rating + RATING_OUT_OF_TEN);
 
-        }
+
+
+
+
+
+
     }
 
     @Override
-    public void onLoaderReset(Loader<Movie> loader) {
+    public void onLoaderReset(Loader<CreditsMovie> loader) {
 
     }
 }

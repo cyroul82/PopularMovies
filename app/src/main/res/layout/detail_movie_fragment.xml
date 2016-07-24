@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DetailMovieFragment"
+    android:background="@drawable/detail_background"
+    tools:context=".detail_movie.DetailMovieFragment"
     tools:showIn="@layout/activity_detail_movie">
 
     <LinearLayout
@@ -16,6 +17,7 @@
             android:layout_height="100dp"
             android:layout_gravity="center|start"
             android:gravity="center|start"
+            android:drawableBottom="#FFFFFF"
             style="@style/titleStyle"/>
 
         <LinearLayout
@@ -38,49 +40,74 @@
                 <ImageView
                     android:id="@+id/moviePictureImageView"
                     android:layout_width="wrap_content"
-                    android:layout_height="150dp"
+                    android:layout_height="wrap_content"
+
                     android:layout_marginRight="20dp"/>
 
-                    <LinearLayout
+                <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical" >
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
-                                android:textAppearance="?android:attr/textAppearanceLarge"
-                                android:id="@+id/movieYearTextView" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="?android:attr/textAppearanceSmall"
-                                android:text="@string/originalTitleTextView" />
+                    <TextView
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="?android:attr/textAppearanceSmall"
-                                android:id="@+id/originalTitleTextView"
-                                android:layout_marginBottom="10dp" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:id="@+id/movieYearTextView" />
 
-                             <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="?android:attr/textAppearanceSmall"
-                                android:id="@+id/movieRatingTextView" />
 
-                             <Button
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/markAsFavoriteButton"
-                                android:text="@string/my_favorite_add_button"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="@string/originalTitleTextView" />
+
+
+                    <TextView
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:id="@+id/originalTitleTextView"
+                        android:layout_marginBottom="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:id="@+id/movieRatingTextView" />
+
+                    <ListView
+                        android:id="@+id/listView_actor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:fitsSystemWindows="true">
+
+                    </ListView>
+
 
                     </LinearLayout>
 
                 </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/markAsFavoriteButton"
+                    android:layout_marginBottom="10dp"
+                    style="@style/ButtonFavorite"
+                    android:background="@drawable/round_corner_button"
+                    android:text="@string/my_favorite_add_button"/>
+
+            </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"

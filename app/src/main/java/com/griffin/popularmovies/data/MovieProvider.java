@@ -7,8 +7,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-import com.griffin.popularmovies.Movie;
-
 /**
  * Created by griffin on 16/07/16.
  */
@@ -28,7 +26,7 @@ public class MovieProvider extends ContentProvider {
 
         //build Uri Matcher
         matcher.addURI(authority, MovieContract.PATH_MOVIE, MOVIE);
-
+        matcher.addURI(authority, MovieContract.PATH_MOVIE + "/#", MOVIE_WITH_ID);
         return matcher;
     }
 
@@ -120,6 +118,8 @@ public class MovieProvider extends ContentProvider {
                 break;
 
             }
+
+
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

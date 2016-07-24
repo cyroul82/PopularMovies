@@ -5,8 +5,6 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import com.griffin.popularmovies.Movie;
-
 /**
  * Created by griffin on 14/07/16.
  */
@@ -52,7 +50,7 @@ public class MovieContract {
         }
 
         public static Uri buildMovieUriFromIdMovie(int id){
-            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_MOVIE_ID, Integer.toString(id)).build();
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(id)).build();
         }
 
         public static long getMovieIdFromUri(Uri uri) {

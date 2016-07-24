@@ -4,7 +4,7 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:layout_weight="1"
-             tools:context=".MovieListFragment"
+             tools:context=".movie_list.MovieListFragment"
              tools:showIn="@layout/activity_main">
 
     <GridView
@@ -15,7 +15,7 @@
         android:layout_margin="0dp"
         android:verticalSpacing="0dp"
         android:horizontalSpacing="0dp"
-        android:columnWidth="150dp"
+        android:columnWidth="130dp"
         android:stretchMode="columnWidth"
         android:numColumns="auto_fit"/>
 

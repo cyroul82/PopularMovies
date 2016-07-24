@@ -2,15 +2,13 @@ package com.griffin.popularmovies.task;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.griffin.popularmovies.BuildConfig;
-import com.griffin.popularmovies.CreditsDetail;
-import com.griffin.popularmovies.DetailMovie;
-import com.griffin.popularmovies.Movie;
-import com.griffin.popularmovies.Utilities;
+import com.griffin.popularmovies.detail_movie.ActorMovie;
+import com.griffin.popularmovies.detail_movie.CreditsMovie;
+import com.griffin.popularmovies.movie_list.Movie;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,20 +20,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 /**
  * Created by griffin on 21/07/16.
  */
-public class FetchDetailMovieTask extends AsyncTaskLoader<Movie> {
+public class FetchDetailMovieTask extends AsyncTaskLoader<CreditsMovie> {
 
-    private DetailMovie mDetailMovie;
+    private Movie mMovie;
+    private CreditsMovie creditsMovie;
 
     private final String LOG_TAG = FetchDetailMovieTask.class.getSimpleName();
 
@@ -51,15 +46,14 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<Movie> {
 
     private final int mNumberMaxCredits = 3;
 
-    private Movie mMovie;
-
     public FetchDetailMovieTask (Context context, Movie movie){
         super(context);
         mMovie = movie;
+
     }
 
     @Override
-    public void deliverResult(Movie movie) {
+    public void deliverResult(CreditsMovie movie) {
         super.deliverResult(movie);
     }
 
@@ -68,15 +62,16 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<Movie> {
      */
     @Override
     protected void onStartLoading() {
-        if (mMovie != null) {
+        if (creditsMovie != null) {
             // If we currently have a result available, deliver it
             // immediately.
-            deliverResult(mMovie);
+            deliverResult(creditsMovie);
         }
 
-        if (takeContentChanged() || mDetailMovie == null ) {
+        if (takeContentChanged() || creditsMovie == null ) {
             // If the data has changed since the last time it was loaded
             // or is not currently available, start a load.
+            creditsMovie = new CreditsMovie();
             forceLoad();
         }
     }
@@ -92,7 +87,7 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<Movie> {
     /**
      * Handles a request to cancel a load.
      */
-    @Override public void onCanceled(Movie movie) {
+    @Override public void onCanceled(CreditsMovie movie) {
         super.onCanceled(movie);
     }
 
@@ -102,14 +97,14 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<Movie> {
         onStopLoading();
 
         // At this point we can release the resources associated with 'mData'.
-        if (mMovie != null) {
-            releaseResources(mMovie);
-            mMovie = null;
+        if (creditsMovie != null) {
+            releaseResources(creditsMovie);
+            creditsMovie = null;
         }
 
     }
 
-    private void releaseResources(Movie data) {
+    private void releaseResources(CreditsMovie movie) {
         // For a simple List, there is nothing to do. For something like a Cursor, we
         // would close it in this method. All resources associated with the Loader
         // should be released here.
@@ -122,7 +117,7 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<Movie> {
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it
      * into an Object hierarchy for us.
      */
-    private Movie getCreditsMovieDataFromJson(String creditsMoviesJsonStr)
+    private List<ActorMovie> getActorFromJson(String creditsMoviesJsonStr)
             throws JSONException {
 
         // These are the names of the JSON objects that need to be extracted.
@@ -135,7 +130,7 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<Movie> {
         JSONObject creditsMovieJson = new JSONObject(creditsMoviesJsonStr);
         JSONArray creditsMovieArray = creditsMovieJson.getJSONArray(JSON_RESULTS);
 
-        List<CreditsDetail> creditslist = new ArrayList<>();
+        List<ActorMovie> actorMovieList = new ArrayList<>();
         int max;
         if (creditsMovieArray.length()< mNumberMaxCredits - 1){
             max = creditsMovieArray.length();
@@ -149,21 +144,20 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<Movie> {
             JSONObject creditMovie = creditsMovieArray.getJSONObject(i);
 
             // udpate the movie detail
-            CreditsDetail creditsDetail = new CreditsDetail();
+            ActorMovie creditsDetail = new ActorMovie();
             creditsDetail.setCharacter(creditMovie.getString(JSON_CHARACTER));
             creditsDetail.setName(creditMovie.getString(JSON_NAME));
 
             //Add the movie to the list
-            creditslist.add(creditsDetail);
+            actorMovieList.add(creditsDetail);
 
         }
-        mMovie.setActors(creditslist);
 
-        return mMovie;
+        return actorMovieList;
 
     }
 
-    private Movie getGenreMovieDataFromJson(String genreMoviesJsonStr)
+    private String[] getGenreFromJson(String genreMoviesJsonStr)
             throws JSONException {
 
         // These are the names of the JSON objects that need to be extracted.
@@ -184,25 +178,20 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<Movie> {
             genreList[i] = genreMovie.getString(JSON_NAME);
 
         }
-        mMovie.setGenre(genreList);
 
-        return mMovie;
+        return genreList;
 
     }
 
     @Override
-    public Movie loadInBackground() {
+    public CreditsMovie loadInBackground() {
         try {
-            getCreditsMovieDataFromJson(getDataFromTheMovieDB(mMovie.getId(), CREDITS));
-            getGenreMovieDataFromJson(getDataFromTheMovieDB(mMovie.getId(), null));
-            for (int i= 0 ; i<mMovie.getActors().size() ; i++) {
-                System.out.println("Movie actors : \n " + mMovie.getActors().get(i) + "\n");
-            }
-            for (int j=0 ; j<mMovie.getGenre().length ; j++){
-                System.out.println("Movie Genre : \n" + mMovie.getGenre()[j]);
-            }
 
-            return mMovie;
+            creditsMovie.setActors(getActorFromJson(getDataFromTheMovieDB(mMovie.getId(), CREDITS)));
+
+
+           // mMovie.setGenre(getGenreFromJson(getDataFromTheMovieDB(mMovie.getId(), null)));
+            return creditsMovie;
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
         }
