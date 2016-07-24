@@ -9,31 +9,34 @@ import java.util.List;
 /**
  * Created by griffin on 21/07/16.
  */
-public class CreditsMovie implements Parcelable{
+public class ExtraDetailMovie implements Parcelable{
 
 
     private String[] genre;
     private List<ActorMovie> actors;
+    private List<TrailerMovie> trailerList;
 
-    public CreditsMovie(){
+    public ExtraDetailMovie(){
 
     }
 
-    protected CreditsMovie(Parcel in) {
+    protected ExtraDetailMovie(Parcel in) {
         genre = in.createStringArray();
         actors = new ArrayList<>();
         in.readList(actors,null);
+        trailerList = new ArrayList<>();
+        in.readList(trailerList,null);
     }
 
-    public static final Creator<CreditsMovie> CREATOR = new Creator<CreditsMovie>() {
+    public static final Creator<ExtraDetailMovie> CREATOR = new Creator<ExtraDetailMovie>() {
         @Override
-        public CreditsMovie createFromParcel(Parcel in) {
-            return new CreditsMovie(in);
+        public ExtraDetailMovie createFromParcel(Parcel in) {
+            return new ExtraDetailMovie(in);
         }
 
         @Override
-        public CreditsMovie[] newArray(int size) {
-            return new CreditsMovie[size];
+        public ExtraDetailMovie[] newArray(int size) {
+            return new ExtraDetailMovie[size];
         }
     };
 
@@ -51,6 +54,13 @@ public class CreditsMovie implements Parcelable{
         return actors;
     }
 
+    public void setTrailers(List<TrailerMovie> trailerList){
+        this.trailerList = trailerList;
+    }
+    public List<TrailerMovie> getTrailers(){
+        return trailerList;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -60,5 +70,6 @@ public class CreditsMovie implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeStringArray(genre);
         dest.writeList(actors);
+        //dest.writeList(trailerList);
     }
 }

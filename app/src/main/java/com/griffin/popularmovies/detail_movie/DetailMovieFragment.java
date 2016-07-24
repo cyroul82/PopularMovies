@@ -2,6 +2,7 @@ package com.griffin.popularmovies.detail_movie;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.griffin.popularmovies.movie_list.Movie;
@@ -26,10 +28,12 @@ import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.task.FetchDetailMovieTask;
 import com.squareup.picasso.Picasso;
 
+import java.net.URI;
+
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailMovieFragment extends Fragment implements LoaderManager.LoaderCallbacks<CreditsMovie>{
+public class DetailMovieFragment extends Fragment implements LoaderManager.LoaderCallbacks<ExtraDetailMovie>{
 
     private final String RATING_OUT_OF_TEN = "/10";
     public static final String DETAIL_MOVIE = "MOVIE";
@@ -47,8 +51,9 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
     private TextView mTextViewMovieRating;
     private TextView mTextViewActor;
     private TextView mTextViewGenre;
+    private LinearLayout mLinearLayoutTrailer;
 
-    private CreditsMovie mCreditsMovie;
+    private ExtraDetailMovie mExtraDetailMovie;
 
     private final int mNumberMaxDisplayedActors = 3;
 
@@ -62,17 +67,17 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
         super.onCreate(savedInstanceState);
         // Creates a new List of movies if no previous state
         if(savedInstanceState == null || !savedInstanceState.containsKey(EXTRA_DETAIL_MOVIE)){
-            mCreditsMovie = null;
+            mExtraDetailMovie = null;
         }
         //restore the previous state
         else {
-            mCreditsMovie = (CreditsMovie)savedInstanceState.getParcelable(DetailMovieFragment.EXTRA_DETAIL_MOVIE);
+            mExtraDetailMovie = (ExtraDetailMovie)savedInstanceState.getParcelable(DetailMovieFragment.EXTRA_DETAIL_MOVIE);
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(EXTRA_DETAIL_MOVIE, mCreditsMovie);
+        outState.putParcelable(EXTRA_DETAIL_MOVIE, mExtraDetailMovie);
         super.onSaveInstanceState(outState);
     }
 
@@ -102,6 +107,7 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
         mTextViewMovieRating = (TextView) rootView.findViewById(R.id.movieRatingTextView);
         mTextViewActor = (TextView) rootView.findViewById(R.id.textView_actor);
         mTextViewGenre = (TextView) rootView.findViewById(R.id.textView_genre);
+        mLinearLayoutTrailer = (LinearLayout) rootView.findViewById(R.id.lineareLayout_trailer);
 
         Bundle arguments = getArguments();
 
@@ -128,9 +134,9 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
             mTextViewOverview.setText(overview);
 
             String rating = mMovie.getMovieRating();
-            mTextViewMovieRating.setText(rating + RATING_OUT_OF_TEN);
+            mTextViewMovieRating.setText(rating + " " + RATING_OUT_OF_TEN);
 
-            if (mCreditsMovie != null) {
+            if (mExtraDetailMovie != null) {
                 setExtraDetail();
             }
 
@@ -198,34 +204,41 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        if(mMovie != null && mCreditsMovie == null) getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+        if(mMovie != null && mExtraDetailMovie == null) getLoaderManager().initLoader(DETAIL_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
     @Override
-    public Loader<CreditsMovie> onCreateLoader(int id, Bundle args) {
+    public Loader<ExtraDetailMovie> onCreateLoader(int id, Bundle args) {
         return new FetchDetailMovieTask(getActivity(), mMovie);
 
     }
 
     @Override
-    public void onLoadFinished(Loader<CreditsMovie> loader, CreditsMovie creditsMovie) {
-
+    public void onLoadFinished(Loader<ExtraDetailMovie> loader, ExtraDetailMovie extraDetailMovie) {
+        mExtraDetailMovie = extraDetailMovie;
+       if (mExtraDetailMovie != null) {
+           setExtraDetail();
+        }
     }
 
     @Override
-    public void onLoaderReset(Loader<CreditsMovie> loader) {
+    public void onLoaderReset(Loader<ExtraDetailMovie> loader) {
 
     }
 
-
     private void setExtraDetail(){
-        mMovie.setActors(mCreditsMovie.getActors());
+
+        final String YOUTUBE_BASE_URL="https://www.youtube.com/watch?";
+        final String PARAM = "v";
+
+        //set Actors to movie Object and update UI
+        mMovie.setActors(mExtraDetailMovie.getActors());
         int maxActors;
-        if(mCreditsMovie.getActors().size() > mNumberMaxDisplayedActors ){
+        if(mExtraDetailMovie.getActors().size() > mNumberMaxDisplayedActors ){
             maxActors = mNumberMaxDisplayedActors;
         }
-        else maxActors = mCreditsMovie.getActors().size();
+        else maxActors = mExtraDetailMovie.getActors().size();
 
         for (int i=0 ; i < maxActors  ; i++){
             StringBuilder sb = new StringBuilder();
@@ -233,7 +246,8 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
             mTextViewActor.append(sb.toString());
         }
 
-        mMovie.setGenre(mCreditsMovie.getGenre());
+        //Set genre Object and update UI
+        mMovie.setGenre(mExtraDetailMovie.getGenre());
         String[] genres = mMovie.getGenre();
         for (int i = 0 ; i < genres.length ; i++){
             StringBuilder sb = new StringBuilder();
@@ -242,6 +256,29 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
                 mTextViewGenre.append(" / ");
             }
         }
+
+        //set Trailer to movie Object and update UI
+        mMovie.setTrailers(mExtraDetailMovie.getTrailers());
+        for(final TrailerMovie trailerMovie : mMovie.getTrailers()){
+            Button buttonName  = new Button(getActivity());
+            buttonName.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+            buttonName.setText(trailerMovie.getNameTrailer());
+            buttonName.setBackgroundColor(getResources().getColor(R.color.colorBackgoundTitle));
+            buttonName.setPadding(10, 10, 10, 10);// in pixels (left, top, right, bottom)
+            mLinearLayoutTrailer.addView(buttonName);
+
+            buttonName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Uri uri = Uri.parse(YOUTUBE_BASE_URL).buildUpon().appendQueryParameter(PARAM, trailerMovie.getKeyTrailer()).build();
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    intent.putExtra("VIDEO_ID", trailerMovie.getKeyTrailer());
+                    startActivity(intent);
+                }
+            });
+        }
+
     }
 
 

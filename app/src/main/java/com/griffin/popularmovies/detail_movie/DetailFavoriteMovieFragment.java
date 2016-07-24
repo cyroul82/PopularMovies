@@ -73,7 +73,7 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
     private TextView mTextViewActor;
     private TextView mTextViewGenre;
 
-    private CreditsMovie mCreditsMovie;
+    private ExtraDetailMovie mExtraDetailMovie;
 
 
     public DetailFavoriteMovieFragment() {
@@ -90,13 +90,13 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
         }
         //restore the previous state
         else {
-            mCreditsMovie = (CreditsMovie)savedInstanceState.getParcelable(EXTRA_DETAIL_MOVIE);
+            mExtraDetailMovie = (ExtraDetailMovie)savedInstanceState.getParcelable(EXTRA_DETAIL_MOVIE);
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(EXTRA_DETAIL_MOVIE, mCreditsMovie);
+        outState.putParcelable(EXTRA_DETAIL_MOVIE, mExtraDetailMovie);
         super.onSaveInstanceState(outState);
     }
 
@@ -195,12 +195,12 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
     }
 
     private void setExtraDetail(){
-        mMovie.setActors(mCreditsMovie.getActors());
+        mMovie.setActors(mExtraDetailMovie.getActors());
         int maxActors;
-        if(mCreditsMovie.getActors().size() > mNumberMaxDisplayedActors ){
+        if(mExtraDetailMovie.getActors().size() > mNumberMaxDisplayedActors ){
             maxActors = mNumberMaxDisplayedActors;
         }
-        else maxActors = mCreditsMovie.getActors().size();
+        else maxActors = mExtraDetailMovie.getActors().size();
 
         for (int i=0 ; i < maxActors  ; i++){
             StringBuilder sb = new StringBuilder();
@@ -208,7 +208,7 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
             mTextViewActor.append(sb.toString());
         }
 
-        mMovie.setGenre(mCreditsMovie.getGenre());
+        mMovie.setGenre(mExtraDetailMovie.getGenre());
         String[] genres = mMovie.getGenre();
         for (int i = 0 ; i < genres.length ; i++){
             StringBuilder sb = new StringBuilder();
