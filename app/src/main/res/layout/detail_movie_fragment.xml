@@ -14,7 +14,7 @@
         <TextView
             android:id="@+id/titleTextView"
             android:layout_width="fill_parent"
-            android:layout_height="100dp"
+            android:layout_height="80dp"
             android:layout_gravity="center|start"
             android:gravity="center|start"
             android:drawableBottom="#FFFFFF"
@@ -45,13 +45,11 @@
                     android:layout_marginRight="20dp"/>
 
                 <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical" >
 
-
                     <TextView
-
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
@@ -63,6 +61,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/colorBackgoundTitle"
                         android:text="@string/originalTitleTextView" />
 
 
@@ -78,16 +77,34 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:id="@+id/movieRatingTextView" />
+                        android:id="@+id/movieRatingTextView"
+                        android:layout_marginBottom="10dp" />
 
-                    <ListView
-                        android:id="@+id/listView_actor"
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:fitsSystemWindows="true">
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="@string/textView_actorsList_title"
+                        android:textColor="@color/colorBackgoundTitle"/>
 
-                    </ListView>
+                    <TextView
+                        android:id="@+id/textView_actor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="@string/textView_genre_title"
+                        android:textColor="@color/colorBackgoundTitle"/>
+
+                    <TextView
+                        android:id="@+id/textView_genre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"/>
 
 
                     </LinearLayout>
@@ -104,7 +121,6 @@
                     android:id="@+id/markAsFavoriteButton"
                     android:layout_marginBottom="10dp"
                     style="@style/ButtonFavorite"
-                    android:background="@drawable/round_corner_button"
                     android:text="@string/my_favorite_add_button"/>
 
             </LinearLayout>
@@ -114,18 +130,16 @@
                     android:layout_height="wrap_content"
                     android:gravity="fill_horizontal"
                     android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@color/colorBackgoundTitle"
                     android:text="@string/overviewText" />
 
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:id="@+id/overviewMovieTextView" />
-                </ScrollView>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/overviewMovieTextView" />
+
 
         </LinearLayout>
 
