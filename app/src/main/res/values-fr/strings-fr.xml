@@ -15,7 +15,8 @@
     <string name="sort_by">Sort By</string>
     <string name="title_activity_settings">Paramètres</string>
 
-
+    <string name="textView_actorsList_title">Acteurs et Personnages :</string>
+    <string name="textView_genre_title">Genre :</string>
 
     <string name="my_favorite_add_button">Ajouter à mes favoris</string>
     <string name="my_favorite_remove_button">Supprimer</string>
