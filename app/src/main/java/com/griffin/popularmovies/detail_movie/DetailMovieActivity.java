@@ -27,6 +27,8 @@ public class DetailMovieActivity extends AppCompatActivity {
                 Get back the movie from the Intent
 
             */
+            //TODO DetailFavoriteFragment
+
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailMovieFragment.DETAIL_MOVIE, getIntent().getParcelableExtra(getString(R.string.key_movies_list)));
 

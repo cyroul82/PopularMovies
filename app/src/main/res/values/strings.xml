@@ -46,8 +46,8 @@
         <item>favorite</item>
     </string-array>
 
-    <string name="textView_actorsList_title">Casting and Character :</string>
-    <string name="textView_genre_title">Genre :</string>
+    <string name="textView_actorsList_title">Casting and Character : </string>
+    <string name="textView_genre_title">Genre : </string>
 
     <string name="title_activity_settings">Settings</string>
 
@@ -58,6 +58,15 @@
     <string name="my_favorite_remove_button">Remove from favorite</string>
 
     <string name="action_share">Share</string>
+    <string name="action_favorite">Favorite</string>
 
     <string name="user_choice" translatable="false">user choice</string>
+
+    <string name="rating" translatable="false">%1$s / 10</string>
+
+    <string name="reviews" translatable="false">\nAuthor : %1$s \n \n%2$s</string>
+
+    <string name="reviewTitle">Reviews :</string>
+    <string name="trailerTitle">Videos :</string>
+    <string name="runtime" translatable="false">%1$s min</string>
 </resources>

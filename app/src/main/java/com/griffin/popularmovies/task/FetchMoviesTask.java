@@ -1,7 +1,9 @@
 package com.griffin.popularmovies.task;
 
+import android.content.ContentProvider;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -9,6 +11,8 @@ import android.util.Log;
 
 import com.griffin.popularmovies.BuildConfig;
 import com.griffin.popularmovies.MainActivity;
+import com.griffin.popularmovies.data.MovieContract;
+import com.griffin.popularmovies.data.MovieProvider;
 import com.griffin.popularmovies.movie_list.Movie;
 import com.griffin.popularmovies.R;
 
@@ -139,18 +143,34 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
 
         for(int i = 0; i < popularMoviesArray.length(); i++) {
 
+
+
+
+
             // Get the JSON object representing a popular movie
             JSONObject popularMovie = popularMoviesArray.getJSONObject(i);
 
+            int idMovie = Integer.parseInt(popularMovie.getString(JSON_ID));
+            //Check from SQLite DB if already favorite
+            int isFavorite = 0;
+           Cursor movieCursor = getContext().getContentResolver().query(MovieContract.FavoriteMoviesEntry.buildMovieUriFromIdMovie(idMovie),null,
+                    null,null,null,
+                    null);
+
+            if(movieCursor.moveToFirst())isFavorite = 1;
+
+            movieCursor.close();
+
             // Creates the movie
             Movie movie = new Movie(
-                    Integer.parseInt(popularMovie.getString(JSON_ID)),
+                    idMovie,
                     popularMovie.getString(JSON_TITLE),
                     popularMovie.getString(JSON_OVERVIEW),
                     IMAGE_BASE_URL + popularMovie.getString(JSON_IMAGE),
                     popularMovie.getString(JSON_ORIGINAL_TITLE),
                     getYear(popularMovie.getString(JSON_MOVIE_YEAR)),
-                    popularMovie.getString(JSON_RATING)
+                    popularMovie.getString(JSON_RATING),
+                    isFavorite
             );
 
 

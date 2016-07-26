@@ -6,6 +6,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.griffin.popularmovies.BuildConfig;
+import com.griffin.popularmovies.ReviewMovie;
 import com.griffin.popularmovies.detail_movie.ActorMovie;
 import com.griffin.popularmovies.detail_movie.ExtraDetailMovie;
 import com.griffin.popularmovies.detail_movie.TrailerMovie;
@@ -37,6 +38,9 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
 
     private final static String CREDITS = "credits";
     private final static String TRAILER = "videos";
+    private final static String REVIEWS = "reviews";
+    private final static String LANGUAGE_SYSTEM = Locale.getDefault().getLanguage();
+    private final static String LANGUAGE_CALLBACK = "en";
 
     // These two need to be declared outside the try/catch
     // so that they can be closed in the finally block.
@@ -151,19 +155,28 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
 
     }
 
-    private String[] getGenreFromJson(String genreMoviesJsonStr)
+    private List<String[]> getGenreAndRuntimeFromJson(String genreMoviesJsonStr)
             throws JSONException {
 
         // These are the names of the JSON objects that need to be extracted.
         final String JSON_RESULTS = "genres";
         final String JSON_NAME = "name";
+        final String JSON_RUNTIME = "runtime";
+
+        List<String[]> infoMovie = new ArrayList<>();
 
         JSONObject genreMovieJson = new JSONObject(genreMoviesJsonStr);
+
+        //Get back the runtime
+        String runtimeMovie = genreMovieJson.getString(JSON_RUNTIME);
+
+
+        //Get the back the genres
         JSONArray genreMovieArray = genreMovieJson.getJSONArray(JSON_RESULTS);
 
         String[] genreList = new String[genreMovieArray.length()];
 
-        for(int i = 0; i < genreMovieArray.length(); i++) {
+        for (int i = 0; i < genreMovieArray.length(); i++) {
 
             // Get the JSON object representing a genre
             JSONObject genreMovie = genreMovieArray.getJSONObject(i);
@@ -173,7 +186,10 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
 
         }
 
-        return genreList;
+        infoMovie.add(genreList);
+        infoMovie.add(new String[]{runtimeMovie});
+
+        return infoMovie;
 
     }
 
@@ -208,12 +224,45 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
         return trailerList;
     }
 
+    private List<ReviewMovie> getReviewFromJson(String reviewJsonStr)
+            throws JSONException{
+        // These are the names of the JSON objects that need to be extracted.
+        final String JSON_RESULTS = "results";
+        final String JSON_AUTHOR = "author";
+        final String JSON_CONTENT = "content";
+
+        JSONObject reviewJson = new JSONObject(reviewJsonStr);
+        JSONArray reviewArray = reviewJson.getJSONArray(JSON_RESULTS);
+
+        List<ReviewMovie> reviewMovieList = new ArrayList<>();
+
+        for (int i=0 ; i < reviewArray.length() ; i++) {
+            // Get the JSON object representing an review
+            JSONObject review = reviewArray.getJSONObject(i);
+
+            // udpate the review detail
+            ReviewMovie reviewMovie = new ReviewMovie();
+            reviewMovie.setAuthor(review.getString(JSON_AUTHOR));
+            reviewMovie.setReview(review.getString(JSON_CONTENT));
+
+
+            //Add the trailer to the list
+            reviewMovieList.add(reviewMovie);
+        }
+        return reviewMovieList;
+    }
+
     @Override
     public ExtraDetailMovie loadInBackground() {
         try {
-            extraDetailMovie.setActors(getActorFromJson(getDataFromTheMovieDB(mMovie.getId(), CREDITS)));
-            extraDetailMovie.setGenre(getGenreFromJson(getDataFromTheMovieDB(mMovie.getId(), null)));
-            extraDetailMovie.setTrailers(getTrailFromJson(getDataFromTheMovieDB(mMovie.getId(), TRAILER)));
+
+            extraDetailMovie.setActors(getActorFromJson(getDataFromTheMovieDB(mMovie.getId(), CREDITS, LANGUAGE_SYSTEM)));
+            List<String[]> infoMovie = getGenreAndRuntimeFromJson(getDataFromTheMovieDB(mMovie.getId(), null, LANGUAGE_SYSTEM));
+            extraDetailMovie.setGenre(infoMovie.get(0));
+            String[] runtime = infoMovie.get(1);
+            extraDetailMovie.setRuntime(runtime[0]);
+            extraDetailMovie.setTrailers(getTrailFromJson(getDataFromTheMovieDB(mMovie.getId(), TRAILER, LANGUAGE_SYSTEM)));
+            extraDetailMovie.setReviewMovieList(getReviewFromJson(getDataFromTheMovieDB(mMovie.getId(), REVIEWS, LANGUAGE_SYSTEM)));
             return extraDetailMovie;
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
@@ -222,7 +271,7 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
         return null;
     }
 
-    private String getDataFromTheMovieDB(int id, String param){
+    private String getDataFromTheMovieDB(int id, String param, String language){
         String parsedParam;
         if (param == null){
             parsedParam = "";
@@ -240,7 +289,7 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
             // Build the Uri
             final Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                     .appendQueryParameter(APPID_PARAM, BuildConfig.MOVIE_DB_API_KEY)
-                    .appendQueryParameter(LANGUAGE, Locale.getDefault().getLanguage())
+                    .appendQueryParameter(LANGUAGE, language)
                     .build();
 
             // Create the Url to open the connection later

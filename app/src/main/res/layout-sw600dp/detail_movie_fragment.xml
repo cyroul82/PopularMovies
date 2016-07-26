@@ -62,10 +62,10 @@
             android:orientation="vertical">
 
             <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="20dp" >
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp" >
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -144,7 +144,23 @@
 
             </LinearLayout>
 
-             <TextView
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!--Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/markAsFavoriteButton"
+                    android:layout_marginBottom="10dp"
+                    android:background="@color/colorBackgoundTitle"
+                    style="@style/ButtonFavorite"
+                    android:text="@string/my_favorite_add_button"/-->
+
+            </LinearLayout>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="fill_horizontal"

@@ -1,6 +1,5 @@
 package com.griffin.popularmovies.detail_movie;
 
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,13 +21,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.griffin.popularmovies.ReviewMovie;
 import com.griffin.popularmovies.movie_list.Movie;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.task.FetchDetailMovieTask;
+import com.sackcentury.shinebuttonlib.ShineButton;
 import com.squareup.picasso.Picasso;
-
-import java.net.URI;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -42,6 +40,7 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
     private Movie mMovie;
     private ShareActionProvider mShareActionProvider;
 
+
     private static final int DETAIL_LOADER = 0;
 
     private TextView mTitleTextView;
@@ -52,11 +51,12 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
     private TextView mTextViewMovieRating;
     private TextView mTextViewActor;
     private TextView mTextViewGenre;
+    private TextView mTextViewRuntime;
     private LinearLayout mLinearLayoutTrailer;
+    private LinearLayout mLinearLayoutReview;
+    private ShineButton mFavoriteButton;
 
     private ExtraDetailMovie mExtraDetailMovie;
-
-    private final int mNumberMaxDisplayedActors = 3;
 
     public DetailMovieFragment() {
         setHasOptionsMenu(true);
@@ -72,7 +72,7 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
         }
         //restore the previous state
         else {
-            mExtraDetailMovie = (ExtraDetailMovie)savedInstanceState.getParcelable(DetailMovieFragment.EXTRA_DETAIL_MOVIE);
+            mExtraDetailMovie = savedInstanceState.getParcelable(DetailMovieFragment.EXTRA_DETAIL_MOVIE);
         }
     }
 
@@ -88,10 +88,12 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
         inflater.inflate(R.menu.menu_detail_fragment, menu);
 
         // Retrieve the share menu item
-        MenuItem menuItem = menu.findItem(R.id.action_share);
+        MenuItem menuShare = menu.findItem(R.id.action_share);
 
         // Get the provider and hold onto it to set/change the share intent.
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuShare);
+
+
     }
 
     @Override
@@ -108,7 +110,13 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
         mTextViewMovieRating = (TextView) rootView.findViewById(R.id.movieRatingTextView);
         mTextViewActor = (TextView) rootView.findViewById(R.id.textView_actor);
         mTextViewGenre = (TextView) rootView.findViewById(R.id.textView_genre);
-        mLinearLayoutTrailer = (LinearLayout) rootView.findViewById(R.id.lineareLayout_trailer);
+        mLinearLayoutTrailer = (LinearLayout) rootView.findViewById(R.id.linearLayout_trailer);
+        mLinearLayoutReview = (LinearLayout) rootView.findViewById(R.id.linearLayout_Review);
+        mFavoriteButton = (ShineButton) rootView.findViewById(R.id.shineButton_favorite);
+        mTextViewRuntime = (TextView) rootView.findViewById(R.id.textView_runtime);
+
+
+        mFavoriteButton.init(getActivity());
 
         Bundle arguments = getArguments();
 
@@ -117,7 +125,10 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
             mMovie = arguments.getParcelable(DetailMovieFragment.DETAIL_MOVIE);
 
 
-            String urlPicture = mMovie.getUrl();
+            String urlPicture = null;
+            if (mMovie != null) {
+                urlPicture = mMovie.getUrl();
+            }
             Picasso.with(getActivity())
                     .load(urlPicture)
                     .into(mImageViewMoviePicture);
@@ -135,7 +146,13 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
             mTextViewOverview.setText(overview);
 
             String rating = mMovie.getMovieRating();
-            mTextViewMovieRating.setText(rating + " " + RATING_OUT_OF_TEN);
+            String rating_text = String.format(getString(R.string.rating),rating);
+            mTextViewMovieRating.setText(rating_text);
+
+            if (mMovie.getFavorite() == 0){
+                mFavoriteButton.setChecked(false);
+            }
+            else mFavoriteButton.setChecked(true);
 
             if (mExtraDetailMovie != null) {
                 setExtraDetail();
@@ -143,11 +160,19 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
 
         }
 
-        Button buttonMarkAsFavorite = (Button) rootView.findViewById(R.id.markAsFavoriteButton);
-        buttonMarkAsFavorite.setOnClickListener(new View.OnClickListener() {
+
+
+
+        mFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addMovieToFavorite(mMovie);
+                if(mFavoriteButton.isChecked()) {
+                    addMovieToFavorite(mMovie);
+
+                }
+                else {
+                    removeMovie(mMovie);
+                }
             }
         });
 
@@ -155,7 +180,7 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
     }
 
     private void addMovieToFavorite(Movie movie) {
-        long movieRowId;
+        //long movieRowId;
 
         // First, check if the mMovie with this id already exists in the db
         Cursor movieCursor = getContext().getContentResolver().query(
@@ -171,7 +196,7 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
 
         if (movieCursor.moveToFirst()) {
             int movieIdIndex = movieCursor.getColumnIndex(MovieContract.FavoriteMoviesEntry._ID);
-            movieRowId = movieCursor.getLong(movieIdIndex);
+            //movieRowId = movieCursor.getLong(movieIdIndex);
         } else {
             // Now that the content provider is set up, inserting rows of data is pretty simple.
             // First create a ContentValues object to hold the data you want to insert.
@@ -191,15 +216,16 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
             Uri insertedUri = getContext().getContentResolver().insert(MovieContract.FavoriteMoviesEntry.CONTENT_URI,values);
 
             // The resulting URI contains the ID for the row.  Extract the movieId from the Uri.
-            movieRowId = ContentUris.parseId(insertedUri);
+            // movieRowId = ContentUris.parseId(insertedUri);
         }
 
         movieCursor.close();
 
     }
-    //TODO
+
     public void removeMovie(Movie movie){
-        getContext().getContentResolver().delete(MovieContract.FavoriteMoviesEntry.CONTENT_URI, MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID,
+        getContext().getContentResolver().delete(MovieContract.FavoriteMoviesEntry.CONTENT_URI,
+                MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID,
                 new String[]{Integer.toString(movie.getId())});
     }
 
@@ -236,15 +262,14 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
         //set Actors to movie Object and update UI
         mMovie.setActors(mExtraDetailMovie.getActors());
         int maxActors;
-        if(mExtraDetailMovie.getActors().size() > mNumberMaxDisplayedActors ){
+        int mNumberMaxDisplayedActors = 3;
+        if(mExtraDetailMovie.getActors().size() > mNumberMaxDisplayedActors){
             maxActors = mNumberMaxDisplayedActors;
         }
         else maxActors = mExtraDetailMovie.getActors().size();
 
         for (int i=0 ; i < maxActors  ; i++){
-            StringBuilder sb = new StringBuilder();
-            sb.append(mMovie.getActors().get(i).getName()).append("  (").append(mMovie.getActors().get(i).getCharacter()).append(")\n");
-            mTextViewActor.append(sb.toString());
+            mTextViewActor.append(mMovie.getActors().get(i).getName() + "  (" + mMovie.getActors().get(i).getCharacter() + ")\n");
         }
 
         //Set genre Object and update UI
@@ -258,30 +283,50 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
             }
         }
 
+        //set review Object and update UI
+        mMovie.setReviewMovieList(mExtraDetailMovie.getReviewMovieList());
+        for (ReviewMovie reviewMovie : mMovie.getReviewMovieList()){
+            TextView textView = new TextView(getActivity());
+            LinearLayout.LayoutParams textViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams
+                    .MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            textView.setLayoutParams(textViewLayoutParams);
+            textViewLayoutParams.setMargins(0,0,0,10);
+            String review = String.format(getString(R.string.reviews),reviewMovie.getAuthor(), reviewMovie.getReview());
+            textView.setText(review);
+            textView.setBackground(getResources().getDrawable(R.drawable.border_top));
+
+            mLinearLayoutReview.addView(textView);
+        }
+
+
         //set Trailer to movie Object and update UI
         mMovie.setTrailers(mExtraDetailMovie.getTrailers());
         for(final TrailerMovie trailerMovie : mMovie.getTrailers()){
-            Button buttonName  = new Button(getActivity());
+            Button button  = new Button(getActivity());
             LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams
-                    .WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
-            buttonName.setLayoutParams(buttonLayoutParams);
+                    .MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            button.setLayoutParams(buttonLayoutParams);
             buttonLayoutParams.setMargins(0,0,0,10);
-            buttonName.setText(trailerMovie.getNameTrailer());
-            buttonName.setBackgroundColor(getResources().getColor(R.color.colorBackgoundTitle));
-            buttonName.setPadding(10, 10, 10, 10);// in pixels (left, top, right, bottom)
-            mLinearLayoutTrailer.addView(buttonName);
+            button.setText(trailerMovie.getNameTrailer());
+            button.setCompoundDrawablePadding(5);
+            button.setCompoundDrawables(getResources().getDrawable(R.drawable.ic_play_circle_outline_white_24dp), null, null, null);
+            button.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+            button.setPadding(10, 10, 10, 10);// in pixels (left, top, right, bottom)
+            mLinearLayoutTrailer.addView(button);
 
-            buttonName.setOnClickListener(new View.OnClickListener() {
+            button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Uri uri = Uri.parse(YOUTUBE_BASE_URL).buildUpon().appendQueryParameter(PARAM, trailerMovie.getKeyTrailer()).build();
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    intent.putExtra("VIDEO_ID", trailerMovie.getKeyTrailer());
                     startActivity(intent);
                 }
             });
         }
+
+        mMovie.setRuntime(mExtraDetailMovie.getRuntime());
+        String runtime = String.format(getString(R.string.runtime),mMovie.getRuntime());
+        mTextViewRuntime.setText(runtime);
 
     }
 

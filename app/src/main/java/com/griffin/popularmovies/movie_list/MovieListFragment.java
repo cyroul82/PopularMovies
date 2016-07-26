@@ -32,6 +32,11 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     //Loader ID
     private static final int MOVIE_LOADER = 0;
 
+    private int mPosition;
+    private String SELECTED_KEY = "positionkey";
+
+    private GridView mGridView;
+
     public MovieListFragment(){
 
     }
@@ -71,19 +76,26 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
         View rootView = inflater.inflate(R.layout.movie_list_fragment, container, false);
 
-        GridView gridViewMovies = (GridView)rootView.findViewById(R.id.gridview_moviesList);
+        mGridView = (GridView)rootView.findViewById(R.id.gridview_moviesList);
         mMoviesAdapter = new PopularMoviesAdapter(getActivity(), R.layout.movie_item_picture, R.id.movieItemPictureImageView, mMoviesList);
-        gridViewMovies.setAdapter(mMoviesAdapter);
+        mGridView.setAdapter(mMoviesAdapter);
 
         //set up the OnClick Listener to gridViewMovies
-        gridViewMovies.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     //get the movie back from the adapter
                     Movie movie = mMoviesAdapter.getItem(position);
                     ((Callback)getActivity()).onItemSelected(movie);
+
+                    mPosition = position;
                 }
             });
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)){
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+            mGridView.smoothScrollToPosition(mPosition);
+        }
 
         return rootView;
     }
@@ -99,6 +111,9 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        if(mPosition != mGridView.getFirstVisiblePosition()){
+            outState.putInt(SELECTED_KEY, mPosition);
+        }
         //we put the mMoviesList into the bundle to avoid querying again while rebuilding
         outState.putParcelableArrayList(getString(R.string.key_movies_list), mMoviesList);
         super.onSaveInstanceState(outState);
@@ -123,8 +138,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
-        FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(getContext());
-        return fetchMoviesTask;
+        return new FetchMoviesTask(getContext());
     }
 
     @Override
@@ -134,6 +148,9 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
             for (Movie movie : data) {
                 mMoviesAdapter.add(movie);
             }
+        }
+        if (mPosition != mGridView.getFirstVisiblePosition()){
+            mGridView.smoothScrollToPosition(mPosition);
         }
     }
 

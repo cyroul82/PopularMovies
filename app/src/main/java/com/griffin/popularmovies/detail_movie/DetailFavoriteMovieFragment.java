@@ -132,10 +132,6 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
         mTextViewActor = (TextView) rootView.findViewById(R.id.textView_actor);
         mTextViewGenre = (TextView) rootView.findViewById(R.id.textView_genre);
 
-        Button buttonFavorite = (Button) rootView.findViewById(R.id.markAsFavoriteButton);
-        buttonFavorite.setVisibility(View.GONE);
-
-
         return rootView;
     }
 

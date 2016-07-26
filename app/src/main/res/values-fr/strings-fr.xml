@@ -16,7 +16,7 @@
     <string name="title_activity_settings">Paramètres</string>
 
     <string name="textView_actorsList_title">Acteurs et Personnages :</string>
-    <string name="textView_genre_title">Genre :</string>
+    <string name="textView_genre_title">Genre :\u00A0</string>
 
     <string name="my_favorite_add_button">Ajouter à mes favoris</string>
     <string name="my_favorite_remove_button">Supprimer</string>
@@ -28,4 +28,7 @@
     <string name="key_movies_upcoming">A Venir</string>
     <string name="key_movies_now_playing">Cette semaine</string>
     <string name="key_movies_favorite">Mes Favoris</string>
+
+    <string name="reviewTitle">Critiques :</string>
+    <string name="trailerTitle">Videos :</string>
 </resources>

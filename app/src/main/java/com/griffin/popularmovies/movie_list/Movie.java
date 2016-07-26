@@ -17,13 +17,14 @@ public class Movie extends ExtraDetailMovie implements Parcelable {
     private String originalTitle = null;
     private String movieDate = null;
     private String movieRating = null;
+    private int isFavorite ;
 
 
     public Movie(){
 
     }
 
-    public Movie(int id, String title, String overview, String url, String originalTitle, String movieDate, String movieRating) {
+    public Movie(int id, String title, String overview, String url, String originalTitle, String movieDate, String movieRating, int isFavorite) {
         this.id = id;
         this.title =title;
         this.overview = overview;
@@ -31,6 +32,7 @@ public class Movie extends ExtraDetailMovie implements Parcelable {
         this.originalTitle = originalTitle;
         this.movieDate = movieDate;
         this.movieRating = movieRating;
+        this.isFavorite = isFavorite;
     }
 
     private Movie(Parcel in) {
@@ -41,6 +43,7 @@ public class Movie extends ExtraDetailMovie implements Parcelable {
         originalTitle = in.readString();
         movieDate = in.readString();
         movieRating = in.readString();
+        isFavorite = in.readInt();
 
     }
 
@@ -116,6 +119,7 @@ public class Movie extends ExtraDetailMovie implements Parcelable {
         dest.writeString(originalTitle);
         dest.writeString(movieDate);
         dest.writeString(movieRating);
+        dest.writeInt(isFavorite);
 
     }
 
@@ -132,6 +136,14 @@ public class Movie extends ExtraDetailMovie implements Parcelable {
         }
 
     };
+
+    public int getFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(int favorite) {
+        isFavorite = favorite;
+    }
 }
 
 

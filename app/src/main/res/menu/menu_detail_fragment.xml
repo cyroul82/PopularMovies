@@ -5,4 +5,10 @@
           android:title="@string/action_share"
           app:showAsAction="always"
           app:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
+
+    <item android:id="@+id/action_favorite"
+          android:title="@string/action_favorite"
+          android:icon="@drawable/favorite"
+          app:showAsAction="always"
+          app:actionProviderClass="com.griffin.popularmovies.FavoriteActionProvider" />
 </menu>

@@ -142,7 +142,7 @@ public class MovieProvider extends ContentProvider {
         switch (match){
 
             case MOVIE: {
-                rowsDeleted = db.delete(MovieContract.FavoriteMoviesEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = db.delete(MovieContract.FavoriteMoviesEntry.TABLE_NAME, selection + " = ?", selectionArgs);
                 break;
 
             }
