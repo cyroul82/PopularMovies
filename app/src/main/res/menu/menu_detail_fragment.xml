@@ -10,5 +10,5 @@
           android:title="@string/action_favorite"
           android:icon="@drawable/favorite"
           app:showAsAction="always"
-          app:actionProviderClass="com.griffin.popularmovies.FavoriteActionProvider" />
+           />
 </menu>
