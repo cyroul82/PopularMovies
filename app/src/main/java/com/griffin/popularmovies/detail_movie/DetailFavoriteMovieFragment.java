@@ -17,11 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.movie_list.Movie;
+import com.sackcentury.shinebuttonlib.ShineButton;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -72,6 +74,11 @@ public class DetailFavoriteMovieFragment extends Fragment implements LoaderManag
     private TextView mTextViewMovieRating;
     private TextView mTextViewActor;
     private TextView mTextViewGenre;
+    private TextView mTextViewRuntime;
+    private LinearLayout mLinearLayoutTrailer;
+    private LinearLayout mLinearLayoutReview;
+    private ShineButton mFavoriteButton;
+
 
     private ExtraDetailMovie mExtraDetailMovie;
 

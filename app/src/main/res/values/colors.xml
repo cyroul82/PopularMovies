@@ -6,4 +6,5 @@
     <color name="colorBackgoundTitle">#F38E2B</color>
     <color name="colorTitle">#FFFFFF</color>
     <color name="colorText">#FFFFFF</color>
+    <color name="grey">@android:color/darker_gray</color>
 </resources>
