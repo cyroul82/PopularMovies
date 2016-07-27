@@ -14,7 +14,7 @@ public class ExtraDetailMovie implements Parcelable{
 
 
     private String[] mGenre;
-    private List<ActorMovie> mActors;
+    private List<CastingMovie> mActors;
     private List<TrailerMovie> mTrailerList;
     private List<ReviewMovie> mReviewMovieList;
     private String mRuntime;
@@ -50,10 +50,10 @@ public class ExtraDetailMovie implements Parcelable{
         return mGenre;
     }
 
-    public void setActors(List<ActorMovie> mActors){
+    public void setActors(List<CastingMovie> mActors){
         this.mActors = mActors;
     }
-    public List<ActorMovie> getActors(){
+    public List<CastingMovie> getCasting(){
         return mActors;
     }
 
@@ -64,7 +64,7 @@ public class ExtraDetailMovie implements Parcelable{
         return mTrailerList;
     }
 
-    public List<ReviewMovie> getReviewMovieList() {
+    public List<ReviewMovie> getReviews() {
         return mReviewMovieList;
     }
 

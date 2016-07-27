@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.griffin.popularmovies.movie_list.FavoriteMovieFragment;
+import com.griffin.popularmovies.movie_list.FavoriteListFragment;
 import com.griffin.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
@@ -48,7 +48,7 @@ public class FavoriteMoviesAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         //get the url Picture from cursor
-        String urlPicture = cursor.getString(FavoriteMovieFragment.COLUMN_MOVIE_PICTURE);
+        String urlPicture = cursor.getString(FavoriteListFragment.COLUMN_MOVIE_PICTURE);
         Picasso.with(mContext)
                 .load(urlPicture)
                 .into(viewHolder.moviePicture);

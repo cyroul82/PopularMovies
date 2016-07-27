@@ -6,29 +6,29 @@ import android.os.Parcelable;
 /**
  * Created by griffin on 21/07/16.
  */
-public class ActorMovie implements Parcelable{
+public class CastingMovie implements Parcelable{
 
     public String name;
     public String character;
 
-    protected ActorMovie(Parcel in) {
+    protected CastingMovie(Parcel in) {
         name = in.readString();
         character = in.readString();
     }
 
-    public ActorMovie(){
+    public CastingMovie(){
 
     }
 
-    public static final Creator<ActorMovie> CREATOR = new Creator<ActorMovie>() {
+    public static final Creator<CastingMovie> CREATOR = new Creator<CastingMovie>() {
         @Override
-        public ActorMovie createFromParcel(Parcel in) {
-            return new ActorMovie(in);
+        public CastingMovie createFromParcel(Parcel in) {
+            return new CastingMovie(in);
         }
 
         @Override
-        public ActorMovie[] newArray(int size) {
-            return new ActorMovie[size];
+        public CastingMovie[] newArray(int size) {
+            return new CastingMovie[size];
         }
     };
 

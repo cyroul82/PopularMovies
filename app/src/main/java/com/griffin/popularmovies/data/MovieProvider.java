@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
 /**
@@ -17,8 +18,24 @@ public class MovieProvider extends ContentProvider {
 
     static final int MOVIE = 100;
     static final int MOVIE_WITH_ID = 101;
-    static final int MOVIE_DETAIL = 200;
-    static final int MOVIE_DETAIL_WITH_ID_MOVIE = 201;
+    static final int DETAIL = 200;
+
+
+    private static final SQLiteQueryBuilder sMovieByDetailQueryBuilder;
+
+    static{
+        sMovieByDetailQueryBuilder = new SQLiteQueryBuilder();
+
+        //This is an inner join which looks like
+        //favorite_detail INNER JOIN favorite ON favorite_detail.movie_id = favorite.movie_id
+        sMovieByDetailQueryBuilder.setTables(
+                MovieContract.FavoriteEntry.TABLE_NAME + " INNER JOIN " +
+                        MovieContract.DetailEntry.TABLE_NAME +
+                        " ON " + MovieContract.FavoriteEntry.TABLE_NAME +
+                        "." + MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY +
+                        " = " + MovieContract.DetailEntry.TABLE_NAME +
+                        "." + MovieContract.DetailEntry._ID);
+    }
 
     static UriMatcher buildUriMatcher (){
         //Create the default matcher
@@ -29,8 +46,9 @@ public class MovieProvider extends ContentProvider {
         //build Uri Matcher
         matcher.addURI(authority, MovieContract.PATH_MOVIE, MOVIE);
         matcher.addURI(authority, MovieContract.PATH_MOVIE + "/#", MOVIE_WITH_ID);
-        matcher.addURI(authority, MovieContract.PATH_MOVIE_DETAIL, MOVIE_DETAIL);
-        matcher.addURI(authority, MovieContract.PATH_MOVIE_DETAIL + "/#", MOVIE_DETAIL_WITH_ID_MOVIE);
+
+        matcher.addURI(authority, MovieContract.PATH_DETAIL, DETAIL);
+
         return matcher;
     }
 
@@ -41,13 +59,30 @@ public class MovieProvider extends ContentProvider {
         return true;
     }
 
-    //movie.id = ?
-    private static final String sFavoriteMovieSelection = MovieContract.FavoriteMoviesEntry.TABLE_NAME +
-            "." + MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID + " = ? ";
+    //detail.id = ?
+    private static final String sDetailSelection = MovieContract.FavoriteEntry.TABLE_NAME +
+            "." + MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY + " = ? ";
 
-    //movie.id = ?
-    private static final String sFavoriteMovieDetailSelection = MovieContract.FavoriteDetailMoviesEntry.TABLE_NAME +
-            "." + MovieContract.FavoriteDetailMoviesEntry.COLUMN_MOVIE_ID + " = ? ";
+    private Cursor getMovieByDetail(Uri uri, String[] projection, String sortOrder) {
+        long detailId = MovieContract.FavoriteEntry.getDetailIdFromUri(uri);
+
+        String[] selectionArgs;
+        String selection;
+
+        selection = sDetailSelection;
+        selectionArgs = new String[]{Long.toString(detailId)};
+
+
+        return sMovieByDetailQueryBuilder.query(mMovieDbHelper.getReadableDatabase(),
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
+    }
+
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
@@ -58,23 +93,14 @@ public class MovieProvider extends ContentProvider {
 
             case MOVIE_WITH_ID:
             {
-                long movieId = MovieContract.FavoriteMoviesEntry.getMovieIdFromUri(uri);
-                selectionArgs = new String[]{Long.toString(movieId)};
-                retCursor = mMovieDbHelper.getReadableDatabase().query(
-                        MovieContract.FavoriteMoviesEntry.TABLE_NAME,
-                        projection,
-                        sFavoriteMovieSelection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder);
+                retCursor = getMovieByDetail(uri, projection, sortOrder);
                 break;
             }
 
 
             case MOVIE: {
                 retCursor = mMovieDbHelper.getReadableDatabase().query(
-                        MovieContract.FavoriteMoviesEntry.TABLE_NAME,
+                        MovieContract.FavoriteEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -84,25 +110,10 @@ public class MovieProvider extends ContentProvider {
                 );
                 break;
             }
-            case MOVIE_DETAIL:
+            case DETAIL:
             {
-                long movieId = MovieContract.FavoriteDetailMoviesEntry.getMovieDetailIdFromUri(uri);
-                selectionArgs = new String[]{Long.toString(movieId)};
                 retCursor = mMovieDbHelper.getReadableDatabase().query(
-                        MovieContract.FavoriteDetailMoviesEntry.TABLE_NAME,
-                        projection,
-                        sFavoriteMovieDetailSelection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder);
-                break;
-            }
-
-
-            case MOVIE_DETAIL_WITH_ID_MOVIE: {
-                retCursor = mMovieDbHelper.getReadableDatabase().query(
-                        MovieContract.FavoriteDetailMoviesEntry.TABLE_NAME,
+                        MovieContract.DetailEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -129,13 +140,11 @@ public class MovieProvider extends ContentProvider {
 
         switch (match){
             case MOVIE_WITH_ID :
-                return MovieContract.FavoriteMoviesEntry.CONTENT_ITEM_TYPE;
+                return MovieContract.FavoriteEntry.CONTENT_ITEM_TYPE;
             case MOVIE:
-                return MovieContract.FavoriteMoviesEntry.CONTENT_TYPE;
-            case MOVIE_DETAIL_WITH_ID_MOVIE :
-                return MovieContract.FavoriteDetailMoviesEntry.CONTENT_ITEM_TYPE;
-            case MOVIE_DETAIL:
-                return MovieContract.FavoriteDetailMoviesEntry.CONTENT_TYPE;
+                return MovieContract.FavoriteEntry.CONTENT_TYPE;
+            case DETAIL:
+                return MovieContract.DetailEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknow uri: " + uri );
         }
@@ -146,23 +155,22 @@ public class MovieProvider extends ContentProvider {
         final SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         Uri returnUri;
-        long _id;
 
         switch (match){
 
             case MOVIE: {
-                _id = db.insert(MovieContract.FavoriteMoviesEntry.TABLE_NAME, null, values);
+                long _id = db.insert(MovieContract.FavoriteEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
-                    returnUri = MovieContract.FavoriteMoviesEntry.buildMovieUri(_id);
+                    returnUri = MovieContract.FavoriteEntry.buildMovieUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
 
             }
-            case MOVIE_DETAIL: {
-                _id = db.insert(MovieContract.FavoriteDetailMoviesEntry.TABLE_NAME, null, values);
+            case DETAIL: {
+                long _id = db.insert(MovieContract.DetailEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
-                    returnUri = MovieContract.FavoriteDetailMoviesEntry.buildMovieDetailUri(_id);
+                    returnUri = MovieContract.DetailEntry.buildMovieDetailUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -192,12 +200,12 @@ public class MovieProvider extends ContentProvider {
         switch (match){
 
             case MOVIE: {
-                rowsDeleted = db.delete(MovieContract.FavoriteMoviesEntry.TABLE_NAME, selection + " = ?", selectionArgs);
+                rowsDeleted = db.delete(MovieContract.FavoriteEntry.TABLE_NAME, selection + " = ?", selectionArgs);
                 break;
 
             }
-            case MOVIE_DETAIL: {
-                rowsDeleted = db.delete(MovieContract.FavoriteDetailMoviesEntry.TABLE_NAME, selection + " = ?", selectionArgs);
+            case DETAIL: {
+                rowsDeleted = db.delete(MovieContract.DetailEntry.TABLE_NAME, selection + " = ?", selectionArgs);
                 break;
 
             }
@@ -225,12 +233,12 @@ public class MovieProvider extends ContentProvider {
         switch (match){
 
             case MOVIE: {
-                rowsUpdated = db.update(MovieContract.FavoriteMoviesEntry.TABLE_NAME, values, selection, selectionArgs);
+                rowsUpdated = db.update(MovieContract.FavoriteEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
 
             }
-            case MOVIE_DETAIL: {
-                rowsUpdated = db.update(MovieContract.FavoriteDetailMoviesEntry.TABLE_NAME, values, selection, selectionArgs);
+            case DETAIL: {
+                rowsUpdated = db.update(MovieContract.DetailEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
 
             }
@@ -256,7 +264,7 @@ public class MovieProvider extends ContentProvider {
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values){
-                        long _id = db.insert(MovieContract.FavoriteMoviesEntry.TABLE_NAME, null, value);
+                        long _id = db.insert(MovieContract.FavoriteEntry.TABLE_NAME, null, value);
                         if (_id != 1) {
                             returnCount++;
                         }
@@ -270,12 +278,12 @@ public class MovieProvider extends ContentProvider {
                 //Return the number of rows inserted
                 return returnCount;
             }
-            case (MOVIE_DETAIL): {
+            case (DETAIL): {
                 db.beginTransaction();
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values){
-                        long _id = db.insert(MovieContract.FavoriteDetailMoviesEntry.TABLE_NAME, null, value);
+                        long _id = db.insert(MovieContract.DetailEntry.TABLE_NAME, null, value);
                         if (_id != 1) {
                             returnCount++;
                         }

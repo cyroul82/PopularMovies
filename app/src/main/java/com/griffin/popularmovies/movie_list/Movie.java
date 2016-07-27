@@ -91,7 +91,7 @@ public class Movie extends ExtraDetailMovie implements Parcelable {
         this.movieDate = movieDate;
     }
 
-    public String getMovieDate() {
+    public String getDate() {
         return movieDate;
     }
 
@@ -99,7 +99,7 @@ public class Movie extends ExtraDetailMovie implements Parcelable {
         this.movieRating = movieRating;
     }
 
-    public String getMovieRating() {
+    public String getRating() {
         return movieRating;
     }
 

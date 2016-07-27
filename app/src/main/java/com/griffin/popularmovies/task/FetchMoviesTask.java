@@ -1,6 +1,5 @@
 package com.griffin.popularmovies.task;
 
-import android.content.ContentProvider;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -12,7 +11,6 @@ import android.util.Log;
 import com.griffin.popularmovies.BuildConfig;
 import com.griffin.popularmovies.MainActivity;
 import com.griffin.popularmovies.data.MovieContract;
-import com.griffin.popularmovies.data.MovieProvider;
 import com.griffin.popularmovies.movie_list.Movie;
 import com.griffin.popularmovies.R;
 
@@ -153,7 +151,7 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
             int idMovie = Integer.parseInt(popularMovie.getString(JSON_ID));
             //Check from SQLite DB if already favorite
             int isFavorite = 0;
-           Cursor movieCursor = getContext().getContentResolver().query(MovieContract.FavoriteMoviesEntry.buildMovieUriFromIdMovie(idMovie),null,
+           Cursor movieCursor = getContext().getContentResolver().query(MovieContract.FavoriteEntry.buildMovieUriFromDetailId(idMovie),null,
                     null,null,null,
                     null);
 

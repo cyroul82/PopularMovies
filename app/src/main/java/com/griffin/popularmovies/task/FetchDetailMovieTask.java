@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.griffin.popularmovies.BuildConfig;
 import com.griffin.popularmovies.ReviewMovie;
-import com.griffin.popularmovies.detail_movie.ActorMovie;
+import com.griffin.popularmovies.detail_movie.CastingMovie;
 import com.griffin.popularmovies.detail_movie.ExtraDetailMovie;
 import com.griffin.popularmovies.detail_movie.TrailerMovie;
 import com.griffin.popularmovies.movie_list.Movie;
@@ -121,7 +121,7 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it
      * into an Object hierarchy for us.
      */
-    private List<ActorMovie> getActorFromJson(String creditsMoviesJsonStr)
+    private List<CastingMovie> getActorFromJson(String creditsMoviesJsonStr)
             throws JSONException {
 
         // These are the names of the JSON objects that need to be extracted.
@@ -134,7 +134,7 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
         JSONObject creditsMovieJson = new JSONObject(creditsMoviesJsonStr);
         JSONArray creditsMovieArray = creditsMovieJson.getJSONArray(JSON_RESULTS);
 
-        List<ActorMovie> actorMovieList = new ArrayList<>();
+        List<CastingMovie> castingMovieList = new ArrayList<>();
 
         for(int i = 0; i < creditsMovieArray.length(); i++) {
 
@@ -142,16 +142,16 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
             JSONObject creditMovie = creditsMovieArray.getJSONObject(i);
 
             // udpate the movie detail
-            ActorMovie creditsDetail = new ActorMovie();
+            CastingMovie creditsDetail = new CastingMovie();
             creditsDetail.setCharacter(creditMovie.getString(JSON_CHARACTER));
             creditsDetail.setName(creditMovie.getString(JSON_NAME));
 
             //Add the movie to the list
-            actorMovieList.add(creditsDetail);
+            castingMovieList.add(creditsDetail);
 
         }
 
-        return actorMovieList;
+        return castingMovieList;
 
     }
 
