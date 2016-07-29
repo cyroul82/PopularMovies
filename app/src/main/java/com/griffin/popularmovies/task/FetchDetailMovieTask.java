@@ -6,9 +6,9 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.griffin.popularmovies.BuildConfig;
-import com.griffin.popularmovies.ReviewMovie;
+import com.griffin.popularmovies.detail_movie.DetailMovie;
+import com.griffin.popularmovies.detail_movie.ReviewMovie;
 import com.griffin.popularmovies.detail_movie.CastingMovie;
-import com.griffin.popularmovies.detail_movie.ExtraDetailMovie;
 import com.griffin.popularmovies.detail_movie.TrailerMovie;
 import com.griffin.popularmovies.movie_list.Movie;
 
@@ -29,10 +29,10 @@ import java.util.Locale;
 /**
  * Created by griffin on 21/07/16.
  */
-public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
+public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
 
     private Movie mMovie;
-    private ExtraDetailMovie extraDetailMovie;
+    private DetailMovie detailMovie;
 
     private final String LOG_TAG = FetchDetailMovieTask.class.getSimpleName();
 
@@ -57,8 +57,8 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
     }
 
     @Override
-    public void deliverResult(ExtraDetailMovie extraDetailMovie) {
-        super.deliverResult(extraDetailMovie);
+    public void deliverResult(DetailMovie detailMovie) {
+        super.deliverResult(detailMovie);
     }
 
     /**
@@ -66,16 +66,16 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
      */
     @Override
     protected void onStartLoading() {
-        if (extraDetailMovie != null) {
+        if (detailMovie != null) {
             // If we currently have a result available, deliver it
             // immediately.
-            deliverResult(extraDetailMovie);
+            deliverResult(detailMovie);
         }
 
-        if (takeContentChanged() || extraDetailMovie == null ) {
+        if (takeContentChanged() || detailMovie == null ) {
             // If the data has changed since the last time it was loaded
             // or is not currently available, start a load.
-            extraDetailMovie = new ExtraDetailMovie();
+            detailMovie = new DetailMovie();
             forceLoad();
         }
     }
@@ -91,7 +91,7 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
     /**
      * Handles a request to cancel a load.
      */
-    @Override public void onCanceled(ExtraDetailMovie movie) {
+    @Override public void onCanceled(DetailMovie movie) {
         super.onCanceled(movie);
     }
 
@@ -101,14 +101,14 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
         onStopLoading();
 
         // At this point we can release the resources associated with 'mData'.
-        if (extraDetailMovie != null) {
-            releaseResources(extraDetailMovie);
-            extraDetailMovie = null;
+        if (detailMovie != null) {
+            releaseResources(detailMovie);
+            detailMovie = null;
         }
 
     }
 
-    private void releaseResources(ExtraDetailMovie movie) {
+    private void releaseResources(DetailMovie movie) {
         // For a simple List, there is nothing to do. For something like a Cursor, we
         // would close it in this method. All resources associated with the Loader
         // should be released here.
@@ -253,17 +253,17 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<ExtraDetailMovie> {
     }
 
     @Override
-    public ExtraDetailMovie loadInBackground() {
+    public DetailMovie loadInBackground() {
         try {
 
-            extraDetailMovie.setActors(getActorFromJson(getDataFromTheMovieDB(mMovie.getId(), CREDITS, LANGUAGE_SYSTEM)));
+            detailMovie.setCasting(getActorFromJson(getDataFromTheMovieDB(mMovie.getId(), CREDITS, LANGUAGE_SYSTEM)));
             List<String[]> infoMovie = getGenreAndRuntimeFromJson(getDataFromTheMovieDB(mMovie.getId(), null, LANGUAGE_SYSTEM));
-            extraDetailMovie.setGenre(infoMovie.get(0));
+            detailMovie.setGenre(infoMovie.get(0));
             String[] runtime = infoMovie.get(1);
-            extraDetailMovie.setRuntime(runtime[0]);
-            extraDetailMovie.setTrailers(getTrailFromJson(getDataFromTheMovieDB(mMovie.getId(), TRAILER, LANGUAGE_SYSTEM)));
-            extraDetailMovie.setReviewMovieList(getReviewFromJson(getDataFromTheMovieDB(mMovie.getId(), REVIEWS, LANGUAGE_SYSTEM)));
-            return extraDetailMovie;
+            detailMovie.setRuntime(runtime[0]);
+            detailMovie.setTrailers(getTrailFromJson(getDataFromTheMovieDB(mMovie.getId(), TRAILER, LANGUAGE_SYSTEM)));
+            detailMovie.setReviewMovieList(getReviewFromJson(getDataFromTheMovieDB(mMovie.getId(), REVIEWS, LANGUAGE_SYSTEM)));
+            return detailMovie;
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
         }

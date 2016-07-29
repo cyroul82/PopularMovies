@@ -28,6 +28,7 @@
     <string name="key_movies_upcoming">A Venir</string>
     <string name="key_movies_now_playing">Cette semaine</string>
     <string name="key_movies_favorite">Mes Favoris</string>
+    <string name="action_favorite">Favoris</string>
 
     <string name="reviewTitle">Critiques :</string>
     <string name="trailerTitle">Videos :</string>

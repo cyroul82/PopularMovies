@@ -1,11 +1,7 @@
 package com.griffin.popularmovies.data;
 
 import android.content.ContentValues;
-import android.database.ContentObserver;
 import android.database.Cursor;
-import android.net.Uri;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.test.AndroidTestCase;
 
 import java.util.Map;
@@ -19,13 +15,13 @@ public class TestUtilities extends AndroidTestCase {
     static ContentValues createFavoriteMovieValues() {
         // Create a new map of values, where column names are the keys
         ContentValues testValues = new ContentValues();
-        testValues.put(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID, "12546");
-        testValues.put(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_TITLE, "Get your hands dirty and program hard !");
-        testValues.put(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_PICTURE, "movie picutre");
-        testValues.put(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ORIGINAL_TITLE, "Lève toi et bat toi !");
-        testValues.put(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_OVERVIEW, "Le Travail c'est la santé !");
-        testValues.put(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_DATE, "2016");
-        testValues.put(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_RATING, "8");
+      /*  testValues.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID, "12546");
+        testValues.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_TITLE, "Get your hands dirty and program hard !");
+        testValues.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE, "movie picutre");
+        testValues.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ORIGINAL_TITLE, "Lève toi et bat toi !");
+        testValues.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_OVERVIEW, "Le Travail c'est la santé !");
+        testValues.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_DATE, "2016");
+        testValues.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_RATING, "8");*/
 
         return testValues;
     }

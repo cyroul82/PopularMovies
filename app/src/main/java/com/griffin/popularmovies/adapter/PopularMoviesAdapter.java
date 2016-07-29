@@ -43,7 +43,7 @@ public class PopularMoviesAdapter extends ArrayAdapter<Movie> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         Picasso.with(mContext)
-                .load(mMoviesList.get(position).getUrl())
+                .load(mMoviesList.get(position).getPicture_url())
                 .into(viewHolder.popularMoviePicture);
 
         return view;

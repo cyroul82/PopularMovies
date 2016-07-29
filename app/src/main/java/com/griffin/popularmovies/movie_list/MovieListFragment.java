@@ -1,6 +1,7 @@
 package com.griffin.popularmovies.movie_list;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.adapter.PopularMoviesAdapter;
+import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.task.FetchMoviesTask;
 
 import java.util.ArrayList;
@@ -86,6 +88,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     //get the movie back from the adapter
                     Movie movie = mMoviesAdapter.getItem(position);
+
                     ((Callback)getActivity()).onItemSelected(movie);
 
                     mPosition = position;
@@ -93,8 +96,8 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
             });
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)){
-            mPosition = savedInstanceState.getInt(SELECTED_KEY);
-            mGridView.smoothScrollToPosition(mPosition);
+          //  mPosition = savedInstanceState.getInt(SELECTED_KEY);
+            //mGridView.smoothScrollToPosition(mPosition);
         }
 
         return rootView;
@@ -111,9 +114,9 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if(mPosition != mGridView.getFirstVisiblePosition()){
+       /* if(mPosition != mGridView.getFirstVisiblePosition()){
             outState.putInt(SELECTED_KEY, mPosition);
-        }
+        }*/
         //we put the mMoviesList into the bundle to avoid querying again while rebuilding
         outState.putParcelableArrayList(getString(R.string.key_movies_list), mMoviesList);
         super.onSaveInstanceState(outState);

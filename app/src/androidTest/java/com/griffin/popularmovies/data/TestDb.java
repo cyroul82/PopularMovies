@@ -32,7 +32,7 @@ public class TestDb extends AndroidTestCase{
         // Note that there will be another table in the DB that stores the
         // Android metadata (db version information)
         final HashSet<String> tableNameHashSet = new HashSet<String>();
-        tableNameHashSet.add(MovieContract.FavoriteMoviesEntry.TABLE_NAME);
+        tableNameHashSet.add(MovieContract.FavoriteEntry.TABLE_NAME);
 
         //TODO: why here again, it is already done in the setup before testing ?
         mContext.deleteDatabase(MovieDbHelper.DATABASE_NAME);
@@ -56,7 +56,7 @@ public class TestDb extends AndroidTestCase{
                 tableNameHashSet.isEmpty());
 
         // now, do our tables contain the correct columns?
-        c = db.rawQuery("PRAGMA table_info(" + MovieContract.FavoriteMoviesEntry.TABLE_NAME + ")",
+        c = db.rawQuery("PRAGMA table_info(" + MovieContract.FavoriteEntry.TABLE_NAME + ")",
                 null);
 
         assertTrue("Error: This means that we were unable to query the database for table information.",
@@ -64,13 +64,9 @@ public class TestDb extends AndroidTestCase{
 
         // Build a HashSet of all of the column names we want to look for
         final HashSet<String> locationColumnHashSet = new HashSet<String>();
-        locationColumnHashSet.add(MovieContract.FavoriteMoviesEntry._ID);
-        locationColumnHashSet.add(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID);
-        locationColumnHashSet.add(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_TITLE);
-        locationColumnHashSet.add(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_PICTURE);
-        locationColumnHashSet.add(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ORIGINAL_TITLE);
-        locationColumnHashSet.add(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_DATE);
-        locationColumnHashSet.add(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_RATING);
+        locationColumnHashSet.add(MovieContract.FavoriteEntry._ID);
+        locationColumnHashSet.add(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID);
+        locationColumnHashSet.add(MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE);
 
         int columnNameIndex = c.getColumnIndex("name");
         do {
@@ -100,7 +96,7 @@ public class TestDb extends AndroidTestCase{
 
         // Third Step: Insert ContentValues into database and get a row ID back
         long locationRowId;
-        locationRowId = db.insert(MovieContract.FavoriteMoviesEntry.TABLE_NAME, null, testValues);
+        locationRowId = db.insert(MovieContract.FavoriteEntry.TABLE_NAME, null, testValues);
 
         // Verify we got a row back.
         assertTrue(locationRowId != -1);
@@ -111,7 +107,7 @@ public class TestDb extends AndroidTestCase{
         // Fourth Step: Query the database and receive a Cursor back
         // A cursor is your primary interface to the query results.
         Cursor cursor = db.query(
-                MovieContract.FavoriteMoviesEntry.TABLE_NAME,  // Table to Query
+                MovieContract.FavoriteEntry.TABLE_NAME,  // Table to Query
                 null, // all columns
                 null, // Columns for the "where" clause
                 null, // Values for the "where" clause

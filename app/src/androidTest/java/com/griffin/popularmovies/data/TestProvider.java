@@ -1,16 +1,12 @@
 package com.griffin.popularmovies.data;
 
 import android.content.ComponentName;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.os.Build;
 import android.test.AndroidTestCase;
-import android.util.Log;
 
 /**
  * Created by griffin on 16/07/16.
@@ -21,14 +17,14 @@ public class TestProvider extends AndroidTestCase {
 
     public void deleteAllRecordsFromProvider() {
         mContext.getContentResolver().delete(
-                MovieContract.FavoriteMoviesEntry.CONTENT_URI,
+                MovieContract.FavoriteEntry.CONTENT_URI,
                 null,
                 null
         );
 
 
         Cursor cursor = mContext.getContentResolver().query(
-                MovieContract.FavoriteMoviesEntry.CONTENT_URI,
+                MovieContract.FavoriteEntry.CONTENT_URI,
                 null,
                 null,
                 null,
@@ -81,9 +77,9 @@ public class TestProvider extends AndroidTestCase {
 
 
     public void testGetType() {
-        String type = mContext.getContentResolver().getType(MovieContract.FavoriteMoviesEntry.CONTENT_URI);
+        String type = mContext.getContentResolver().getType(MovieContract.FavoriteEntry.CONTENT_URI);
         assertEquals("Error: the FavoriteMovieEntry CONTENT_URI should return WeatherEntry.CONTENT_TYPE",
-                MovieContract.FavoriteMoviesEntry.CONTENT_TYPE, type);
+                MovieContract.FavoriteEntry.CONTENT_TYPE, type);
 
 
     }
@@ -97,14 +93,14 @@ public class TestProvider extends AndroidTestCase {
 
         ContentValues testValues = TestUtilities.createFavoriteMovieValues();
 
-        long movieRowId = db.insert(MovieContract.FavoriteMoviesEntry.TABLE_NAME, null, testValues);
+        long movieRowId = db.insert(MovieContract.FavoriteEntry.TABLE_NAME, null, testValues);
         assertTrue("Unable to Insert WeatherEntry into the Database", movieRowId != -1);
 
         db.close();
 
         // Test the basic content provider query
         Cursor movieCursor = mContext.getContentResolver().query(
-                MovieContract.FavoriteMoviesEntry.CONTENT_URI,
+                MovieContract.FavoriteEntry.CONTENT_URI,
                 null,
                 null,
                 null,

@@ -1,5 +1,6 @@
 package com.griffin.popularmovies.movie_list;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -85,7 +86,6 @@ public class FavoriteListFragment extends Fragment implements LoaderManager.Load
                     ((Callback) getActivity()).onItemSelected(MovieContract.FavoriteEntry.buildMovieUriFromDetailId(movieCursor.getInt
                             (COLUMN_DETAIL_KEY)));
                 }
-
             }
         });
 
@@ -95,8 +95,6 @@ public class FavoriteListFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-
         getLoaderManager().initLoader(FAVORITE_LOADER, null, this);
     }
 
@@ -126,4 +124,6 @@ public class FavoriteListFragment extends Fragment implements LoaderManager.Load
         //Release any resources that might be using
         mFavoriteAdapter.swapCursor(null);
     }
+
+
 }

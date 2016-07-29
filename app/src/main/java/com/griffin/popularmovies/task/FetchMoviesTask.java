@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.griffin.popularmovies.BuildConfig;
 import com.griffin.popularmovies.MainActivity;
+import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.movie_list.Movie;
 import com.griffin.popularmovies.R;
@@ -150,14 +151,7 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
 
             int idMovie = Integer.parseInt(popularMovie.getString(JSON_ID));
             //Check from SQLite DB if already favorite
-            int isFavorite = 0;
-           Cursor movieCursor = getContext().getContentResolver().query(MovieContract.FavoriteEntry.buildMovieUriFromDetailId(idMovie),null,
-                    null,null,null,
-                    null);
-
-            if(movieCursor.moveToFirst())isFavorite = 1;
-
-            movieCursor.close();
+            int isFavorite = Utilities.isMovieFavorite(idMovie, getContext());
 
             // Creates the movie
             Movie movie = new Movie(
@@ -170,15 +164,10 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
                     popularMovie.getString(JSON_RATING),
                     isFavorite
             );
-
-
             //Add the movie to the list
             moviesList.add(movie);
-
         }
-
         return moviesList;
-
     }
 
     private String getYear(String date) {

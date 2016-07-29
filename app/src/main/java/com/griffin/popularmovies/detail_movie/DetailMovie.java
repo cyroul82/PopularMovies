@@ -3,43 +3,40 @@ package com.griffin.popularmovies.detail_movie;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.griffin.popularmovies.ReviewMovie;
-
 import java.util.List;
 
 /**
  * Created by griffin on 21/07/16.
  */
-public class ExtraDetailMovie implements Parcelable{
-
+public class DetailMovie implements Parcelable {
 
     private String[] mGenre;
-    private List<CastingMovie> mActors;
+    private List<CastingMovie> mCasting;
     private List<TrailerMovie> mTrailerList;
     private List<ReviewMovie> mReviewMovieList;
     private String mRuntime;
 
-    public ExtraDetailMovie(){
+    public DetailMovie(){
 
     }
 
-    protected ExtraDetailMovie(Parcel in) {
+    protected DetailMovie(Parcel in) {
         mGenre = in.createStringArray();
-        /*mActors = new ArrayList<>();
-        in.readList(mActors,null);
-        mTrailerList = new ArrayList<>();
-        in.readList(mTrailerList,null);*/
+        mCasting = in.createTypedArrayList(CastingMovie.CREATOR);
+        mTrailerList = in.createTypedArrayList(TrailerMovie.CREATOR);
+        mReviewMovieList = in.createTypedArrayList(ReviewMovie.CREATOR);
+        mRuntime = in.readString();
     }
 
-    public static final Creator<ExtraDetailMovie> CREATOR = new Creator<ExtraDetailMovie>() {
+    public static final Creator<DetailMovie> CREATOR = new Creator<DetailMovie>() {
         @Override
-        public ExtraDetailMovie createFromParcel(Parcel in) {
-            return new ExtraDetailMovie(in);
+        public DetailMovie createFromParcel(Parcel in) {
+            return new DetailMovie(in);
         }
 
         @Override
-        public ExtraDetailMovie[] newArray(int size) {
-            return new ExtraDetailMovie[size];
+        public DetailMovie[] newArray(int size) {
+            return new DetailMovie[size];
         }
     };
 
@@ -50,11 +47,11 @@ public class ExtraDetailMovie implements Parcelable{
         return mGenre;
     }
 
-    public void setActors(List<CastingMovie> mActors){
-        this.mActors = mActors;
+    public void setCasting(List<CastingMovie> mActors){
+        this.mCasting = mActors;
     }
     public List<CastingMovie> getCasting(){
-        return mActors;
+        return mCasting;
     }
 
     public void setTrailers(List<TrailerMovie> trailerList){
@@ -72,6 +69,14 @@ public class ExtraDetailMovie implements Parcelable{
         this.mReviewMovieList = mReviewMovieList;
     }
 
+    public String getRuntime() {
+        return mRuntime;
+    }
+
+    public void setRuntime(String mRuntime) {
+        this.mRuntime = mRuntime;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -80,16 +85,9 @@ public class ExtraDetailMovie implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeStringArray(mGenre);
-        //dest.writeList(mActors);
-        //dest.writeList(mTrailerList);
-    }
-
-
-    public String getRuntime() {
-        return mRuntime;
-    }
-
-    public void setRuntime(String mRuntime) {
-        this.mRuntime = mRuntime;
+        dest.writeTypedList(mCasting);
+        dest.writeTypedList(mTrailerList);
+        dest.writeTypedList(mReviewMovieList);
+        dest.writeString(mRuntime);
     }
 }

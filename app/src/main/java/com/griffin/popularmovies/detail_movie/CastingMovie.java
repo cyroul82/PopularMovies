@@ -3,6 +3,12 @@ package com.griffin.popularmovies.detail_movie;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by griffin on 21/07/16.
  */
@@ -17,7 +23,6 @@ public class CastingMovie implements Parcelable{
     }
 
     public CastingMovie(){
-
     }
 
     public static final Creator<CastingMovie> CREATOR = new Creator<CastingMovie>() {

@@ -1,51 +1,72 @@
 package com.griffin.popularmovies.movie_list;
 
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.griffin.popularmovies.detail_movie.ExtraDetailMovie;
+import com.griffin.popularmovies.detail_movie.DetailMovie;
 
 /**
  * Created by griffin on 08/07/16.
  */
-public class Movie extends ExtraDetailMovie implements Parcelable {
+public class Movie implements Parcelable {
 
     private int id = 0;
     private String title = null;
     private String overview = null;
-    private String url = null;
+    private String picture_url = null;
     private String originalTitle = null;
     private String movieDate = null;
     private String movieRating = null;
     private int isFavorite ;
+    private DetailMovie detailMovie;
 
 
     public Movie(){
+        detailMovie = new DetailMovie();
 
     }
 
-    public Movie(int id, String title, String overview, String url, String originalTitle, String movieDate, String movieRating, int isFavorite) {
+    public Movie(int id, String picture_url){
+        this.id = id;
+        this.picture_url = picture_url;
+    }
+
+    public Movie(int id, String title, String overview, String picture_url, String originalTitle, String movieDate, String movieRating, int isFavorite) {
         this.id = id;
         this.title =title;
         this.overview = overview;
-        this.url = url;
+        this.picture_url = picture_url;
         this.originalTitle = originalTitle;
         this.movieDate = movieDate;
         this.movieRating = movieRating;
         this.isFavorite = isFavorite;
     }
 
-    private Movie(Parcel in) {
+
+    protected Movie(Parcel in) {
         id = in.readInt();
         title = in.readString();
         overview = in.readString();
-        url = in.readString();
+        picture_url = in.readString();
         originalTitle = in.readString();
         movieDate = in.readString();
         movieRating = in.readString();
         isFavorite = in.readInt();
-
+        detailMovie = in.readParcelable(DetailMovie.class.getClassLoader());
     }
+
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 
     public void setId(int id) {
         this.id = id;
@@ -71,12 +92,12 @@ public class Movie extends ExtraDetailMovie implements Parcelable {
         return overview;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setPicture_url(String picture_url) {
+        this.picture_url = picture_url;
     }
 
-    public String getUrl() {
-        return url;
+    public String getPicture_url() {
+        return picture_url;
     }
 
     public void setOriginalTitle(String originalTitle) {
@@ -87,7 +108,7 @@ public class Movie extends ExtraDetailMovie implements Parcelable {
         return originalTitle;
     }
 
-    public void setMovieDate(String movieDate) {
+    public void setDate(String movieDate) {
         this.movieDate = movieDate;
     }
 
@@ -95,7 +116,7 @@ public class Movie extends ExtraDetailMovie implements Parcelable {
         return movieDate;
     }
 
-    public void setMovieRating(String movieRating) {
+    public void setRating(String movieRating) {
         this.movieRating = movieRating;
     }
 
@@ -104,6 +125,23 @@ public class Movie extends ExtraDetailMovie implements Parcelable {
     }
 
 
+
+
+    public int getFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(int favorite) {
+        isFavorite = favorite;
+    }
+
+    public DetailMovie getDetailMovie() {
+        return detailMovie;
+    }
+
+    public void setDetail(DetailMovie detailMovie) {
+        this.detailMovie = detailMovie;
+    }
 
     @Override
     public int describeContents() {
@@ -115,34 +153,12 @@ public class Movie extends ExtraDetailMovie implements Parcelable {
         dest.writeInt(id);
         dest.writeString(title);
         dest.writeString(overview);
-        dest.writeString(url);
+        dest.writeString(picture_url);
         dest.writeString(originalTitle);
         dest.writeString(movieDate);
         dest.writeString(movieRating);
         dest.writeInt(isFavorite);
-
-    }
-
-
-    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
-        @Override
-        public Movie createFromParcel(Parcel source) {
-            return new Movie(source);
-        }
-
-        @Override
-        public Movie[] newArray(int size) {
-            return new Movie[0];
-        }
-
-    };
-
-    public int getFavorite() {
-        return isFavorite;
-    }
-
-    public void setFavorite(int favorite) {
-        isFavorite = favorite;
+        dest.writeParcelable(detailMovie, flags);
     }
 }
 

@@ -63,6 +63,9 @@ public class MovieProvider extends ContentProvider {
     private static final String sDetailSelection = MovieContract.FavoriteEntry.TABLE_NAME +
             "." + MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY + " = ? ";
 
+    private static final String sMovieIdSelection = MovieContract.FavoriteEntry.TABLE_NAME +
+            "." + MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + " = ? ";
+
     private Cursor getMovieByDetail(Uri uri, String[] projection, String sortOrder) {
         long detailId = MovieContract.FavoriteEntry.getDetailIdFromUri(uri);
 
@@ -204,6 +207,7 @@ public class MovieProvider extends ContentProvider {
                 break;
 
             }
+
             case DETAIL: {
                 rowsDeleted = db.delete(MovieContract.DetailEntry.TABLE_NAME, selection + " = ?", selectionArgs);
                 break;

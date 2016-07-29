@@ -18,7 +18,7 @@
             android:layout_gravity="center|start"
             android:gravity="center|start"
             android:drawableBottom="#FFFFFF"
-            style="@style/titleStyle"/>
+            style="@style/titleStyleTablet"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -134,29 +134,13 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/textView_actorsList_title"
+                    android:text="@string/textView_casting_list_title"
                     style="@style/titleParagraph"/>
 
                 <TextView
-                    android:id="@+id/textView_actor"
+                    android:id="@+id/textView_casting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <!--Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/markAsFavoriteButton"
-                    android:layout_marginBottom="10dp"
-                    android:background="@color/colorBackgoundTitle"
-                    style="@style/ButtonFavorite"
-                    android:text="@string/my_favorite_add_button"/-->
 
             </LinearLayout>
 
@@ -171,7 +155,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/overviewMovieTextView"
                 android:layout_marginBottom="10dp"/>
 

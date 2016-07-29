@@ -11,8 +11,8 @@ public class TestUriMatcher extends AndroidTestCase {
     private static final int MOVIE_ID = 2569;
 
     // content://com.griffin.popularmovies/movie
-    private static final Uri TEST_MOVIE_DIR = MovieContract.FavoriteMoviesEntry.CONTENT_URI;
-    private static final Uri TEST_MOVIE_WITH_ID = MovieContract.FavoriteMoviesEntry.buildMovieUriFromIdMovie(MOVIE_ID);
+    private static final Uri TEST_MOVIE_DIR = MovieContract.FavoriteEntry.CONTENT_URI;
+    private static final Uri TEST_MOVIE_WITH_ID = MovieContract.FavoriteEntry.buildMovieUriFromDetailId(MOVIE_ID);
 
 
     public void testUriMatcher() {

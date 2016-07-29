@@ -1,5 +1,6 @@
 package com.griffin.popularmovies.detail_movie;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,7 +10,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +20,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.data.MovieContract;
@@ -27,10 +30,7 @@ import com.griffin.popularmovies.movie_list.Movie;
 import com.sackcentury.shinebuttonlib.ShineButton;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -40,20 +40,18 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
     private final static String TAG = DetailFavoriteFragment.class.getSimpleName();
 
-    private final String RATING_OUT_OF_TEN = "/10";
     public static final String DETAIL_URI = "FAVORITEMOVIE";
-    public static final String EXTRA_DETAIL_MOVIE="EXTRAMOVIE";
     private Uri mUriMovie;
     private Movie mMovie;
     private ShareActionProvider mShareActionProvider;
 
-
     private static final int DETAIL_LOADER = 1;
 
-    private final int mNumberMaxDisplayedActors = 3;
+    private final int mNumberMaxDisplayedActors = 5;
 
     private static final String[] DETAIL_COLUMNS = {
             MovieContract.DetailEntry.TABLE_NAME + "." + MovieContract.DetailEntry._ID,
+
             MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY,
             MovieContract.FavoriteEntry.COLUMN_MOVIE_ID,
             MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE,
@@ -68,7 +66,6 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
             MovieContract.DetailEntry.COLUMN_MOVIE_CASTING,
             MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER,
             MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS
-
     };
 
     // These indices are tied to DETAIL_COLUMNS.  If DETAIL_COLUMNS changes, these
@@ -103,20 +100,36 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     private ShineButton mFavoriteButton;
 
 
-    private ExtraDetailMovie mExtraDetailMovie;
-
-
     public DetailFavoriteFragment() {
         setHasOptionsMenu(true);
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        void onFavoriteMovieClick(Movie movie, Context context);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(savedInstanceState == null || !savedInstanceState.containsKey(DETAIL_URI)){
+            mUriMovie = null;
+        }
+        else {
+            mUriMovie = savedInstanceState.getParcelable(DETAIL_URI);
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(DETAIL_URI, mUriMovie);
         super.onSaveInstanceState(outState);
     }
 
@@ -135,27 +148,49 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        View rootView;
         Bundle arguments = getArguments();
         if (arguments != null) {
             //content://com.griffin.popularmovies/favorite/1  -> the number represents the selected movie in the the gridView
             mUriMovie = arguments.getParcelable(DetailFavoriteFragment.DETAIL_URI);
+
+            rootView = inflater.inflate(R.layout.detail_movie_fragment, container, false);
+
+            mTextViewTitle = (TextView) rootView.findViewById(R.id.titleTextView);
+            mImageViewMoviePicture = (ImageView) rootView.findViewById(R.id.moviePictureImageView);
+            mTextViewMovieYear = (TextView) rootView.findViewById(R.id.movieYearTextView);
+            mTextViewOriginalTitle = (TextView) rootView.findViewById(R.id.originalTitleTextView);
+            mTextViewOverview = (TextView) rootView.findViewById(R.id.overviewMovieTextView);
+            mTextViewMovieRating = (TextView) rootView.findViewById(R.id.movieRatingTextView);
+            mTextViewCasting = (TextView) rootView.findViewById(R.id.textView_casting);
+            mTextViewGenre = (TextView) rootView.findViewById(R.id.textView_genre);
+            mLinearLayoutTrailer = (LinearLayout) rootView.findViewById(R.id.linearLayout_trailer);
+            mLinearLayoutReview = (LinearLayout) rootView.findViewById(R.id.linearLayout_Review);
+
+            mTextViewRuntime = (TextView) rootView.findViewById(R.id.textView_runtime);
+
+            mFavoriteButton = (ShineButton) rootView.findViewById(R.id.shineButton_favorite);
+            mFavoriteButton.init(getActivity());
+
+            mFavoriteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(mFavoriteButton.isChecked()) {
+                        //Utilities.addMovieToFavorite(mMovie, getContext());
+                    }
+                    else {
+                        ((Callback)getActivity()).onFavoriteMovieClick(mMovie, getContext());
+                    }
+
+                }
+            });
         }
 
-        View rootView = inflater.inflate(R.layout.detail_movie_fragment, container, false);
+        else {
+            rootView = inflater.inflate(R.layout.detail_blank_fragment, container, false);
+        }
 
-        mTextViewTitle = (TextView) rootView.findViewById(R.id.titleTextView);
-        mImageViewMoviePicture = (ImageView) rootView.findViewById(R.id.moviePictureImageView);
-        mTextViewMovieYear = (TextView) rootView.findViewById(R.id.movieYearTextView);
-        mTextViewOriginalTitle = (TextView) rootView.findViewById(R.id.originalTitleTextView);
-        mTextViewOverview = (TextView) rootView.findViewById(R.id.overviewMovieTextView);
-        mTextViewMovieRating = (TextView) rootView.findViewById(R.id.movieRatingTextView);
-        mTextViewCasting = (TextView) rootView.findViewById(R.id.textView_actor);
-        mTextViewGenre = (TextView) rootView.findViewById(R.id.textView_genre);
-        mLinearLayoutTrailer = (LinearLayout) rootView.findViewById(R.id.linearLayout_trailer);
-        mLinearLayoutReview = (LinearLayout) rootView.findViewById(R.id.linearLayout_Review);
-        mFavoriteButton = (ShineButton) rootView.findViewById(R.id.shineButton_favorite);
-        mTextViewRuntime = (TextView) rootView.findViewById(R.id.textView_runtime);
+
 
         return rootView;
     }
@@ -165,8 +200,6 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
         getLoaderManager().initLoader(DETAIL_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
-
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -179,62 +212,63 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
                     DETAIL_COLUMNS,
                     null,
                     null, null);
-
         }
         return null;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor movieCursor) {
+
         if (movieCursor != null && movieCursor.moveToFirst()) {
-            String urlPicture = movieCursor.getString(COL_FAVORITE_MOVIE_PICTURE);
+
+            mMovie = Utilities.getMovieFromCursor(movieCursor);
+
             Picasso.with(getActivity())
-                    .load(urlPicture)
+                    .load(mMovie.getPicture_url())
                     .into(mImageViewMoviePicture);
 
-            String date = movieCursor.getString(COL_FAVORITE_MOVIE_DATE);
-            mTextViewMovieYear.setText(date);
 
-            String title = movieCursor.getString(COL_FAVORITE_MOVIE_TITLE);
-            mTextViewTitle.setText(title);
+            mTextViewMovieYear.setText(mMovie.getDate());
 
-            String originalTitle = movieCursor.getString(COL_FAVORITE_MOVIE_ORIGINAL_TITLE);
-            mTextViewOriginalTitle.setText(originalTitle);
+            mFavoriteButton.setChecked(true);
 
-            String overview = movieCursor.getString(COL_FAVORITE_MOVIE_OVERVIEW);
-            mTextViewOverview.setText(overview);
+            mTextViewTitle.setText(mMovie.getTitle());
 
-            String rating = movieCursor.getString(COL_FAVORITE_MOVIE_RATING);
-            mTextViewMovieRating.setText(rating + RATING_OUT_OF_TEN);
+            mTextViewOriginalTitle.setText(mMovie.getOriginalTitle());
 
-            String runtime = movieCursor.getString(COL_FAVORITE_MOVIE_DETAIL_RUNTIME);
-            mTextViewRuntime.setText(runtime);
+            mTextViewOverview.setText(mMovie.getOverview());
 
-            String[] genres = Utilities.convertStringToArray(movieCursor.getString(COL_FAVORITE_MOVIE_DETAIL_GENRE));
+            mTextViewMovieRating.setText(String.format(getString(R.string.rating), mMovie.getRating()));
+
+            mTextViewRuntime.setText(String.format(getString(R.string.runtime), mMovie.getDetailMovie().getRuntime()));
+
+
+            String[] genres = mMovie.getDetailMovie().getGenre();
             //Set genre Object and update UI
+            StringBuilder sb = new StringBuilder();
             for (int i = 0 ; i < genres.length ; i++){
-                StringBuilder sb = new StringBuilder();
-                mTextViewGenre.append(genres[i]);
+                sb.append(genres[i]);
                 if(i != genres.length-1){
-                    mTextViewGenre.append(" / ");
+                    sb.append(" / ");
                 }
             }
-            String genre = movieCursor.getString(COL_FAVORITE_MOVIE_DETAIL_GENRE);
-            mTextViewGenre.setText(genre);
+            mTextViewGenre.setText(sb.toString());
 
-            List<CastingMovie> castingList = Utilities.convertStringToList(movieCursor.getString(COL_FAVORITE_MOVIE_DETAIL_CASTING));
+            List<CastingMovie>  castingList = mMovie.getDetailMovie().getCasting();
+
             int maxActors;
-            int mNumberMaxDisplayedActors = 5;
+
             if(castingList.size() > mNumberMaxDisplayedActors){
                 maxActors = mNumberMaxDisplayedActors;
             }
             else maxActors = castingList.size();
-
+            sb = new StringBuilder();
             for (int i=0 ; i < maxActors  ; i++){
                 CastingMovie castingMovie = castingList.get(i);
-                mTextViewCasting.append(castingMovie.getName() + "  (" + castingMovie.getCharacter() + ")\n");
+                sb.append(castingMovie.getName() + "  (" + castingMovie.getCharacter() + ")\n");
 
             }
+            mTextViewCasting.setText(sb.toString());
         }
     }
 
@@ -242,30 +276,4 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     public void onLoaderReset(Loader<Cursor> loader) {
 
     }
-
-    private void setExtraDetail(){
-        mMovie.setActors(mExtraDetailMovie.getCasting());
-        int maxActors;
-        if(mExtraDetailMovie.getCasting().size() > mNumberMaxDisplayedActors ){
-            maxActors = mNumberMaxDisplayedActors;
-        }
-        else maxActors = mExtraDetailMovie.getCasting().size();
-
-        for (int i=0 ; i < maxActors  ; i++){
-            StringBuilder sb = new StringBuilder();
-            sb.append(mMovie.getCasting().get(i).getName()).append("  (").append(mMovie.getCasting().get(i).getCharacter()).append(")\n");
-            mTextViewCasting.append(sb.toString());
-        }
-
-        mMovie.setGenre(mExtraDetailMovie.getGenre());
-        String[] genres = mMovie.getGenre();
-        for (int i = 0 ; i < genres.length ; i++){
-            StringBuilder sb = new StringBuilder();
-            mTextViewGenre.append(genres[i]);
-            if(i != genres.length-1){
-                mTextViewGenre.append(" / ");
-            }
-        }
-    }
-
 }
