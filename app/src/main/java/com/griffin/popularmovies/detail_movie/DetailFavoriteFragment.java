@@ -148,57 +148,50 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView;
+        View rootView = inflater.inflate(R.layout.detail_movie_fragment, container, false);
         Bundle arguments = getArguments();
         if (arguments != null) {
             //content://com.griffin.popularmovies/favorite/1  -> the number represents the selected movie in the the gridView
             mUriMovie = arguments.getParcelable(DetailFavoriteFragment.DETAIL_URI);
+        }
 
-            rootView = inflater.inflate(R.layout.detail_movie_fragment, container, false);
+        mTextViewTitle = (TextView) rootView.findViewById(R.id.titleTextView);
+        mImageViewMoviePicture = (ImageView) rootView.findViewById(R.id.moviePictureImageView);
+        mTextViewMovieYear = (TextView) rootView.findViewById(R.id.movieYearTextView);
+        mTextViewOriginalTitle = (TextView) rootView.findViewById(R.id.originalTitleTextView);
+        mTextViewOverview = (TextView) rootView.findViewById(R.id.overviewMovieTextView);
+        mTextViewMovieRating = (TextView) rootView.findViewById(R.id.movieRatingTextView);
+        mTextViewCasting = (TextView) rootView.findViewById(R.id.textView_casting);
+        mTextViewGenre = (TextView) rootView.findViewById(R.id.textView_genre);
+        mLinearLayoutTrailer = (LinearLayout) rootView.findViewById(R.id.linearLayout_trailer);
+        mLinearLayoutReview = (LinearLayout) rootView.findViewById(R.id.linearLayout_Review);
 
-            mTextViewTitle = (TextView) rootView.findViewById(R.id.titleTextView);
-            mImageViewMoviePicture = (ImageView) rootView.findViewById(R.id.moviePictureImageView);
-            mTextViewMovieYear = (TextView) rootView.findViewById(R.id.movieYearTextView);
-            mTextViewOriginalTitle = (TextView) rootView.findViewById(R.id.originalTitleTextView);
-            mTextViewOverview = (TextView) rootView.findViewById(R.id.overviewMovieTextView);
-            mTextViewMovieRating = (TextView) rootView.findViewById(R.id.movieRatingTextView);
-            mTextViewCasting = (TextView) rootView.findViewById(R.id.textView_casting);
-            mTextViewGenre = (TextView) rootView.findViewById(R.id.textView_genre);
-            mLinearLayoutTrailer = (LinearLayout) rootView.findViewById(R.id.linearLayout_trailer);
-            mLinearLayoutReview = (LinearLayout) rootView.findViewById(R.id.linearLayout_Review);
+        mTextViewRuntime = (TextView) rootView.findViewById(R.id.textView_runtime);
 
-            mTextViewRuntime = (TextView) rootView.findViewById(R.id.textView_runtime);
+        mFavoriteButton = (ShineButton) rootView.findViewById(R.id.shineButton_favorite);
+        mFavoriteButton.init(getActivity());
 
-            mFavoriteButton = (ShineButton) rootView.findViewById(R.id.shineButton_favorite);
-            mFavoriteButton.init(getActivity());
-
-            mFavoriteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(mFavoriteButton.isChecked()) {
-                        //Utilities.addMovieToFavorite(mMovie, getContext());
-                    }
-                    else {
-                        ((Callback)getActivity()).onFavoriteMovieClick(mMovie, getContext());
-                    }
-
+        mFavoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mFavoriteButton.isChecked()) {
+                    //Utilities.addMovieToFavorite(mMovie, getContext());
                 }
-            });
-        }
+                else {
+                    ((Callback)getActivity()).onFavoriteMovieClick(mMovie, getContext());
+                }
 
-        else {
-            rootView = inflater.inflate(R.layout.detail_blank_fragment, container, false);
-        }
-
-
+            }
+        });
 
         return rootView;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(DETAIL_LOADER, savedInstanceState, this);
+
     }
 
     @Override

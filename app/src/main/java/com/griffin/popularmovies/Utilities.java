@@ -137,22 +137,22 @@ public class Utilities {
     public static String getOrder(Context context, int spinnerChoice){
 
         switch (spinnerChoice){
-            case 0: {
+            case 1: {
                 return context.getString(R.string.pref_movies_popular);
 
             }
-            case 1 : {
+            case 2 : {
                 return context.getString(R.string.pref_movies_top_rated);
             }
-            case 2 : {
+            case 3 : {
                 return context.getString(R.string.pref_movies_upcoming);
 
             }
-            case 3 : {
+            case 4 : {
                 return context.getString(R.string.pref_movies_now_playing);
 
             }
-            case 4 : {
+            case 5 : {
                 return context.getString(R.string.pref_movies_favorite);
             }
             default:

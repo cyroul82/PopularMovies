@@ -23,11 +23,11 @@
     <string name="pref_movies_sorting_key" translatable="false">sortby</string>
     <string name="pref_movies_sorting_favorite_key" translatable="false">favorite</string>
 
-    <string name="key_movies_popular">Popular Movies</string>
-    <string name="key_movies_top_rated">Top Rated Movies</string>
-    <string name="key_movies_upcoming">Upcoming Movies</string>
-    <string name="key_movies_now_playing">This Week Movies</string>
-    <string name="key_movies_favorite">My Favorites Movies</string>
+    <string name="key_movies_popular">Popular</string>
+    <string name="key_movies_top_rated">Top Rated</string>
+    <string name="key_movies_upcoming">Upcoming</string>
+    <string name="key_movies_now_playing">This Week</string>
+    <string name="key_movies_favorite">My Favorites</string>
 
     //Sorting choice array
     <string-array name="sorting_choice_entries" >
