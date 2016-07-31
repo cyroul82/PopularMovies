@@ -51,6 +51,7 @@
         <provider
             android:authorities="com.griffin.popularmovies"
             android:name=".data.MovieProvider"/>
+        <service android:name=".service.PopularMovieService"/>
     </application>
 
 </manifest>

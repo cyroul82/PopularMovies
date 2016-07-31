@@ -6,11 +6,18 @@ android {
 
     defaultConfig {
         applicationId "com.griffin.popularmovies"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
+
+    //compatibilite for java 1.7 in order to use switch(String) !
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
     buildTypes {
         release {
             minifyEnabled false
