@@ -12,7 +12,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/titleTextView"
+            android:id="@+id/textView_Title"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_gravity="center|start"
@@ -26,7 +26,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/textView_genre"
+                android:id="@+id/textView_Genre"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -75,7 +75,7 @@
                     android:layout_weight="1">
 
                     <ImageView
-                        android:id="@+id/moviePictureImageView"
+                        android:id="@+id/imageView_Picture"
                         android:layout_width="100dp"
                         android:layout_height="match_parent"
                         android:scaleType="fitStart"/>
@@ -93,14 +93,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:id="@+id/movieYearTextView" />
+                        android:id="@+id/textView_Year" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="18sp"
                         android:layout_marginBottom="5dp"
-                        android:id="@+id/textView_runtime"/>
+                        android:id="@+id/textView_Runtime"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -112,14 +112,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:id="@+id/originalTitleTextView"
+                        android:id="@+id/textView_Original_Title"
                         android:layout_marginBottom="10dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:id="@+id/movieRatingTextView"
+                        android:id="@+id/textView_Rating"
                         android:drawableLeft="@drawable/ic_stars_white_24dp"
                         android:drawablePadding="5dp"/>
 
@@ -139,7 +139,7 @@
                     style="@style/titleParagraph"/>
 
                 <TextView
-                    android:id="@+id/textView_casting"
+                    android:id="@+id/textView_Casting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -157,7 +157,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/overviewMovieTextView"
+                android:id="@+id/textView_Overview"
                 android:layout_marginBottom="10dp"/>
 
             <LinearLayout
@@ -165,7 +165,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginBottom="10dp"
-                android:id="@+id/linearLayout_trailer">
+                android:id="@+id/linearLayout_Trailer">
 
                 <TextView
                     android:layout_width="match_parent"

@@ -20,9 +20,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.data.MovieContract;
@@ -30,8 +27,10 @@ import com.griffin.popularmovies.movie_list.Movie;
 import com.sackcentury.shinebuttonlib.ShineButton;
 import com.squareup.picasso.Picasso;
 
-import java.lang.reflect.Type;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by griffin on 22/07/16.
@@ -86,18 +85,18 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     public static final int COL_FAVORITE_MOVIE_DETAIL_REVIEWS = 13;
 
 
-    private TextView mTextViewTitle;
-    private ImageView mImageViewMoviePicture;
-    private TextView mTextViewMovieYear;
-    private TextView mTextViewOriginalTitle;
-    private TextView mTextViewOverview;
-    private TextView mTextViewMovieRating;
-    private TextView mTextViewCasting;
-    private TextView mTextViewGenre;
-    private TextView mTextViewRuntime;
-    private LinearLayout mLinearLayoutTrailer;
-    private LinearLayout mLinearLayoutReview;
-    private ShineButton mFavoriteButton;
+    @BindView(R.id.textView_Title) TextView mTextViewTitle;
+    @BindView(R.id.imageView_Picture) ImageView mImageViewMoviePicture;
+    @BindView(R.id.textView_Year) TextView mTextViewMovieYear;
+    @BindView(R.id.textView_Original_Title) TextView mTextViewOriginalTitle;
+    @BindView(R.id.textView_Overview) TextView mTextViewOverview;
+    @BindView(R.id.textView_Rating) TextView mTextViewMovieRating;
+    @BindView(R.id.textView_Casting) TextView mTextViewCasting;
+    @BindView(R.id.textView_Genre) TextView mTextViewGenre;
+    @BindView(R.id.textView_Runtime) TextView mTextViewRuntime;
+    @BindView(R.id.linearLayout_Trailer) LinearLayout mLinearLayoutTrailer;
+    @BindView(R.id.linearLayout_Review) LinearLayout mLinearLayoutReview;
+    @BindView(R.id.shineButton_favorite) ShineButton mFavoriteButton;
 
 
     public DetailFavoriteFragment() {
@@ -149,26 +148,16 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.detail_movie_fragment, container, false);
+
+        ButterKnife.bind(this, rootView);
+
         Bundle arguments = getArguments();
         if (arguments != null) {
             //content://com.griffin.popularmovies/favorite/1  -> the number represents the selected movie in the the gridView
             mUriMovie = arguments.getParcelable(DetailFavoriteFragment.DETAIL_URI);
         }
 
-        mTextViewTitle = (TextView) rootView.findViewById(R.id.titleTextView);
-        mImageViewMoviePicture = (ImageView) rootView.findViewById(R.id.moviePictureImageView);
-        mTextViewMovieYear = (TextView) rootView.findViewById(R.id.movieYearTextView);
-        mTextViewOriginalTitle = (TextView) rootView.findViewById(R.id.originalTitleTextView);
-        mTextViewOverview = (TextView) rootView.findViewById(R.id.overviewMovieTextView);
-        mTextViewMovieRating = (TextView) rootView.findViewById(R.id.movieRatingTextView);
-        mTextViewCasting = (TextView) rootView.findViewById(R.id.textView_casting);
-        mTextViewGenre = (TextView) rootView.findViewById(R.id.textView_genre);
-        mLinearLayoutTrailer = (LinearLayout) rootView.findViewById(R.id.linearLayout_trailer);
-        mLinearLayoutReview = (LinearLayout) rootView.findViewById(R.id.linearLayout_Review);
 
-        mTextViewRuntime = (TextView) rootView.findViewById(R.id.textView_runtime);
-
-        mFavoriteButton = (ShineButton) rootView.findViewById(R.id.shineButton_favorite);
         mFavoriteButton.init(getActivity());
 
         mFavoriteButton.setOnClickListener(new View.OnClickListener() {

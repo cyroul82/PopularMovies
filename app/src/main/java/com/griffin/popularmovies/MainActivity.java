@@ -22,6 +22,8 @@ import com.griffin.popularmovies.movie_list.FavoriteListFragment;
 import com.griffin.popularmovies.movie_list.Movie;
 import com.griffin.popularmovies.movie_list.MovieListFragment;
 
+import butterknife.ButterKnife;
+
 
 public class MainActivity extends AppCompatActivity implements FavoriteListFragment.Callback, MovieListFragment.Callback, DetailFavoriteFragment
         .Callback,AdapterView.OnItemSelectedListener {

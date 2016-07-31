@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
 
 android {
     compileSdkVersion 23
@@ -6,10 +7,11 @@ android {
 
     defaultConfig {
         applicationId "com.griffin.popularmovies"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+
     }
     buildTypes {
         release {
@@ -23,10 +25,13 @@ android {
         it.buildConfigField 'String', 'MOVIE_DB_API_KEY', apiKey
     }
 
+
     repositories {
         mavenCentral()
     }
+
 }
+
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -36,6 +41,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:support-v4:23.4.0'
     compile 'com.jakewharton:butterknife:8.2.1'
+    apt 'com.jakewharton:butterknife-compiler:8.2.1'
     compile 'com.sackcentury:shinebutton:0.1.3'
     compile 'com.google.code.gson:gson:2.6.2'
 }

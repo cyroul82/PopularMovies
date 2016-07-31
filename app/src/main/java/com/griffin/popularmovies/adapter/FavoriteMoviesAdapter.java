@@ -12,6 +12,9 @@ import com.griffin.popularmovies.movie_list.FavoriteListFragment;
 import com.griffin.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by griffin on 17/07/16.
  */
@@ -21,10 +24,10 @@ public class FavoriteMoviesAdapter extends CursorAdapter {
     private static final int VIEW_TYPE = 0;
 
     static class ViewHolder {
-        ImageView moviePicture;
+        @BindView(R.id.movieItemPictureImageView) ImageView moviePicture;
 
         public ViewHolder(View view) {
-            moviePicture = (ImageView) view.findViewById(R.id.movieItemPictureImageView);
+            ButterKnife.bind(this, view);
 
         }
     }

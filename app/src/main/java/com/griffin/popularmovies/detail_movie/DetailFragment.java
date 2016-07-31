@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.movie_list.Movie;
@@ -25,6 +27,7 @@ import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.task.FetchDetailMovieTask;
 import com.sackcentury.shinebuttonlib.ShineButton;
 import com.squareup.picasso.Picasso;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -40,18 +43,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static final int DETAIL_LOADER = 0;
 
-    private TextView mTitleTextView;
-    private ImageView mImageViewMoviePicture;
-    private TextView mTextViewMovieYear;
-    private TextView mTextViewOriginalTitle;
-    private TextView mTextViewOverview;
-    private TextView mTextViewMovieRating;
-    private TextView mTextViewActor;
-    private TextView mTextViewGenre;
-    private TextView mTextViewRuntime;
-    private LinearLayout mLinearLayoutTrailer;
-    private LinearLayout mLinearLayoutReview;
-    private ShineButton mFavoriteButton;
+    @BindView(R.id.textView_Title) TextView mTitleTextView;
+    @BindView(R.id.imageView_Picture) ImageView mImageViewMoviePicture;
+    @BindView(R.id.textView_Year) TextView mTextViewMovieYear;
+    @BindView(R.id.textView_Original_Title) TextView mTextViewOriginalTitle;
+    @BindView(R.id.textView_Overview) TextView mTextViewOverview;
+    @BindView(R.id.textView_Rating) TextView mTextViewMovieRating;
+    @BindView(R.id.textView_Casting) TextView mTextViewCasting;
+    @BindView(R.id.textView_Genre) TextView mTextViewGenre;
+    @BindView(R.id.textView_Runtime) TextView mTextViewRuntime;
+    @BindView(R.id.linearLayout_Trailer) LinearLayout mLinearLayoutTrailer;
+    @BindView(R.id.linearLayout_Review) LinearLayout mLinearLayoutReview;
+    @BindView(R.id.shineButton_favorite) ShineButton mFavoriteButton;
 
 
     public DetailFragment() {
@@ -101,19 +104,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if (arguments != null) {
             mMovie = arguments.getParcelable(DetailFragment.DETAIL_MOVIE);
         }
-        mTitleTextView = (TextView) rootView.findViewById(R.id.titleTextView);
-        mImageViewMoviePicture = (ImageView) rootView.findViewById(R.id.moviePictureImageView);
-        mTextViewMovieYear = (TextView) rootView.findViewById(R.id.movieYearTextView);
-        mTextViewOriginalTitle = (TextView) rootView.findViewById(R.id.originalTitleTextView);
-        mTextViewOverview = (TextView) rootView.findViewById(R.id.overviewMovieTextView);
-        mTextViewMovieRating = (TextView) rootView.findViewById(R.id.movieRatingTextView);
-        mTextViewActor = (TextView) rootView.findViewById(R.id.textView_casting);
-        mTextViewGenre = (TextView) rootView.findViewById(R.id.textView_genre);
-        mLinearLayoutTrailer = (LinearLayout) rootView.findViewById(R.id.linearLayout_trailer);
-        mLinearLayoutReview = (LinearLayout) rootView.findViewById(R.id.linearLayout_Review);
-        mTextViewRuntime = (TextView) rootView.findViewById(R.id.textView_runtime);
+        ButterKnife.bind(this, rootView);
 
-        mFavoriteButton = (ShineButton) rootView.findViewById(R.id.shineButton_favorite);
         mFavoriteButton.init(getActivity());
 
         mFavoriteButton.setOnClickListener(new View.OnClickListener() {
@@ -204,7 +196,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         else maxActors = mMovie.getDetailMovie().getCasting().size();
 
         for (int i=0 ; i < maxActors  ; i++){
-            mTextViewActor.append(mMovie.getDetailMovie().getCasting().get(i).getName() + "  (" + mMovie.getDetailMovie().getCasting().get(i).getCharacter() + ")\n");
+            mTextViewCasting.append(mMovie.getDetailMovie().getCasting().get(i).getName() + "  (" + mMovie.getDetailMovie().getCasting().get(i).getCharacter() + ")\n");
         }
 
         //Set genre Object and update UI

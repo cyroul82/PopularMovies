@@ -12,6 +12,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by griffin on 08/07/16.
  */
@@ -55,9 +58,9 @@ public class PopularMoviesAdapter extends ArrayAdapter<Movie> {
     }
 
     static class ViewHolder {
-        ImageView popularMoviePicture;
+        @BindView(R.id.movieItemPictureImageView) ImageView popularMoviePicture;
         public ViewHolder(View v) {
-            popularMoviePicture = (ImageView) v.findViewById(R.id.movieItemPictureImageView);
+            ButterKnife.bind(this, v);
         }
     }
 
