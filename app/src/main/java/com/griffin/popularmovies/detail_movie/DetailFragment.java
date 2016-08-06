@@ -1,6 +1,8 @@
 package com.griffin.popularmovies.detail_movie;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +30,7 @@ import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.task.FetchDetailMovieTask;
 import com.sackcentury.shinebuttonlib.ShineButton;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 
 /**
@@ -34,7 +38,8 @@ import com.squareup.picasso.Picasso;
  */
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<DetailMovie>{
 
-    private final String RATING_OUT_OF_TEN = "/10";
+    private static final String LOG_TAG = DetailFragment.class.getSimpleName();
+
     public static final String DETAIL_MOVIE = "MOVIE";
     public static final String EXTRA_DETAIL_MOVIE="EXTRAMOVIE";
     private Movie mMovie;
@@ -112,7 +117,29 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             @Override
             public void onClick(View v) {
                 if(mFavoriteButton.isChecked()) {
+                    Picasso.with(getContext()).load(mMovie.getPicture_url()).into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            String localUrl = Utilities.savePoster(bitmap, mMovie.getId(), getActivity().getApplicationContext());
+                            Log.i(LOG_TAG, localUrl);
+                            mMovie.setPicture_url(localUrl);
+                            Utilities.addMovieToFavorite(mMovie, getContext());
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                        }
+                    });
+
                     Utilities.addMovieToFavorite(mMovie, getContext());
+
+
                 }
                 else {
                     Utilities.removeMovie(mMovie, getContext());
@@ -144,11 +171,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mMovie.setDetail(detailMovie);
 
         String urlPicture = null;
-        if (mMovie != null) {
-            urlPicture = mMovie.getPicture_url();
-        }
+
         Picasso.with(getActivity())
-                .load(urlPicture)
+                .load(mMovie.getPicture_url())
                 .into(mImageViewMoviePicture);
 
         String date = mMovie.getDate();

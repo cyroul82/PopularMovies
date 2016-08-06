@@ -4,10 +4,15 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,8 +21,12 @@ import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.detail_movie.CastingMovie;
 import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
 import com.griffin.popularmovies.movie_list.Movie;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -29,6 +38,13 @@ import java.util.List;
 public class Utilities {
 
     private static final String TAG = Utilities.class.getSimpleName();
+    private static final String CHOICE = "choice";
+    private static final String SELECTED_CHOICE = "selected_choice";
+    private static final int POPULAR_CHOICE = 0;
+    private static final int TOP_RATED_CHOICE = 1;
+    private static final int UPCOMIG_CHOICE = 2;
+    private static final int NOw_PLAYING_CHOICE = 3;
+    private static final int FAVORITE_CHOICE = 4;
 
 
     public static Movie getMovieFromCursor(Cursor movieCursor){
@@ -54,6 +70,9 @@ public class Utilities {
         String castingJSON = movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_CASTING);
         List<CastingMovie>  castingList = gson.fromJson(castingJSON, type);
         movie.getDetailMovie().setCasting(castingList);
+
+        movieCursor.close();
+
 
         return movie;
     }
@@ -108,6 +127,7 @@ public class Utilities {
             // First create a ContentValues object to hold the data you want to insert.
             ContentValues values = new ContentValues();
 
+
             // Then add the data, along with the corresponding name of the data type,
             // so the content provider knows what kind of value is being inserted.
             values.put(MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY,insertedRowId);
@@ -133,33 +153,68 @@ public class Utilities {
     }
 
 
-
-    public static String getOrder(Context context, int spinnerChoice){
-
-        switch (spinnerChoice){
-            case 1: {
-                return context.getString(R.string.pref_movies_popular);
-
-            }
-            case 2 : {
-                return context.getString(R.string.pref_movies_top_rated);
-            }
-            case 3 : {
-                return context.getString(R.string.pref_movies_upcoming);
-
-            }
-            case 4 : {
-                return context.getString(R.string.pref_movies_now_playing);
-
-            }
-            case 5 : {
-                return context.getString(R.string.pref_movies_favorite);
-            }
-            default:
-                return context.getString(R.string.pref_movies_popular);
+    public static void setChoice (Context context, String choice){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor =  sharedPreferences.edit();
+        if(choice.equals(context.getString(R.string.key_movies_popular))){
+            editor.putString(CHOICE, context.getString(R.string.pref_movies_popular));
+            editor.putString(SELECTED_CHOICE, choice);
+            editor.commit();
+        }
+        if(choice.equals(context.getString(R.string.key_movies_top_rated))){
+            editor.putString(SELECTED_CHOICE, choice);
+            editor.putString(CHOICE, context.getString(R.string.pref_movies_top_rated));
+            editor.commit();
+        }
+        if(choice.equals(context.getString(R.string.key_movies_upcoming))){
+            editor.putString(SELECTED_CHOICE, choice);
+            editor.putString(CHOICE, context.getString(R.string.pref_movies_upcoming));
+            editor.commit();
+        }
+        if(choice.equals(context.getString(R.string.key_movies_now_playing))){
+            editor.putString(SELECTED_CHOICE, choice);
+            editor.putString(CHOICE, context.getString(R.string.pref_movies_now_playing));
+            editor.commit();
+        }
+        if(choice.equals(context.getString(R.string.key_movies_favorite))){
+            editor.putString(SELECTED_CHOICE, choice);
+            editor.putString(CHOICE, context.getString(R.string.pref_movies_favorite));
+            editor.commit();
         }
 
     }
+
+    public static String getChoice(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getString(CHOICE, context.getString(R.string.pref_movies_popular));
+    }
+
+    public static int getSelectedChoiceNumber(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String choice =  sharedPreferences.getString(SELECTED_CHOICE, context.getString(R.string.key_movies_popular));
+        if(choice.equals(context.getString(R.string.key_movies_popular))){
+            return POPULAR_CHOICE;
+        }
+        if(choice.equals(context.getString(R.string.key_movies_top_rated))){
+            return TOP_RATED_CHOICE;
+        }
+        if(choice.equals(context.getString(R.string.key_movies_upcoming))){
+            return UPCOMIG_CHOICE;
+        }
+        if(choice.equals(context.getString(R.string.key_movies_now_playing))){
+            return NOw_PLAYING_CHOICE;
+        }
+        if(choice.equals(context.getString(R.string.key_movies_favorite))){
+            return FAVORITE_CHOICE;
+        }
+        else return POPULAR_CHOICE;
+    }
+
+    public static String getSelectedChoice(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getString(SELECTED_CHOICE, context.getString(R.string.key_movies_popular));
+    }
+
 
     public static int isMovieFavorite(int idMovie, Context context){
         int isFavorite = 0;
@@ -172,24 +227,39 @@ public class Utilities {
         return isFavorite;
     }
 
-    private static String saveToInternalStorage(Bitmap bitmapImage, Context context){
+    public static String savePoster(Bitmap bitmapImage, int idMovie, Context context){
         ContextWrapper cw = new ContextWrapper(context.getApplicationContext());
         // path to /data/data/yourapp/app_data/imageDir
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-        // Create imageDir
-        File mypath=new File(directory,"profile.jpg");
+        File bitmap = new File(directory, Integer.toString(idMovie));
 
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(mypath);
+            //fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
+            fos = new FileOutputStream(bitmap);
             // Use the compress method on the BitMap object to write image to the OutputStream
             bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.close();
         } catch (IOException e) {
-            Log.d(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
+        Log.i(TAG, directory.getAbsolutePath());
         return directory.getAbsolutePath();
     }
+
+    public static Bitmap getPoster(String path, int idMovie) {
+        Bitmap bitmap = null;
+        try {
+            File file=new File(path, Integer.toString(idMovie));
+            bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+
+    }
+
 
 
 

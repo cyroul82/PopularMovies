@@ -102,7 +102,7 @@ public class FavoriteListFragment extends Fragment implements LoaderManager.Load
     public void onResume()
     {
         super.onResume();
-        getLoaderManager().initLoader(FAVORITE_LOADER, null, this);
+        getLoaderManager().restartLoader(FAVORITE_LOADER, null, this);
     }
 
     // onCreateLoader is derived from AsyncTask, therefore do the process in doInBackground

@@ -2,12 +2,12 @@ package com.griffin.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,15 +22,13 @@ import com.griffin.popularmovies.movie_list.FavoriteListFragment;
 import com.griffin.popularmovies.movie_list.Movie;
 import com.griffin.popularmovies.movie_list.MovieListFragment;
 
-import butterknife.ButterKnife;
-
 
 public class MainActivity extends AppCompatActivity implements FavoriteListFragment.Callback, MovieListFragment.Callback, DetailFavoriteFragment
-        .Callback,AdapterView.OnItemSelectedListener {
+        .Callback  {
 
     private boolean mTwoPane;
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private static final String DETAIL_FRAGMENT_TAG = "DFTAG";
     private static final String DETAIL_FAVORITE_FRAGMENT_TAG="DFFT";
@@ -41,31 +39,43 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     private static final String BLANK_FRAGMENT_TAG = "BFTAG";
 
     private Spinner spinner;
-    public static final int POPULAR_CHOICE = 1;
-    public static final int TOP_RATED_CHOICE = 2;
-    public static final int UPCOMING_CHOICE = 3;
-    public static final int NOW_PLAYING_CHOICE = 4;
-    public static final int FAVORITE_CHOICE = 5;
+    private int mSpinnerPosition;
+
     public static final String USER_CHOICE= "user_choice";
 
     public static final String TITLE_BLANK_FRAGMENT_KEY = "title";
-    private String mTitleBlankFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         spinner = (Spinner) findViewById(R.id.sort_order_spinner);
-        spinner.setOnItemSelectedListener(this);
+        spinner.setSelection(Utilities.getSelectedChoiceNumber(this));
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selected  = (String)parent.getSelectedItem();
+
+                if(!selected.equals(Utilities.getSelectedChoice(getApplicationContext()))){
+                    Utilities.setChoice(getApplicationContext(), selected);
+                    if(mTwoPane) setBlankFragment();
+                }
+                setListFragmentOnSharedPreferences();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int spinnerValue = sharedPrefs.getInt(USER_CHOICE, POPULAR_CHOICE);
+
 
         if (findViewById(R.id.detail_movie_container) != null) {
             // The detail container view will be present only in the large-screen layouts
@@ -75,45 +85,78 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
-            if (savedInstanceState == null && spinnerValue != FAVORITE_CHOICE) {
-                setBlankFragment();
-
-
+            if (savedInstanceState == null) {
+               setBlankFragment();
             }
-            if(savedInstanceState == null && spinnerValue == FAVORITE_CHOICE) {
-                setBlankFragment();
 
-            }
+            setListFragmentOnSharedPreferences();
         }
         else {
             mTwoPane = false;
+
         }
 
-        setListFragmentOnSharedPreferences();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-       /* FavoriteListFragment favoriteListFragment = (FavoriteListFragment) getSupportFragmentManager().findFragmentById(R.id
-                .fragment_container);*/
+        if(mTwoPane) {
 
-       // BlankFragment blankFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(BLANK_FRAGMENT_TAG);
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.detail_movie_container);
 
-      // DetailFavoriteFragment detailFavoriteFragment = (DetailFavoriteFragment) getSupportFragmentManager().findFragmentByTag
-             //   (DETAIL_FAVORITE_FRAGMENT_TAG);
+            if (fragment instanceof DetailFavoriteFragment) {
+                DetailFavoriteFragment detailFavoriteFragment = (DetailFavoriteFragment) getSupportFragmentManager().findFragmentByTag
+                        (DETAIL_FAVORITE_FRAGMENT_TAG);
 
-       /* MovieListFragment movieListFragment = (MovieListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);*/
-       //DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentByTag(DETAIL_FRAGMENT_TAG);
+                if (detailFavoriteFragment != null) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.detail_movie_container, detailFavoriteFragment,
+                            DETAIL_FAVORITE_FRAGMENT_TAG).commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.detail_movie_container, new DetailFavoriteFragment(),
+                            DETAIL_FAVORITE_FRAGMENT_TAG).commit();
+                }
+            }
+
+            if (fragment instanceof DetailFragment) {
+                DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentByTag(DETAIL_FRAGMENT_TAG);
+
+                if (detailFragment != null) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.detail_movie_container, detailFragment,
+                            DETAIL_FRAGMENT_TAG).commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.detail_movie_container, new DetailFragment(), DETAIL_FRAGMENT_TAG)
+                            .commit();
+                }
+            }
+
+            if (fragment instanceof BlankFragment) {
+                BlankFragment blankFragment = (BlankFragment) getSupportFragmentManager().findFragmentByTag(BLANK_FRAGMENT_TAG);
+
+                if (blankFragment != null) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.detail_movie_container, blankFragment,
+                            BLANK_FRAGMENT_TAG).commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.detail_movie_container, new BlankFragment(),
+                            BLANK_FRAGMENT_TAG).commit();
+                }
+            }
+        }
+        else {
+            spinner.setSelection(Utilities.getSelectedChoiceNumber(this));
+        }
 
     }
 
+
+
     private void setListFragmentOnSharedPreferences(){
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int spinnerValue = sharedPrefs.getInt(USER_CHOICE, -1);
-        String sortOrder = Utilities.getOrder(this, spinnerValue);
-        if(sortOrder.equals(getString(R.string.pref_movies_favorite))) {
+
+
+        String choice = Utilities.getChoice(this);
+        if(choice.equals(getString(R.string.pref_movies_favorite))) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new FavoriteListFragment(), FAVORITE_MOVIE_LIST_FRAGMENT_TAG)
                     .commit();
@@ -188,56 +231,26 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
         }
     }
 
-    //sets the shared preference on the spinner choice TODO : arrange this !!!
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPref.edit();
-
-
-        String selected = (String) parent.getItemAtPosition(position);
-        if (selected.equals(getString(R.string.key_movies_popular))) {
-            editor.putInt(USER_CHOICE,POPULAR_CHOICE);
-            editor.commit();
-        }
-
-        if (selected.equals(getString(R.string.key_movies_upcoming))) {
-            editor.putInt(USER_CHOICE,UPCOMING_CHOICE);
-            editor.commit();
-        }
-        if (selected.equals(getString(R.string.key_movies_top_rated))) {
-            editor.putInt(USER_CHOICE, TOP_RATED_CHOICE);
-            editor.commit();
-        }
-
-        if (selected.equals(getString(R.string.key_movies_now_playing))) {
-            editor.putInt(USER_CHOICE, NOW_PLAYING_CHOICE);
-            editor.commit();
-        }
-
-        if (selected.equals(getString(R.string.key_movies_favorite))) {
-            editor.putInt(USER_CHOICE, FAVORITE_CHOICE);
-            editor.commit();
-        }
-
-        setListFragmentOnSharedPreferences();
-        setBlankFragment();
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
 
     //Remove the movie from the favorite list
     @Override
     public void onFavoriteMovieClick(Movie movie, Context context) {
-        Utilities.removeMovie(movie, context);
+
+
+        if(mTwoPane) {
+            Utilities.removeMovie(movie, context);
+            setBlankFragment();
+        }
+        else {
+
+        }
+
     }
 
     private void setBlankFragment(){
+        //frag = 0;
         Bundle b = new Bundle();
-        b.putString(TITLE_BLANK_FRAGMENT_KEY, getString(R.string.pref_movies_favorite));
+        b.putString(TITLE_BLANK_FRAGMENT_KEY, Utilities.getSelectedChoice(this));
         BlankFragment bf= new BlankFragment();
         bf.setArguments(b);
         getSupportFragmentManager().beginTransaction()

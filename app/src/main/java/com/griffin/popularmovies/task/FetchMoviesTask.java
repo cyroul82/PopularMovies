@@ -199,33 +199,10 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
     public List<Movie> loadInBackground() {
         try{
 
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        int spinnerValue = sharedPrefs.getInt(MainActivity.USER_CHOICE, MainActivity.POPULAR_CHOICE);
-        String choice;
-        switch(spinnerValue){
-            case MainActivity.POPULAR_CHOICE: {
-                choice = getContext().getString(R.string.pref_movies_popular);
-                break;
-            }
-            case MainActivity.UPCOMING_CHOICE: {
-                choice = getContext().getString(R.string.pref_movies_upcoming);
-                break;
-            }
-            case MainActivity.TOP_RATED_CHOICE: {
-                choice = getContext().getString(R.string.pref_movies_top_rated);
-                break;
-            }
-            case MainActivity.NOW_PLAYING_CHOICE: {
-                choice = getContext().getString(R.string.pref_movies_now_playing);
-                break;
-            }
-
-            default :
-                choice = getContext().getString(R.string.pref_movies_popular);
-        }
 
 
-            final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/" + choice + "?";
+
+            final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/" + Utilities.getChoice(getContext()) + "?";
             final String APPID_PARAM = "api_key";
             final String LANGUAGE = "language";
 

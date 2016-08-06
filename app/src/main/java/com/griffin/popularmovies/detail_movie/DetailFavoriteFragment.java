@@ -10,6 +10,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -163,13 +164,10 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
         mFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mFavoriteButton.isChecked()) {
-                    //Utilities.addMovieToFavorite(mMovie, getContext());
-                }
-                else {
+                if(!mFavoriteButton.isChecked()) {
+
                     ((Callback)getActivity()).onFavoriteMovieClick(mMovie, getContext());
                 }
-
             }
         });
 
@@ -205,10 +203,11 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
             mMovie = Utilities.getMovieFromCursor(movieCursor);
 
-            Picasso.with(getActivity())
+            /*Picasso.with(getActivity())
                     .load(mMovie.getPicture_url())
-                    .into(mImageViewMoviePicture);
+                    .into(mImageViewMoviePicture);*/
 
+            mImageViewMoviePicture.setImageBitmap(Utilities.getPoster(mMovie.getPicture_url(), mMovie.getId()));
 
             mTextViewMovieYear.setText(mMovie.getDate());
 
@@ -251,6 +250,7 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
             }
             mTextViewCasting.setText(sb.toString());
+
         }
     }
 

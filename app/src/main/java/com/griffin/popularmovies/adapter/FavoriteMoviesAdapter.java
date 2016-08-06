@@ -2,12 +2,14 @@ package com.griffin.popularmovies.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.movie_list.FavoriteListFragment;
 import com.griffin.popularmovies.R;
 import com.squareup.picasso.Picasso;
@@ -52,9 +54,14 @@ public class FavoriteMoviesAdapter extends CursorAdapter {
 
         //get the url Picture from cursor
         String urlPicture = cursor.getString(FavoriteListFragment.COLUMN_MOVIE_PICTURE);
-        Picasso.with(mContext)
-                .load(urlPicture)
-                .into(viewHolder.moviePicture);
+        /*Picasso.with(mContext)
+                .load(Utilities)
+                .into(viewHolder.moviePicture);*/
+
+
+
+        Bitmap bitmap = Utilities.getPoster(urlPicture, cursor.getInt(FavoriteListFragment.COLUMN_MOVIE_ID));
+        viewHolder.moviePicture.setImageBitmap(bitmap);
 
     }
 
