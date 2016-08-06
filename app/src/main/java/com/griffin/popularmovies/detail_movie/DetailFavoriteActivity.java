@@ -1,13 +1,18 @@
 package com.griffin.popularmovies.detail_movie;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.griffin.popularmovies.R;
+import com.griffin.popularmovies.movie_list.Movie;
 
-public class DetailFavoriteActivity extends AppCompatActivity {
+public class DetailFavoriteActivity extends AppCompatActivity implements DetailFavoriteFragment
+.Callback {
 
+    private static final String LOG_TAG = DetailFavoriteActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,9 +36,10 @@ public class DetailFavoriteActivity extends AppCompatActivity {
                     .add(R.id.detail_movie_container, fragment)
                     .commit();
         }
+  }
 
-
+    @Override
+    public void onFavoriteMovieClick(Movie movie, Context context) {
+        onBackPressed();
     }
-
-
 }

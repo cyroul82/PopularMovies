@@ -71,9 +71,6 @@ public class Utilities {
         List<CastingMovie>  castingList = gson.fromJson(castingJSON, type);
         movie.getDetailMovie().setCasting(castingList);
 
-        movieCursor.close();
-
-
         return movie;
     }
 

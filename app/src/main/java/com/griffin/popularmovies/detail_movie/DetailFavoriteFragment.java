@@ -165,14 +165,16 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
             @Override
             public void onClick(View v) {
                 if(!mFavoriteButton.isChecked()) {
-
-                    ((Callback)getActivity()).onFavoriteMovieClick(mMovie, getContext());
+                    Utilities.removeMovie(mMovie, getContext());
+                    ((Callback)getActivity()).onFavoriteMovieClick(mMovie, getContext().getApplicationContext());
                 }
             }
         });
 
         return rootView;
     }
+
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -202,10 +204,6 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
         if (movieCursor != null && movieCursor.moveToFirst()) {
 
             mMovie = Utilities.getMovieFromCursor(movieCursor);
-
-            /*Picasso.with(getActivity())
-                    .load(mMovie.getPicture_url())
-                    .into(mImageViewMoviePicture);*/
 
             mImageViewMoviePicture.setImageBitmap(Utilities.getPoster(mMovie.getPicture_url(), mMovie.getId()));
 

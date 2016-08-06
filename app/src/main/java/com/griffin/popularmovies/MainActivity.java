@@ -235,16 +235,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     //Remove the movie from the favorite list
     @Override
     public void onFavoriteMovieClick(Movie movie, Context context) {
-
-
-        if(mTwoPane) {
-            Utilities.removeMovie(movie, context);
-            setBlankFragment();
-        }
-        else {
-
-        }
-
+        setBlankFragment();
     }
 
     private void setBlankFragment(){

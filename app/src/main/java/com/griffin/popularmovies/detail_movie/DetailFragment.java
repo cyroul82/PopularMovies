@@ -83,6 +83,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        //save the movie
         outState.putParcelable(EXTRA_DETAIL_MOVIE, mMovie);
         super.onSaveInstanceState(outState);
     }
@@ -123,7 +124,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                             String localUrl = Utilities.savePoster(bitmap, mMovie.getId(), getActivity().getApplicationContext());
                             Log.i(LOG_TAG, localUrl);
                             mMovie.setPicture_url(localUrl);
-                            Utilities.addMovieToFavorite(mMovie, getContext());
+                            mMovie.setFavorite(1);
                         }
 
                         @Override
@@ -169,8 +170,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onLoadFinished(Loader<DetailMovie> loader, DetailMovie detailMovie) {
 
         mMovie.setDetail(detailMovie);
-
-        String urlPicture = null;
 
         Picasso.with(getActivity())
                 .load(mMovie.getPicture_url())

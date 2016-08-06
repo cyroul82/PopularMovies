@@ -135,7 +135,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/textView_actorsList_title"
+                    android:text="@string/textView_casting_list_title"
                     style="@style/titleParagraph"/>
 
                 <TextView
