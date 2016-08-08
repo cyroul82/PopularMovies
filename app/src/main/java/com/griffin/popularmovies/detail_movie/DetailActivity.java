@@ -3,10 +3,13 @@ package com.griffin.popularmovies.detail_movie;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.griffin.popularmovies.R;
 
 public class DetailActivity extends AppCompatActivity {
+
+    private final static String LOG_TAG = DetailActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +30,10 @@ public class DetailActivity extends AppCompatActivity {
                 Get back the movie from the Intent
 
             */
-            //TODO DetailFavoriteFragment
+
 
             Bundle arguments = new Bundle();
-            arguments.putParcelable(DetailFragment.DETAIL_MOVIE, getIntent().getParcelableExtra(getString(R.string.key_movies_list)));
+            arguments.putParcelable(DetailFragment.MOVIE, getIntent().getParcelableExtra(getString(R.string.key_movies_list)));
 
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(arguments);

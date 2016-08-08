@@ -31,7 +31,7 @@ import java.util.Locale;
  */
 public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
 
-    private Movie mMovie;
+    private int mIdMovie;
     private DetailMovie detailMovie;
 
     private final String LOG_TAG = FetchDetailMovieTask.class.getSimpleName();
@@ -50,9 +50,9 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
     // Will contain the raw JSON response as a string.
     private String mDetailMoviesJsonStr = null;
 
-    public FetchDetailMovieTask (Context context, Movie movie){
+    public FetchDetailMovieTask (Context context, int idMovie){
         super(context);
-        mMovie = movie;
+        mIdMovie = idMovie;
 
     }
 
@@ -256,13 +256,13 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
     public DetailMovie loadInBackground() {
         try {
 
-            detailMovie.setCasting(getActorFromJson(getDataFromTheMovieDB(mMovie.getId(), CREDITS, LANGUAGE_SYSTEM)));
-            List<String[]> infoMovie = getGenreAndRuntimeFromJson(getDataFromTheMovieDB(mMovie.getId(), null, LANGUAGE_SYSTEM));
+            detailMovie.setCasting(getActorFromJson(getDataFromTheMovieDB(mIdMovie, CREDITS, LANGUAGE_SYSTEM)));
+            List<String[]> infoMovie = getGenreAndRuntimeFromJson(getDataFromTheMovieDB(mIdMovie, null, LANGUAGE_SYSTEM));
             detailMovie.setGenre(infoMovie.get(0));
             String[] runtime = infoMovie.get(1);
             detailMovie.setRuntime(runtime[0]);
-            detailMovie.setTrailers(getTrailFromJson(getDataFromTheMovieDB(mMovie.getId(), TRAILER, LANGUAGE_SYSTEM)));
-            detailMovie.setReviewMovieList(getReviewFromJson(getDataFromTheMovieDB(mMovie.getId(), REVIEWS, LANGUAGE_SYSTEM)));
+            detailMovie.setTrailers(getTrailFromJson(getDataFromTheMovieDB(mIdMovie, TRAILER, LANGUAGE_SYSTEM)));
+            detailMovie.setReviewMovieList(getReviewFromJson(getDataFromTheMovieDB(mIdMovie, REVIEWS, LANGUAGE_SYSTEM)));
             return detailMovie;
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);

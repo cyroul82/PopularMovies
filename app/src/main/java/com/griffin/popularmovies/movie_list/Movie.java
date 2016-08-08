@@ -21,7 +21,6 @@ public class Movie implements Parcelable {
     private int isFavorite ;
     private DetailMovie detailMovie;
 
-
     public Movie(){
         detailMovie = new DetailMovie();
 
@@ -32,7 +31,8 @@ public class Movie implements Parcelable {
         this.picture_url = picture_url;
     }
 
-    public Movie(int id, String title, String overview, String picture_url, String originalTitle, String movieDate, String movieRating, int isFavorite) {
+    public Movie(int id, String title, String overview, String picture_url, String originalTitle, String movieDate, String movieRating, int
+            isFavorite) {
         this.id = id;
         this.title =title;
         this.overview = overview;

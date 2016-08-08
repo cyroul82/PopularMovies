@@ -10,7 +10,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,7 +25,6 @@ import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.movie_list.Movie;
 import com.sackcentury.shinebuttonlib.ShineButton;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -165,7 +163,7 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
             @Override
             public void onClick(View v) {
                 if(!mFavoriteButton.isChecked()) {
-                    Utilities.removeMovie(mMovie, getContext());
+                    Utilities.removeMovieFromFavorite(mMovie, getContext());
                     ((Callback)getActivity()).onFavoriteMovieClick(mMovie, getContext().getApplicationContext());
                 }
             }

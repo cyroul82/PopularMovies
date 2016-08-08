@@ -20,6 +20,7 @@ import com.google.gson.reflect.TypeToken;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.detail_movie.CastingMovie;
 import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
+import com.griffin.popularmovies.detail_movie.DetailMovie;
 import com.griffin.popularmovies.movie_list.Movie;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -143,7 +144,7 @@ public class Utilities {
     }
 
 
-    public static void removeMovie(Movie movie, Context context){
+    public static void removeMovieFromFavorite(Movie movie, Context context){
         context.getContentResolver().delete(MovieContract.FavoriteEntry.CONTENT_URI,
                 MovieContract.FavoriteEntry.COLUMN_MOVIE_ID,
                 new String[]{Integer.toString(movie.getId())});

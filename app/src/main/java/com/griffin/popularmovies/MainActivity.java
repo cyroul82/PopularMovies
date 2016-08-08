@@ -38,6 +38,9 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
 
     private static final String BLANK_FRAGMENT_TAG = "BFTAG";
 
+    private DetailFavoriteFragment detailFavoriteFragment;
+    private MovieListFragment movieListFragment;
+
     private Spinner spinner;
     private int mSpinnerPosition;
 
@@ -76,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
         getSupportActionBar().setHomeButtonEnabled(true);
 
 
-
         if (findViewById(R.id.detail_movie_container) != null) {
             // The detail container view will be present only in the large-screen layouts
             // (res/layout-sw600dp). If this view is present, then the activity should be
@@ -100,10 +102,15 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
-        if(mTwoPane) {
 
             Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.detail_movie_container);
 
@@ -143,29 +150,24 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                             BLANK_FRAGMENT_TAG).commit();
                 }
             }
-        }
-        else {
             spinner.setSelection(Utilities.getSelectedChoiceNumber(this));
-        }
-
     }
 
 
 
     private void setListFragmentOnSharedPreferences(){
+            String choice = Utilities.getChoice(this);
 
-
-        String choice = Utilities.getChoice(this);
-        if(choice.equals(getString(R.string.pref_movies_favorite))) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new FavoriteListFragment(), FAVORITE_MOVIE_LIST_FRAGMENT_TAG)
-                    .commit();
-        }
-        else {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new MovieListFragment(), MOVIE_LIST_FRAGMENT_TAG)
-                    .commit();
-        }
+            if (choice.equals(getString(R.string.pref_movies_favorite))) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new FavoriteListFragment(), FAVORITE_MOVIE_LIST_FRAGMENT_TAG)
+                        .commit();
+            }
+            else {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new MovieListFragment(), MOVIE_LIST_FRAGMENT_TAG)
+                        .commit();
+            }
     }
 
     @Override
@@ -215,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     public void onItemSelected(Movie movie) {
         if(mTwoPane){
             Bundle args = new Bundle();
-            args.putParcelable(DetailFragment.DETAIL_MOVIE, movie);
+            args.putParcelable(DetailFragment.MOVIE, movie);
 
             DetailFragment detailFragment = new DetailFragment();
             detailFragment.setArguments(args);
@@ -225,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                     .commit();
         }
         else {
-            Intent intent = new Intent(this, DetailActivity.class);
+            Intent intent = new Intent(MainActivity.this, DetailActivity.class);
             intent.putExtra(getString(R.string.key_movies_list), movie);
             startActivity(intent);
         }

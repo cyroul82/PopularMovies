@@ -91,13 +91,13 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
                     ((Callback)getActivity()).onItemSelected(movie);
 
-                    mPosition = position;
+                    mPosition = mGridView.getFirstVisiblePosition();
                 }
             });
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)){
-          //  mPosition = savedInstanceState.getInt(SELECTED_KEY);
-            //mGridView.smoothScrollToPosition(mPosition);
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+            mGridView.smoothScrollToPosition(mPosition);
         }
 
         return rootView;
@@ -114,13 +114,13 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-       /* if(mPosition != mGridView.getFirstVisiblePosition()){
-            outState.putInt(SELECTED_KEY, mPosition);
-        }*/
+        outState.putInt(SELECTED_KEY, mPosition);
         //we put the mMoviesList into the bundle to avoid querying again while rebuilding
         outState.putParcelableArrayList(getString(R.string.key_movies_list), mMoviesList);
         super.onSaveInstanceState(outState);
     }
+
+
 
     public void checkConnectionStatus(){
         final ConnectivityManager connectivityManager = (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
