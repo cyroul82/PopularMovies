@@ -1,7 +1,6 @@
 package com.griffin.popularmovies.movie_list;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -15,9 +14,9 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.adapter.PopularMoviesAdapter;
-import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.task.FetchMoviesTask;
 
 import java.util.ArrayList;

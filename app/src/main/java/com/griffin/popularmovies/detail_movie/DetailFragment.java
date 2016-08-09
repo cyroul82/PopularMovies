@@ -23,13 +23,18 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import com.griffin.popularmovies.Pojo.Genre;
+import com.griffin.popularmovies.Pojo.Movie;
+import com.griffin.popularmovies.Pojo.Reviews;
+import com.griffin.popularmovies.Pojo.TrailerDetail;
 import com.griffin.popularmovies.Utilities;
-import com.griffin.popularmovies.movie_list.Movie;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.task.FetchDetailMovieTask;
 import com.sackcentury.shinebuttonlib.ShineButton;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
+import java.util.List;
 
 
 /**
@@ -120,11 +125,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             @Override
             public void onClick(View v) {
                 if(mFavoriteButton.isChecked()) {
-                    Picasso.with(getContext()).load(movie.getPicture_url()).into(new Target() {
+                    Picasso.with(getContext()).load(getString(R.string.IMAGE_BASE_URL) + movie.getPosterPath()).into(new Target() {
                         @Override
                         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                             String localUrl = Utilities.savePoster(bitmap, movie.getId(), getActivity().getApplicationContext());
-                            movie.setPicture_url(localUrl);
+                            movie.setPosterPath(localUrl);
                             movie.setFavorite(1);
                         }
 
@@ -175,10 +180,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mMovie.setDetail(detailMovie);
 
         Picasso.with(getActivity())
-                .load(mMovie.getPicture_url())
+                .load(getString(R.string.IMAGE_BASE_URL) + mMovie.getPosterPath())
                 .into(mImageViewMoviePicture);
 
-        String date = mMovie.getDate();
+        String date = mMovie.getReleaseDate();
         mTextViewMovieYear.setText(date);
 
         String title = mMovie.getTitle();
@@ -190,7 +195,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         String overview = mMovie.getOverview();
         mTextViewOverview.setText(overview);
 
-        String rating = mMovie.getRating();
+        String rating = Double.toString(mMovie.getVoteAverage());
         String rating_text = String.format(getString(R.string.rating),rating);
         mTextViewMovieRating.setText(rating_text);
 
@@ -216,40 +221,43 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         //set Casting to movie Object and update UI
         int maxActors;
         int mNumberMaxDisplayedActors = 5;
-        if(mMovie.getDetailMovie().getCasting().size() > mNumberMaxDisplayedActors){
+        if(mMovie.getDetailMovie().getCredits().getCast().size() > mNumberMaxDisplayedActors){
             maxActors = mNumberMaxDisplayedActors;
         }
-        else maxActors = mMovie.getDetailMovie().getCasting().size();
+        else maxActors = mMovie.getDetailMovie().getCredits().getCast().size();
 
         StringBuilder casting = new StringBuilder();
         for (int i=0 ; i < maxActors  ; i++){
-            casting.append(mMovie.getDetailMovie().getCasting().get(i).getName() + "  (" + mMovie.getDetailMovie().getCasting().get(i).getCharacter
-                    () + ")\n");
+            casting.append(mMovie.getDetailMovie().getCredits().getCast().get(i).getName() + "  (" + mMovie.getDetailMovie().getCredits().getCast()
+                    .get(i).getCharacter() + ")\n");
         }
         mTextViewCasting.setText(casting);
 
         //Set genre Object and update UI
-        StringBuilder genre = new StringBuilder();
-        String[] genres = mMovie.getDetailMovie().getGenre();
-        for (int i = 0 ; i < genres.length ; i++){
+        List<Genre> genres = mMovie.getDetailMovie().getMovieDetail().getGenres();
+        StringBuilder sb = new StringBuilder();
 
-            genre.append(genres[i]);
-            if(i != genres.length-1){
-                genre.append(" / ");
+
+        for(Genre genre : genres){
+            sb.append(genre.getName());
+
+            if (genres.iterator().hasNext()){
+                sb.append(" / ");
             }
         }
-        mTextViewGenre.setText(genre);
+
+        mTextViewGenre.setText(sb);
 
 
         //set review Object and update UI
         mLinearLayoutReview.removeAllViews();
-        for (ReviewMovie reviewMovie : mMovie.getDetailMovie().getReviews()){
+        for (Reviews reviews : mMovie.getDetailMovie().getReviewsList()){
             LinearLayout.LayoutParams textViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams
                     .MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             TextView textView = new TextView(getActivity());
             textView.setLayoutParams(textViewLayoutParams);
             textViewLayoutParams.setMargins(0,0,0,10);
-            String review = String.format(getString(R.string.reviews),reviewMovie.getAuthor(), reviewMovie.getReview());
+            String review = String.format(getString(R.string.reviews),reviews.getAuthor(), reviews.getContent());
             textView.setText(review);
             //TODO put it back when finishing  API 21
             textView.setBackground(getResources().getDrawable(R.drawable.border_top));
@@ -260,7 +268,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         //set Trailer to movie Object and update UI
         mLinearLayoutTrailer.removeAllViews();
-        for(final TrailerMovie trailerMovie : mMovie.getDetailMovie().getTrailers()){
+        for(final TrailerDetail trailerDetail : mMovie.getDetailMovie().getTrailerDetails()){
             Button button  = new Button(getActivity());
             LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams
                     .MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -270,7 +278,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             //button.setCompoundDrawablePadding(5);
             //button.setCompoundDrawables(getResources().getDrawable(R.drawable.ic_play_circle_outline_white_24dp), null, null, null);
             // button.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-            button.setText(trailerMovie.getNameTrailer());
+            button.setText(trailerDetail.getName());
             //TODO put it back when finishing API 21
             button.setBackground(getResources().getDrawable(R.drawable.button_selector));
             button.setPadding(10, 10, 10, 10);// in pixels (left, top, right, bottom)
@@ -279,14 +287,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Uri uri = Uri.parse(YOUTUBE_BASE_URL).buildUpon().appendQueryParameter(PARAM, trailerMovie.getKeyTrailer()).build();
+                    Uri uri = Uri.parse(YOUTUBE_BASE_URL).buildUpon().appendQueryParameter(PARAM, trailerDetail.getKey()).build();
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                     startActivity(intent);
                 }
             });
         }
 
-        String runtime = String.format(getString(R.string.runtime),mMovie.getDetailMovie().getRuntime());
+        String runtime = String.format(getString(R.string.runtime),mMovie.getDetailMovie().getMovieDetail().getRuntime());
         mTextViewRuntime.setText(runtime);
 
     }

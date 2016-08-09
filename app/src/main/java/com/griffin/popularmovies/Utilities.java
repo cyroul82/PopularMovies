@@ -8,22 +8,19 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.griffin.popularmovies.Pojo.Cast;
+import com.griffin.popularmovies.Pojo.Genre;
+import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.detail_movie.CastingMovie;
 import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
-import com.griffin.popularmovies.detail_movie.DetailMovie;
-import com.griffin.popularmovies.movie_list.Movie;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,6 +28,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -51,26 +50,29 @@ public class Utilities {
     public static Movie getMovieFromCursor(Cursor movieCursor){
         Movie movie = new Movie();
         movie.setId(movieCursor.getInt(DetailFavoriteFragment.COL_FAVORITE_MOVIE_ID));
-        movie.setPicture_url(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_PICTURE));
-        movie.setDate(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DATE));
+        movie.setPosterPath(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_PICTURE));
+        movie.setReleaseDate(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DATE));
         movie.setTitle(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_TITLE));
         movie.setOriginalTitle(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_ORIGINAL_TITLE));
         movie.setOverview(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_OVERVIEW));
-        movie.setRating(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_RATING));
-        movie.getDetailMovie().setRuntime(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_RUNTIME));
+        movie.setVoteAverage(movieCursor.getDouble(DetailFavoriteFragment.COL_FAVORITE_MOVIE_RATING));
+        movie.getDetailMovie().getMovieDetail().setRuntime(movieCursor.getInt(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_RUNTIME));
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
 
-        Type type = new TypeToken<String[]>() {}.getType();
-        String genreJSON = movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_GENRE);
-        String[] genres = gson.fromJson(genreJSON, type);
-        movie.getDetailMovie().setGenre(genres);
 
-        type = new TypeToken<List<CastingMovie>>() {}.getType();
+        Type type = new TypeToken<List<Genre>>() {}.getType();
+        String genreJSON = movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_GENRE);
+        System.out.println(genreJSON);
+        List<Genre> genres = gson.fromJson(genreJSON, type);
+        movie.getDetailMovie().getMovieDetail().setGenres(genres);
+
+
+        type = new TypeToken<List<Cast>>() {}.getType();
         String castingJSON = movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_CASTING);
-        List<CastingMovie>  castingList = gson.fromJson(castingJSON, type);
-        movie.getDetailMovie().setCasting(castingList);
+        List<Cast> castList = gson.fromJson(castingJSON, type);
+        movie.getDetailMovie().getCredits().setCast(castList);
 
         return movie;
     }
@@ -102,20 +104,20 @@ public class Utilities {
             detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TITLE, movie.getTitle());
 
             Gson gson = new GsonBuilder().create();
-            String casting = gson.toJson(movie.getDetailMovie().getCasting());
+            String casting = gson.toJson(movie.getDetailMovie().getCredits().getCast());
             detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_CASTING,casting);
 
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_DATE, movie.getDate());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_DATE, movie.getReleaseDate());
 
-            String genre = gson.toJson(movie.getDetailMovie().getGenre());
+            String genre = gson.toJson(movie.getDetailMovie().getMovieDetail().getGenres());
             detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_GENRE, genre);
 
             detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_ORIGINAL_TITLE, movie.getOriginalTitle());
             detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_OVERVIEW, movie.getOverview());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RATING, movie.getRating());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS, movie.getDetailMovie().getReviews().toString());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RUNTIME, movie.getDetailMovie().getRuntime());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER, movie.getDetailMovie().getTrailers().toString());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RATING, Double.toString(movie.getVoteAverage()));
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS, movie.getDetailMovie().getReviewsList().toString());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RUNTIME, movie.getDetailMovie().getMovieDetail().getRuntime());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER, movie.getDetailMovie().getTrailerDetails().toString());
 
             // The resulting URI contains the ID for the row.  Extract the movieId from the Uri.
             Uri insertedDetailUri = context.getContentResolver().insert(MovieContract.DetailEntry.CONTENT_URI, detail);
@@ -132,7 +134,7 @@ public class Utilities {
             values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID, movie.getId());
 
 
-            values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE, movie.getPicture_url());
+            values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE, movie.getPosterPath());
 
             // Finally, insert movie data into the database.
             Uri insertedUri = context.getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI,values);

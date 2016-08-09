@@ -4,10 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.movie_list.Movie;
+import com.griffin.popularmovies.Pojo.Movie;
 
 public class DetailFavoriteActivity extends AppCompatActivity implements DetailFavoriteFragment
 .Callback {

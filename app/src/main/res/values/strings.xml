@@ -69,4 +69,6 @@
     <string name="reviewTitle">Reviews :</string>
     <string name="trailerTitle">Videos :</string>
     <string name="runtime" translatable="false">%1$s min</string>
+
+    <string name="IMAGE_BASE_URL" translatable="false">http://image.tmdb.org/t/p/w185</string>
 </resources>

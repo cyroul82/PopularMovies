@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
+import com.griffin.popularmovies.MainActivity;
 import com.griffin.popularmovies.R;
 
 public class DetailActivity extends AppCompatActivity {
@@ -30,7 +31,6 @@ public class DetailActivity extends AppCompatActivity {
                 Get back the movie from the Intent
 
             */
-
 
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailFragment.MOVIE, getIntent().getParcelableExtra(getString(R.string.key_movies_list)));

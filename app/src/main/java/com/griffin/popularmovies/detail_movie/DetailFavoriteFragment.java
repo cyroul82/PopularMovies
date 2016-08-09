@@ -20,10 +20,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.griffin.popularmovies.Pojo.Cast;
+import com.griffin.popularmovies.Pojo.Genre;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.data.MovieContract;
-import com.griffin.popularmovies.movie_list.Movie;
+import com.griffin.popularmovies.Pojo.Movie;
 import com.sackcentury.shinebuttonlib.ShineButton;
 
 import java.util.List;
@@ -203,9 +205,9 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
             mMovie = Utilities.getMovieFromCursor(movieCursor);
 
-            mImageViewMoviePicture.setImageBitmap(Utilities.getPoster(mMovie.getPicture_url(), mMovie.getId()));
+            mImageViewMoviePicture.setImageBitmap(Utilities.getPoster(mMovie.getPosterPath(), mMovie.getId()));
 
-            mTextViewMovieYear.setText(mMovie.getDate());
+            mTextViewMovieYear.setText(mMovie.getReleaseDate());
 
             mFavoriteButton.setChecked(true);
 
@@ -215,23 +217,22 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
             mTextViewOverview.setText(mMovie.getOverview());
 
-            mTextViewMovieRating.setText(String.format(getString(R.string.rating), mMovie.getRating()));
+            mTextViewMovieRating.setText(String.format(getString(R.string.rating), Double.toString(mMovie.getVoteAverage())));
 
-            mTextViewRuntime.setText(String.format(getString(R.string.runtime), mMovie.getDetailMovie().getRuntime()));
+            mTextViewRuntime.setText(String.format(getString(R.string.runtime), Integer.toString(mMovie.getDetailMovie().getMovieDetail()
+                    .getRuntime())));
 
 
-            String[] genres = mMovie.getDetailMovie().getGenre();
-            //Set genre Object and update UI
+            List<Genre> genres = mMovie.getDetailMovie().getMovieDetail().getGenres();
             StringBuilder sb = new StringBuilder();
-            for (int i = 0 ; i < genres.length ; i++){
-                sb.append(genres[i]);
-                if(i != genres.length-1){
-                    sb.append(" / ");
-                }
+            for(Genre genre : genres){
+                sb.append(genre.getName());
+                sb.append(" / ");
             }
+            //Set genre Object and update UI
             mTextViewGenre.setText(sb.toString());
 
-            List<CastingMovie>  castingList = mMovie.getDetailMovie().getCasting();
+            List<Cast>  castingList = mMovie.getDetailMovie().getCredits().getCast();
 
             int maxActors;
 
@@ -239,12 +240,18 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
                 maxActors = mNumberMaxDisplayedActors;
             }
             else maxActors = castingList.size();
+            /*for (Cast cast : castingList) {
+                sb.append(cast.getName() + "  (" + cast.getCharacter() + ")\n");
+            }*/
             sb = new StringBuilder();
-            for (int i=0 ; i < maxActors  ; i++){
-                CastingMovie castingMovie = castingList.get(i);
-                sb.append(castingMovie.getName() + "  (" + castingMovie.getCharacter() + ")\n");
+            int i=0;
+            while(i < maxActors) {
+                Cast cast = castingList.get(i);
+                sb.append(cast.getName() + "  (" + cast.getCharacter() + ")\n");
 
+                i++;
             }
+
             mTextViewCasting.setText(sb.toString());
 
         }

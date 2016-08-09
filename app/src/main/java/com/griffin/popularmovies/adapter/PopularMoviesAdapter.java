@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
-import com.griffin.popularmovies.movie_list.Movie;
 import com.griffin.popularmovies.R;
+import com.griffin.popularmovies.Pojo.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -19,8 +19,6 @@ import butterknife.ButterKnife;
  * Created by griffin on 08/07/16.
  */
 public class PopularMoviesAdapter extends ArrayAdapter<Movie> {
-
-
 
     private Context mContext;
     private List<Movie> mMoviesList;
@@ -46,7 +44,7 @@ public class PopularMoviesAdapter extends ArrayAdapter<Movie> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         Picasso.with(mContext)
-                .load(mMoviesList.get(position).getPicture_url())
+                .load(getContext().getString(R.string.IMAGE_BASE_URL) + mMoviesList.get(position).getPosterPath())
                 .into(viewHolder.popularMoviePicture);
 
         return view;

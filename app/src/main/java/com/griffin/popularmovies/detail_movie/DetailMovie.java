@@ -3,6 +3,13 @@ package com.griffin.popularmovies.detail_movie;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.griffin.popularmovies.Pojo.Credits;
+import com.griffin.popularmovies.Pojo.MovieDetail;
+import com.griffin.popularmovies.Pojo.Reviews;
+import com.griffin.popularmovies.Pojo.Trailer;
+import com.griffin.popularmovies.Pojo.TrailerDetail;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,22 +17,31 @@ import java.util.List;
  */
 public class DetailMovie implements Parcelable {
 
-    private String[] mGenre;
-    private List<CastingMovie> mCasting;
-    private List<TrailerMovie> mTrailerList;
-    private List<ReviewMovie> mReviewMovieList;
-    private String mRuntime;
+    private MovieDetail movieDetail;
+    private List<TrailerDetail> trailerDetails;
+    private Credits credits;
+    private List<Reviews> reviewsList;
 
-    public DetailMovie(){
 
+
+   public DetailMovie(){
+       movieDetail = new MovieDetail();
+       credits = new Credits();
+       trailerDetails = new ArrayList<>();
+       reviewsList = new ArrayList<>();
+   }
+    public DetailMovie(MovieDetail movieDetail, Credits credits, List<TrailerDetail> trailerDetails, List<Reviews> reviewsList) {
+        this.movieDetail = movieDetail;
+        this.credits = credits;
+        this.trailerDetails = trailerDetails;
+        this.reviewsList = reviewsList;
     }
 
     protected DetailMovie(Parcel in) {
-        mGenre = in.createStringArray();
-        mCasting = in.createTypedArrayList(CastingMovie.CREATOR);
-        mTrailerList = in.createTypedArrayList(TrailerMovie.CREATOR);
-        mReviewMovieList = in.createTypedArrayList(ReviewMovie.CREATOR);
-        mRuntime = in.readString();
+        movieDetail = in.readParcelable(MovieDetail.class.getClassLoader());
+        trailerDetails = in.createTypedArrayList(TrailerDetail.CREATOR);
+        credits = in.readParcelable(Credits.class.getClassLoader());
+        reviewsList = in.createTypedArrayList(Reviews.CREATOR);
     }
 
     public static final Creator<DetailMovie> CREATOR = new Creator<DetailMovie>() {
@@ -40,42 +56,38 @@ public class DetailMovie implements Parcelable {
         }
     };
 
-    public void setGenre(String[] mGenre){
-        this.mGenre = mGenre;
-    }
-    public String[] getGenre(){
-        return mGenre;
+    public List<Reviews> getReviewsList() {
+        return reviewsList;
     }
 
-    public void setCasting(List<CastingMovie> mActors){
-        this.mCasting = mActors;
-    }
-    public List<CastingMovie> getCasting(){
-        return mCasting;
+    public void setReviewsList(List<Reviews> reviewsList) {
+        this.reviewsList = reviewsList;
     }
 
-    public void setTrailers(List<TrailerMovie> trailerList){
-        this.mTrailerList = trailerList;
-    }
-    public List<TrailerMovie> getTrailers(){
-        return mTrailerList;
+    public MovieDetail getMovieDetail() {
+        return movieDetail;
     }
 
-    public List<ReviewMovie> getReviews() {
-        return mReviewMovieList;
+    public void setMovieDetail(MovieDetail movieDetail) {
+        this.movieDetail = movieDetail;
     }
 
-    public void setReviewMovieList(List<ReviewMovie> mReviewMovieList) {
-        this.mReviewMovieList = mReviewMovieList;
+    public List<TrailerDetail> getTrailerDetails() {
+        return trailerDetails;
     }
 
-    public String getRuntime() {
-        return mRuntime;
+    public void setTrailerDetails(List<TrailerDetail> trailerDetails) {
+        this.trailerDetails = trailerDetails;
     }
 
-    public void setRuntime(String mRuntime) {
-        this.mRuntime = mRuntime;
+    public Credits getCredits() {
+        return credits;
     }
+
+    public void setCredits(Credits credits) {
+        this.credits = credits;
+    }
+
 
     @Override
     public int describeContents() {
@@ -84,10 +96,9 @@ public class DetailMovie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(mGenre);
-        dest.writeTypedList(mCasting);
-        dest.writeTypedList(mTrailerList);
-        dest.writeTypedList(mReviewMovieList);
-        dest.writeString(mRuntime);
+        dest.writeParcelable(movieDetail, flags);
+        dest.writeTypedList(trailerDetails);
+        dest.writeParcelable(credits, flags);
+        dest.writeTypedList(reviewsList);
     }
 }

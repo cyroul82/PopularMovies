@@ -54,11 +54,6 @@ public class FavoriteMoviesAdapter extends CursorAdapter {
 
         //get the url Picture from cursor
         String urlPicture = cursor.getString(FavoriteListFragment.COLUMN_MOVIE_PICTURE);
-        /*Picasso.with(mContext)
-                .load(Utilities)
-                .into(viewHolder.moviePicture);*/
-
-
 
         Bitmap bitmap = Utilities.getPoster(urlPicture, cursor.getInt(FavoriteListFragment.COLUMN_MOVIE_ID));
         viewHolder.moviePicture.setImageBitmap(bitmap);

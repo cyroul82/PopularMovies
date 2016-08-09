@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,8 +18,8 @@ import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
 import com.griffin.popularmovies.detail_movie.DetailActivity;
 import com.griffin.popularmovies.detail_movie.DetailFragment;
 import com.griffin.popularmovies.movie_list.FavoriteListFragment;
-import com.griffin.popularmovies.movie_list.Movie;
 import com.griffin.popularmovies.movie_list.MovieListFragment;
+import com.griffin.popularmovies.Pojo.Movie;
 
 
 public class MainActivity extends AppCompatActivity implements FavoriteListFragment.Callback, MovieListFragment.Callback, DetailFavoriteFragment
@@ -33,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     private static final String DETAIL_FRAGMENT_TAG = "DFTAG";
     private static final String DETAIL_FAVORITE_FRAGMENT_TAG="DFFT";
 
-    private static final String MOVIE_LIST_FRAGMENT_TAG = "MLFTAG";
+    public static final String MOVIE_LIST_FRAGMENT_TAG = "MLFTAG";
     private static final String FAVORITE_MOVIE_LIST_FRAGMENT_TAG = "FMFTAG";
 
     private static final String BLANK_FRAGMENT_TAG = "BFTAG";
@@ -111,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     protected void onResume() {
         super.onResume();
 
-
+        if(mTwoPane) {
             Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.detail_movie_container);
 
             if (fragment instanceof DetailFavoriteFragment) {
@@ -151,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                 }
             }
             spinner.setSelection(Utilities.getSelectedChoiceNumber(this));
+        }
     }
 
 
