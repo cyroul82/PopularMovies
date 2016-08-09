@@ -17,6 +17,7 @@ import com.griffin.popularmovies.detail_movie.DetailFavoriteActivity;
 import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
 import com.griffin.popularmovies.detail_movie.DetailActivity;
 import com.griffin.popularmovies.detail_movie.DetailFragment;
+import com.griffin.popularmovies.movie_list.BlankFragment;
 import com.griffin.popularmovies.movie_list.FavoriteListFragment;
 import com.griffin.popularmovies.movie_list.MovieListFragment;
 import com.griffin.popularmovies.Pojo.Movie;

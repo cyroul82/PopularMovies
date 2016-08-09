@@ -28,14 +28,20 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by griffin on 18/07/16.
  */
 public class Utilities {
+
+    private static final String LOG_TAG = Utilities.class.getSimpleName();
 
     private static final String TAG = Utilities.class.getSimpleName();
     private static final String CHOICE = "choice";
@@ -258,6 +264,28 @@ public class Utilities {
         }
         return bitmap;
 
+    }
+
+    public static String getMonthAndYear(String date) {
+        // Creates the format style to match the json format
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
+        String year = null;
+        try {
+            // Creates the date with the format previously created
+            Date d = format.parse(date);
+            // Instancie le calendrier
+            Calendar cal = Calendar.getInstance();
+            String month_name = month_date.format(cal.getTime());
+            // Sets up the calendar
+            cal.setTime(d);
+            // gets back the year out of the date and cast it into a string
+            year = month_name + " " + Integer.toString(cal.get(Calendar.YEAR)) ;
+        } catch (ParseException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+
+        }
+        return year;
     }
 
 

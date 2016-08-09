@@ -207,7 +207,7 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
             mImageViewMoviePicture.setImageBitmap(Utilities.getPoster(mMovie.getPosterPath(), mMovie.getId()));
 
-            mTextViewMovieYear.setText(mMovie.getReleaseDate());
+            mTextViewMovieYear.setText(Utilities.getMonthAndYear(mMovie.getReleaseDate()));
 
             mFavoriteButton.setChecked(true);
 

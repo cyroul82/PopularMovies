@@ -1,4 +1,4 @@
-package com.griffin.popularmovies;
+package com.griffin.popularmovies.movie_list;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.griffin.popularmovies.MainActivity;
+import com.griffin.popularmovies.R;
 
 /**
  * Created by griffin on 29/07/16.

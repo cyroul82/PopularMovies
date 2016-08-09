@@ -184,7 +184,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 .into(mImageViewMoviePicture);
 
         String date = mMovie.getReleaseDate();
-        mTextViewMovieYear.setText(date);
+
+        mTextViewMovieYear.setText(Utilities.getMonthAndYear(date));
 
         String title = mMovie.getTitle();
         mTitleTextView.setText(title);
