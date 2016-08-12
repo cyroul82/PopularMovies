@@ -4,7 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -38,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
 
     private static final String BLANK_FRAGMENT_TAG = "BFTAG";
 
+
     private DetailFavoriteFragment detailFavoriteFragment;
     private MovieListFragment movieListFragment;
 
@@ -48,10 +53,16 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
 
     public static final String TITLE_BLANK_FRAGMENT_KEY = "title";
 
+    private DrawerLayout mDrawerLayout;
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         spinner = (Spinner) findViewById(R.id.sort_order_spinner);
         spinner.setSelection(Utilities.getSelectedChoiceNumber(this));
@@ -76,7 +87,22 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeButtonEnabled(true);
+
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        NavigationView view = (NavigationView) findViewById(R.id.nav_view);
+        if (view != null) {
+            view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    Snackbar.make(getCurrentFocus(), menuItem.getTitle() + " pressed", Snackbar.LENGTH_LONG).show();
+                    menuItem.setChecked(true);
+                    mDrawerLayout.closeDrawers();
+                    return true;
+                }
+            });
+        }
 
 
         if (findViewById(R.id.detail_movie_container) != null) {
@@ -88,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             // adding or replacing the detail fragment using a
             // fragment transaction.
             if (savedInstanceState == null) {
-               setBlankFragment();
+                setBlankFragment();
             }
 
             setListFragmentOnSharedPreferences();
@@ -97,7 +123,6 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             mTwoPane = false;
 
         }
-
 
     }
 
@@ -171,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             }
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -183,16 +209,22 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            /*Intent intent = new Intent(this, SettingsActivity.class);
+        switch (item.getItemId()) {
+            case R.id.action_settings :
+                /*Intent intent = new Intent(this, SettingsActivity.class);
 
             startActivity(intent);
             return true;*/
+                return true;
+
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
         }
+
         return super.onOptionsItemSelected(item);
+
     }
 
     @Override

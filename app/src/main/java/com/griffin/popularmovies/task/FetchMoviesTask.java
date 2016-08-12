@@ -99,8 +99,8 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
 
     private String getYear(String date) {
         // Creates the format style to match the json format
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        SimpleDateFormat month_date = new SimpleDateFormat("MMMM", Locale.getDefault());
         String year = null;
         try {
             // Creates the date with the format previously created
@@ -132,7 +132,7 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
             Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
             MovieService movieService = retrofit.create(MovieService.class);
             Call<MoviePage> callMoviePojo = movieService.getMoviesPage(Utilities.getChoice(getContext()), BuildConfig.MOVIE_DB_API_KEY, Locale
-                    .getDefault().getLanguage().toString());
+                    .getDefault().getLanguage());
             Response response = callMoviePojo.execute();
             MoviePage moviePage = (MoviePage) response.body();
             movieList = moviePage.getResults();
@@ -140,8 +140,8 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
         catch (IOException e){
             Log.e(LOG_TAG, e.getMessage(), e);
         }
-        finally {
-            return movieList;
-        }
+
+        return movieList;
+
     }
 }

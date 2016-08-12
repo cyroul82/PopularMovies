@@ -52,4 +52,10 @@
         <item name="android:drawableLeft" >@drawable/ic_favorite_black_24dp</item>
     </style>
 
+    <style name="ProgressDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:background">@drawable/detail_background</item>
+
+
+    </style>
+
 </resources>

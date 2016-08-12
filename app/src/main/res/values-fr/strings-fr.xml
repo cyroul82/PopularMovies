@@ -32,4 +32,7 @@
 
     <string name="reviewTitle">Critiques :</string>
     <string name="trailerTitle">Videos :</string>
+
+    <string name="profil">Profil</string>
+    <string name="favorite">Favoris</string>
 </resources>

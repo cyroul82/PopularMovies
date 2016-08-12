@@ -1,5 +1,6 @@
 package com.griffin.popularmovies.movie_list;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -37,6 +38,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     private String SELECTED_KEY = "positionkey";
 
     private GridView mGridView;
+    private ProgressDialog mProgressDialog;
 
     public MovieListFragment(){
 
@@ -58,6 +60,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         setHasOptionsMenu(true);
 
@@ -105,7 +108,6 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(MOVIE_LOADER, null, this);
@@ -137,6 +139,8 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         super.onStart();
         checkConnectionStatus();
     }
+
+
 
     @Override
     public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {

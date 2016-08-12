@@ -30,7 +30,7 @@
     <string name="key_movies_favorite">My Favorites</string>
 
     //Sorting choice array
-    <string-array name="sorting_choice_entries" >
+    <string-array name="sorting_choice_entries">
         <item>@string/key_movies_popular</item>
         <item>@string/key_movies_top_rated</item>
         <item>@string/key_movies_upcoming</item>
@@ -71,4 +71,8 @@
     <string name="runtime" translatable="false">%1$s min</string>
 
     <string name="IMAGE_BASE_URL" translatable="false">http://image.tmdb.org/t/p/w185</string>
+
+    <string name="profil">Profil</string>
+    <string name="favorite">Favorite</string>
+
 </resources>

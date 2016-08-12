@@ -1,5 +1,6 @@
 package com.griffin.popularmovies.detail_movie;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -48,6 +49,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public static final String DETAIL_MOVIE="DETAILMOVIE";
     private Movie mMovie;
     private ShareActionProvider mShareActionProvider;
+    private ProgressDialog mProgressDialog;
 
 
     private static final int DETAIL_LOADER = 0;
@@ -64,7 +66,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @BindView(R.id.linearLayout_Trailer) LinearLayout mLinearLayoutTrailer;
     @BindView(R.id.linearLayout_Review) LinearLayout mLinearLayoutReview;
     @BindView(R.id.shineButton_favorite) ShineButton mFavoriteButton;
-
+    @BindView(R.id.textView_tagline) TextView mTextViewTagline;
 
     public DetailFragment() {
         setHasOptionsMenu(true);
@@ -115,6 +117,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if (arguments != null) {
             mMovie = arguments.getParcelable(MOVIE);
         }
+
         ButterKnife.bind(this, rootView);
 
         mFavoriteButton.init(getActivity());
@@ -158,10 +161,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         return rootView;
     }
 
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         if(mMovie != null){
+            mProgressDialog = new ProgressDialog(getContext(), R.style.ProgressDialog);
+            mProgressDialog.setTitle("Connecting to themovieDB.org");
+            mProgressDialog.setMessage("Loading data...");
+
+            mProgressDialog.show();
             getLoaderManager().initLoader(DETAIL_LOADER, null, this);
         }
         super.onActivityCreated(savedInstanceState);
@@ -176,7 +183,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<DetailMovie> loader, DetailMovie detailMovie) {
-
+        mProgressDialog.dismiss();
         mMovie.setDetail(detailMovie);
 
         Picasso.with(getActivity())
@@ -193,6 +200,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         String originalTitle = mMovie.getOriginalTitle();
         mTextViewOriginalTitle.setText(originalTitle);
 
+        String tagline = mMovie.getDetailMovie().getMovieDetail().getTagline();
+        if(tagline.isEmpty()){
+            mTextViewTagline.setVisibility(View.GONE);
+        }
+        else {
+            mTextViewTagline.setText(tagline);
+        }
+
         String overview = mMovie.getOverview();
         mTextViewOverview.setText(overview);
 
@@ -205,7 +220,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         }
         else mFavoriteButton.setChecked(true);
 
-           setDetailUI();
+        setDetailUI();
+
+
 
     }
 

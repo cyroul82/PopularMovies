@@ -17,8 +17,20 @@
             android:layout_height="80dp"
             android:layout_gravity="center|start"
             android:gravity="center|start"
-            android:drawableBottom="#FFFFFF"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             style="@style/titleStyleTablet"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView_tagline"
+            android:textColor="@color/grey"
+            android:layout_marginBottom="30dp"
+            android:layout_gravity="center|start"
+            android:gravity="center|start"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,6 +41,7 @@
                 android:id="@+id/textView_Genre"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:layout_marginBottom="10dp"/>
@@ -91,12 +104,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:id="@+id/textView_Year" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textSize="18sp"
                         android:layout_marginBottom="5dp"
                         android:id="@+id/textView_Runtime"/>
@@ -104,20 +118,21 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="@string/originalTitleTextView"
                         style="@style/titleParagraph"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:id="@+id/textView_Original_Title"
                         android:layout_marginBottom="10dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:id="@+id/textView_Rating"
                         android:drawableLeft="@drawable/ic_stars_white_24dp"
                         android:drawablePadding="5dp"/>
@@ -134,11 +149,13 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="@string/textView_casting_list_title"
                     style="@style/titleParagraph"/>
 
                 <TextView
                     android:id="@+id/textView_Casting"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -148,6 +165,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="fill_horizontal"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/overviewText"
                 style="@style/titleParagraph"/>
 
@@ -155,7 +173,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/textView_Overview"
                 android:layout_marginBottom="10dp"/>
 
@@ -169,8 +187,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/trailerTitle"
-                    style="@style/titleParagraph"/>
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/trailerTitle"/>
 
 
             </LinearLayout>
@@ -184,8 +202,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/reviewTitle"
-                    style="@style/titleParagraph"/>
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/reviewTitle"/>
 
             </LinearLayout>
 
