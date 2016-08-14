@@ -33,9 +33,12 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
 
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
+    private int mPage;
 
-    public FetchMoviesTask (Context context){
+
+    public FetchMoviesTask (Context context, int page){
         super(context);
+        mPage = page;
     }
 
     @Override
@@ -113,9 +116,7 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
             // gets back the year out of the date and cast it into a string
             year = month_name + " " + Integer.toString(cal.get(Calendar.YEAR)) ;
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             Log.e(LOG_TAG, e.getMessage(), e);
-
         }
         return year;
     }
@@ -132,7 +133,7 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
             Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
             MovieService movieService = retrofit.create(MovieService.class);
             Call<MoviePage> callMoviePojo = movieService.getMoviesPage(Utilities.getChoice(getContext()), BuildConfig.MOVIE_DB_API_KEY, Locale
-                    .getDefault().getLanguage());
+                    .getDefault().getLanguage(), mPage);
             Response response = callMoviePojo.execute();
             MoviePage moviePage = (MoviePage) response.body();
             movieList = moviePage.getResults();

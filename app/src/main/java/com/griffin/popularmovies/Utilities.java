@@ -19,7 +19,6 @@ import com.griffin.popularmovies.Pojo.Cast;
 import com.griffin.popularmovies.Pojo.Genre;
 import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.data.MovieContract;
-import com.griffin.popularmovies.detail_movie.CastingMovie;
 import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
 
 import java.io.File;
@@ -30,8 +29,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;

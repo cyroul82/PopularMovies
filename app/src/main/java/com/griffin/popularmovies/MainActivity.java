@@ -34,11 +34,11 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    private static final String DETAIL_FRAGMENT_TAG = "DFTAG";
-    private static final String DETAIL_FAVORITE_FRAGMENT_TAG="DFFT";
+    public static final String DETAIL_FRAGMENT_TAG = "DFTAG";
+    public static final String DETAIL_FAVORITE_FRAGMENT_TAG="DFFT";
 
     public static final String MOVIE_LIST_FRAGMENT_TAG = "MLFTAG";
-    private static final String FAVORITE_MOVIE_LIST_FRAGMENT_TAG = "FMFTAG";
+    public static final String FAVORITE_MOVIE_LIST_FRAGMENT_TAG = "FMFTAG";
 
     private static final String BLANK_FRAGMENT_TAG = "BFTAG";
 

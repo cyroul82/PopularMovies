@@ -201,8 +201,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mTextViewOriginalTitle.setText(originalTitle);
 
         String tagline = mMovie.getDetailMovie().getMovieDetail().getTagline();
-        if(tagline.isEmpty()){
-            mTextViewTagline.setVisibility(View.GONE);
+        if (tagline != null){
+            if(tagline.isEmpty()) {
+                mTextViewTagline.setVisibility(View.GONE);
+            }
         }
         else {
             mTextViewTagline.setText(tagline);

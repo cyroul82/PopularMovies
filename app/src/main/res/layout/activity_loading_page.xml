@@ -36,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Thank you to the website themoviedb.org for providing an API available to everyone !"
+        android:text="Thanks to the website themoviedb.org for providing an API available to everyone !"
         android:gravity="center_horizontal"
         android:id="@+id/textView2"
         android:layout_centerVertical="true"

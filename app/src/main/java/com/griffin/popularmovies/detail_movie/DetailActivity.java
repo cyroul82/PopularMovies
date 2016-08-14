@@ -27,7 +27,7 @@ public class DetailActivity extends AppCompatActivity {
 
             /*
                 Create a bundle
-                Get the back the intent
+                Get back the intent
                 Get back the movie from the Intent
 
             */
@@ -39,7 +39,7 @@ public class DetailActivity extends AppCompatActivity {
             fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.detail_movie_container, fragment)
+                    .add(R.id.detail_movie_container, fragment, MainActivity.DETAIL_FRAGMENT_TAG)
                     .commit();
         }
 

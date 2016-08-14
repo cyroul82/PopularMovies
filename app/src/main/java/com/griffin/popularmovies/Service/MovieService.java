@@ -19,7 +19,8 @@ public interface MovieService {
 
     //Get movies list by choice
     @GET("{choice}")
-    Call<MoviePage> getMoviesPage(@Path("choice") String choice, @Query("api_key") String apiKey, @Query("language") String language);
+    Call<MoviePage> getMoviesPage(@Path("choice") String choice, @Query("api_key") String apiKey, @Query("language") String language, @Query
+            ("page") int page);
 
     //Get the videos of a movies by Id
     @GET("{id}/videos")

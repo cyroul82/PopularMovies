@@ -39,6 +39,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
     private GridView mGridView;
     private ProgressDialog mProgressDialog;
+    private int mPage = 1;
 
     public MovieListFragment(){
 
@@ -71,6 +72,9 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         //restore the previous state
         else {
             mMoviesList = savedInstanceState.getParcelableArrayList(getString(R.string.key_movies_list));
+            //int position = savedInstanceState.getInt(SELECTED_KEY);
+            //mGridView.smoothScrollToPosition(position);
+
         }
     }
 
@@ -90,17 +94,21 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     //get the movie back from the adapter
                     Movie movie = mMoviesAdapter.getItem(position);
-
+                    mPosition = mGridView.getFirstVisiblePosition();
                     ((Callback)getActivity()).onItemSelected(movie);
 
-                    mPosition = mGridView.getFirstVisiblePosition();
+
                 }
             });
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)){
-            mPosition = savedInstanceState.getInt(SELECTED_KEY);
-            mGridView.smoothScrollToPosition(mPosition);
-        }
+        mGridView.setOnScrollListener(new EndlessScrolling(4) {
+            @Override
+            public void loadMore(int page, int totalItemsCount) {
+                mPage = page;
+                getLoaderManager().restartLoader(MOVIE_LOADER, null, MovieListFragment.this);
+
+            }
+        });
 
         return rootView;
     }
@@ -115,6 +123,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        //mPosition = mGridView.getFirstVisiblePosition();
         outState.putInt(SELECTED_KEY, mPosition);
         //we put the mMoviesList into the bundle to avoid querying again while rebuilding
         outState.putParcelableArrayList(getString(R.string.key_movies_list), mMoviesList);
@@ -144,19 +153,16 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
-        return new FetchMoviesTask(getContext());
+        return new FetchMoviesTask(getContext(), mPage);
     }
 
     @Override
     public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
         if (data != null) {
-            mMoviesAdapter.clear();
+             //if(mPage == 1) mMoviesAdapter.clear();
             for (Movie movie : data) {
                 mMoviesAdapter.add(movie);
             }
-        }
-        if (mPosition != mGridView.getFirstVisiblePosition()){
-            mGridView.smoothScrollToPosition(mPosition);
         }
     }
 
