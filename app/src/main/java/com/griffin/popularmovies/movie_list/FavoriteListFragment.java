@@ -1,6 +1,5 @@
 package com.griffin.popularmovies.movie_list;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,12 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.adapter.FavoriteMoviesAdapter;
 import com.griffin.popularmovies.data.MovieContract;
-
-import java.net.URI;
 
 /**
  * Created by griffin on 18/07/16.
@@ -26,7 +22,6 @@ import java.net.URI;
 public class FavoriteListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private FavoriteMoviesAdapter mFavoriteAdapter = null;
-    private URI mUriMovie;
 
     //Loader ID
     private static final int FAVORITE_LOADER = 1;
@@ -99,8 +94,7 @@ public class FavoriteListFragment extends Fragment implements LoaderManager.Load
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         getLoaderManager().restartLoader(FAVORITE_LOADER, null, this);
     }

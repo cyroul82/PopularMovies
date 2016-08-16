@@ -100,35 +100,13 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
 
 
 
-    private String getYear(String date) {
-        // Creates the format style to match the json format
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        SimpleDateFormat month_date = new SimpleDateFormat("MMMM", Locale.getDefault());
-        String year = null;
-        try {
-            // Creates the date with the format previously created
-            Date d = format.parse(date);
-            // Instancie le calendrier
-            Calendar cal = Calendar.getInstance();
-            String month_name = month_date.format(cal.getTime());
-            // Sets up the calendar
-            cal.setTime(d);
-            // gets back the year out of the date and cast it into a string
-            year = month_name + " " + Integer.toString(cal.get(Calendar.YEAR)) ;
-        } catch (ParseException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-        }
-        return year;
-    }
-
-
 
     @Override
     public List<Movie> loadInBackground() {
 
         List<Movie> movieList = null;
         try {
-            final String BASE_URL = "https://api.themoviedb.org/3/movie/";
+            String BASE_URL = "https://api.themoviedb.org/3/movie/";
 
             Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
             MovieService movieService = retrofit.create(MovieService.class);
@@ -137,12 +115,13 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
             Response response = callMoviePojo.execute();
             MoviePage moviePage = (MoviePage) response.body();
             movieList = moviePage.getResults();
+            return movieList;
         }
         catch (IOException e){
             Log.e(LOG_TAG, e.getMessage(), e);
         }
 
-        return movieList;
+        return null;
 
     }
 }

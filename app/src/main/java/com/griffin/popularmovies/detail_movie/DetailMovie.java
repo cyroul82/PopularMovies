@@ -6,9 +6,7 @@ import android.os.Parcelable;
 import com.griffin.popularmovies.Pojo.Credits;
 import com.griffin.popularmovies.Pojo.MovieDetail;
 import com.griffin.popularmovies.Pojo.Reviews;
-import com.griffin.popularmovies.Pojo.Trailer;
 import com.griffin.popularmovies.Pojo.TrailerDetail;
-
 import java.util.ArrayList;
 import java.util.List;
 

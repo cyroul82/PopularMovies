@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.griffin.popularmovies.Pojo.Cast;
 import com.griffin.popularmovies.Pojo.Genre;
 import com.griffin.popularmovies.R;
@@ -27,9 +26,7 @@ import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.Pojo.Movie;
 import com.sackcentury.shinebuttonlib.ShineButton;
-
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -240,15 +237,12 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
                 maxActors = mNumberMaxDisplayedActors;
             }
             else maxActors = castingList.size();
-            /*for (Cast cast : castingList) {
-                sb.append(cast.getName() + "  (" + cast.getCharacter() + ")\n");
-            }*/
+
             sb = new StringBuilder();
             int i=0;
             while(i < maxActors) {
                 Cast cast = castingList.get(i);
-                sb.append(cast.getName() + "  (" + cast.getCharacter() + ")\n");
-
+                sb.append(cast.getName()).append("  (").append(cast.getCharacter()).append(")\n");
                 i++;
             }
 

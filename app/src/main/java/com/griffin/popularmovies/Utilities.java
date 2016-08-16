@@ -8,9 +8,12 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by griffin on 18/07/16.
@@ -82,9 +86,9 @@ public class Utilities {
 
 
 
-    public static void addMovieToFavorite(Movie movie, Context context) {
+    public static void addMovieToFavorite(Movie movie, Context context)  {
 
-        long movieRowId;
+        //long movieRowId;
 
         // First, check if the mMovie with this id already exists in the db
         Cursor movieCursor = context.getContentResolver().query(
@@ -92,7 +96,7 @@ public class Utilities {
                 MovieContract.FavoriteEntry.CONTENT_URI,
                 //The list of which columns to return, in this case only the _ID column
                 new String[]{MovieContract.FavoriteEntry._ID},
-                //The filter returning only the row COLUMN_MOVIE_ID with the clause ? = movie_id(declared in the next parameter (selectionArgs))
+                /* The filter returning only the row COLUMN_MOVIE_ID with the clause ? = movie_id(declared in the next parameter (selectionArgs)) */
                 MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + " = ?",
                 //only one clause movie_id
                 new String[]{Long.toString(movie.getId())},
@@ -100,7 +104,7 @@ public class Utilities {
 
         if (movieCursor.moveToFirst()) {
             int movieIdIndex = movieCursor.getColumnIndex(MovieContract.FavoriteEntry._ID);
-            movieRowId = movieCursor.getLong(movieIdIndex);
+            //movieRowId = movieCursor.getLong(movieIdIndex);
         } else {
 
             ContentValues detail = new ContentValues();
@@ -140,12 +144,11 @@ public class Utilities {
             values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE, movie.getPosterPath());
 
             // Finally, insert movie data into the database.
-            Uri insertedUri = context.getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI,values);
+            //Uri insertedUri =
+            context.getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI,values);
 
         }
-
         movieCursor.close();
-
     }
 
 
@@ -265,8 +268,8 @@ public class Utilities {
 
     public static String getMonthAndYear(String date) {
         // Creates the format style to match the json format
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat month_date = new SimpleDateFormat("MMMM", Locale.getDefault());
         String year = null;
         try {
             // Creates the date with the format previously created
@@ -284,6 +287,24 @@ public class Utilities {
         }
         return year;
     }
+
+    public static void checkConnectionStatus(Context context){
+        ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if(networkInfo != null){
+            if(networkInfo.getType() == ConnectivityManager.TYPE_WIFI){
+                //Connected with wifi
+            }
+            else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE){
+                //Connected with mobile
+            }
+        }
+        else {
+            //Not connected
+            Toast.makeText(context, R.string.connectivity, Toast.LENGTH_LONG).show();
+        }
+    }
+
 
 
 

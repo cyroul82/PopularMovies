@@ -206,9 +206,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 mTextViewTagline.setVisibility(View.GONE);
             }
         }
-        else {
-            mTextViewTagline.setText(tagline);
-        }
 
         String overview = mMovie.getOverview();
         mTextViewOverview.setText(overview);
@@ -248,8 +245,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         StringBuilder casting = new StringBuilder();
         for (int i=0 ; i < maxActors  ; i++){
-            casting.append(mMovie.getDetailMovie().getCredits().getCast().get(i).getName() + "  (" + mMovie.getDetailMovie().getCredits().getCast()
-                    .get(i).getCharacter() + ")\n");
+            casting.append(mMovie.getDetailMovie().getCredits().getCast().get(i).getName()).append("  (").append(mMovie.getDetailMovie().getCredits()
+                    .getCast().get(i).getCharacter()).append(")\n");
         }
         mTextViewCasting.setText(casting);
 
@@ -279,8 +276,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             textViewLayoutParams.setMargins(0,0,0,10);
             String review = String.format(getString(R.string.reviews),reviews.getAuthor(), reviews.getContent());
             textView.setText(review);
-            //TODO put it back when finishing  API 21
-            textView.setBackground(getResources().getDrawable(R.drawable.border_top));
+            textView.setBackground(getResources().getDrawable(R.drawable.border_top, null));
             mLinearLayoutReview.addView(textView);
 
         }
@@ -299,8 +295,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             //button.setCompoundDrawables(getResources().getDrawable(R.drawable.ic_play_circle_outline_white_24dp), null, null, null);
             // button.setBackgroundColor(getResources().getColor(android.R.color.transparent));
             button.setText(trailerDetail.getName());
-            //TODO put it back when finishing API 21
-            button.setBackground(getResources().getDrawable(R.drawable.button_selector));
+            button.setBackground(getResources().getDrawable(R.drawable.button_selector, null));
             button.setPadding(10, 10, 10, 10);// in pixels (left, top, right, bottom)
             mLinearLayoutTrailer.addView(button);
 

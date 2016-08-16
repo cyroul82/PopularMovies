@@ -9,7 +9,7 @@ import android.os.Bundle;
 public class LoadingPage extends Activity {
 
     // Splash screen timer
-    private static int SPLASH_TIME_OUT = 4000;
+    private final static int SPLASH_TIME_OUT = 3500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

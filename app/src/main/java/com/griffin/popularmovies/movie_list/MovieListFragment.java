@@ -1,9 +1,5 @@
 package com.griffin.popularmovies.movie_list;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -13,10 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
-
 import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.R;
+import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.adapter.PopularMoviesAdapter;
 import com.griffin.popularmovies.task.FetchMoviesTask;
 
@@ -34,12 +29,12 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     //Loader ID
     private static final int MOVIE_LOADER = 0;
 
-    private int mPosition;
-    private String SELECTED_KEY = "positionkey";
+    private static final String SELECTED_KEY = "position_key";
+    private static final String PAGE_KEY = "page_key";
 
     private GridView mGridView;
-    private ProgressDialog mProgressDialog;
     private int mPage = 1;
+    private int mPosition;
 
     public MovieListFragment(){
 
@@ -72,9 +67,8 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         //restore the previous state
         else {
             mMoviesList = savedInstanceState.getParcelableArrayList(getString(R.string.key_movies_list));
-            //int position = savedInstanceState.getInt(SELECTED_KEY);
-            //mGridView.smoothScrollToPosition(position);
-
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+            mPage = savedInstanceState.getInt(PAGE_KEY);
         }
     }
 
@@ -94,9 +88,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     //get the movie back from the adapter
                     Movie movie = mMoviesAdapter.getItem(position);
-                    mPosition = mGridView.getFirstVisiblePosition();
                     ((Callback)getActivity()).onItemSelected(movie);
-
 
                 }
             });
@@ -104,10 +96,11 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         mGridView.setOnScrollListener(new EndlessScrolling(4) {
             @Override
             public void loadMore(int page, int totalItemsCount) {
-                mPage = page;
-                getLoaderManager().restartLoader(MOVIE_LOADER, null, MovieListFragment.this);
+                    mPage = page;
+                    getLoaderManager().restartLoader(MOVIE_LOADER, null, MovieListFragment.this);
 
             }
+
         });
 
         return rootView;
@@ -118,37 +111,27 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         super.onActivityCreated(savedInstanceState);
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
-        getLoaderManager().initLoader(MOVIE_LOADER, null, this);
+        if(savedInstanceState == null) {
+            getLoaderManager().initLoader(MOVIE_LOADER, null, this);
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         //mPosition = mGridView.getFirstVisiblePosition();
-        outState.putInt(SELECTED_KEY, mPosition);
+        outState.putInt(SELECTED_KEY, mGridView.getFirstVisiblePosition());
+        outState.putInt(PAGE_KEY, mPage);
         //we put the mMoviesList into the bundle to avoid querying again while rebuilding
         outState.putParcelableArrayList(getString(R.string.key_movies_list), mMoviesList);
         super.onSaveInstanceState(outState);
     }
 
 
-
-    public void checkConnectionStatus(){
-        final ConnectivityManager connectivityManager = (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo networkInfoWifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        final NetworkInfo networkInfoMobile = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-
-        if(!networkInfoWifi.isAvailable() && !networkInfoMobile.isAvailable() ){
-            Toast.makeText(getActivity(), R.string.connectivity, Toast.LENGTH_LONG).show();
-
-        }
-    }
-
     @Override
     public void onStart() {
         super.onStart();
-        checkConnectionStatus();
+        Utilities.checkConnectionStatus(getContext());
     }
-
 
 
     @Override
@@ -156,11 +139,15 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         return new FetchMoviesTask(getContext(), mPage);
     }
 
+
     @Override
     public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
         if (data != null) {
-             //if(mPage == 1) mMoviesAdapter.clear();
+            //mMoviesAdapter.clear();
             for (Movie movie : data) {
+                if (Utilities.isMovieFavorite(movie.getId(), getContext()) == 1){
+                    movie.setFavorite(1);
+                }
                 mMoviesAdapter.add(movie);
             }
         }

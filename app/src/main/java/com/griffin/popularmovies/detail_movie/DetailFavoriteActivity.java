@@ -11,15 +11,16 @@ import com.griffin.popularmovies.Pojo.Movie;
 public class DetailFavoriteActivity extends AppCompatActivity implements DetailFavoriteFragment
 .Callback {
 
-    private static final String LOG_TAG = DetailFavoriteActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_movie);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setElevation(0);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
 
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
