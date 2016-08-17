@@ -10,8 +10,9 @@ public abstract class EndlessScrolling implements AbsListView.OnScrollListener {
     private int itemCount = 0;
     private boolean isLoading = true;
 
-    public EndlessScrolling(int bufferItemCount) {
+    public EndlessScrolling(int bufferItemCount, int currentPage) {
         this.bufferItemCount = bufferItemCount;
+        this.currentPage = currentPage;
     }
 
     public abstract void loadMore(int page, int totalItemsCount);

@@ -158,7 +158,9 @@ public class Utilities {
                 new String[]{Integer.toString(movie.getId())});
     }
 
-
+    /*  Set 2 parameters
+    *   1 - CHOICE representing the key used in the query to www.themoviedb.org
+    *   2 - SELECTED_CHOICE the String of the spinner selected */
     public static void setChoice (Context context, String choice){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor =  sharedPreferences.edit();
@@ -190,11 +192,14 @@ public class Utilities {
 
     }
 
+
+    //Get back the String choice from the spinner
     public static String getChoice(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getString(CHOICE, context.getString(R.string.pref_movies_popular));
     }
 
+    //This method is to ease the spinner.setSelection(int position), return the right position
     public static int getSelectedChoiceNumber(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String choice =  sharedPreferences.getString(SELECTED_CHOICE, context.getString(R.string.key_movies_popular));

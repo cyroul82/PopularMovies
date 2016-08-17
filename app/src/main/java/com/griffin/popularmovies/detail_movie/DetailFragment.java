@@ -162,6 +162,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case android.R.id.home:
+                getActivity().onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         if(mMovie != null){
             mProgressDialog = new ProgressDialog(getContext(), R.style.ProgressDialog);

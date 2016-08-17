@@ -35,10 +35,13 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
 
     private int mPage;
 
+    private String mChoice;
 
-    public FetchMoviesTask (Context context, int page){
+
+    public FetchMoviesTask (Context context, int page, String choice){
         super(context);
         mPage = page;
+        mChoice = choice;
     }
 
     @Override
@@ -110,7 +113,7 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
 
             Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
             MovieService movieService = retrofit.create(MovieService.class);
-            Call<MoviePage> callMoviePojo = movieService.getMoviesPage(Utilities.getChoice(getContext()), BuildConfig.MOVIE_DB_API_KEY, Locale
+            Call<MoviePage> callMoviePojo = movieService.getMoviesPage(mChoice, BuildConfig.MOVIE_DB_API_KEY, Locale
                     .getDefault().getLanguage(), mPage);
             Response response = callMoviePojo.execute();
             MoviePage moviePage = (MoviePage) response.body();
