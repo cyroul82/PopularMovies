@@ -11,7 +11,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,8 +25,6 @@ import com.griffin.popularmovies.movie_list.BlankFragment;
 import com.griffin.popularmovies.movie_list.FavoriteListFragment;
 import com.griffin.popularmovies.movie_list.MovieListFragment;
 import com.griffin.popularmovies.Pojo.Movie;
-
-import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements FavoriteListFragment.Callback, MovieListFragment.Callback, DetailFavoriteFragment
@@ -122,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             }
         });
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarDetailMovie);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
@@ -301,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
         }
         else {
             Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-            intent.putExtra(getString(R.string.key_movies_list), movie);
+            intent.putExtra(DetailActivity.MOVIE_KEY, movie);
             startActivity(intent);
         }
     }

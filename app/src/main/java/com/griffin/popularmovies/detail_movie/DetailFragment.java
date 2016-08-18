@@ -69,8 +69,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @BindView(R.id.textView_tagline) TextView mTextViewTagline;
 
     public DetailFragment() {
-        setHasOptionsMenu(true);
-
     }
 
     @Override
