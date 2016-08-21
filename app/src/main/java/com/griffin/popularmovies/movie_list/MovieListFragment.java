@@ -1,11 +1,12 @@
 package com.griffin.popularmovies.movie_list;
 
+import android.content.Loader;
 import android.os.Bundle;
+
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -19,6 +20,9 @@ import com.griffin.popularmovies.task.FetchMoviesTask;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -27,18 +31,18 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     private PopularMoviesAdapter mMoviesAdapter = null;
 
     private ArrayList<Movie> mMoviesList = null;
-    //Loader ID
+
     private static final int MOVIE_LOADER = 0;
 
-    private static final String SELECTED_KEY = "position_key";
     private static final String PAGE_KEY = "page_key";
 
     public static final String CHOICE = "choice";
+
     private String mChoice;
 
-    private GridView mGridView;
     private int mPage = 1;
-    private int mPosition;
+
+    @BindView(R.id.gridview_moviesList) GridView mGridView;
 
     public MovieListFragment(){
 
@@ -56,13 +60,9 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         void onItemSelected(Movie movie);
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-        setHasOptionsMenu(true);
 
         // Creates a new List of movies if no previous state
         if(savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.key_movies_list))){
@@ -71,7 +71,6 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         //restore the previous state
         else {
             mMoviesList = savedInstanceState.getParcelableArrayList(getString(R.string.key_movies_list));
-            //mPosition = savedInstanceState.getInt(SELECTED_KEY);
             mPage = savedInstanceState.getInt(PAGE_KEY);
         }
     }
@@ -80,16 +79,15 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        View rootView = inflater.inflate(R.layout.movie_list_fragment, container, false);
+
+        ButterKnife.bind(this, rootView);
+
         //Get back the arguments
         Bundle args = getArguments();
         //Set up the variable mChoice
         mChoice = args.getString(CHOICE);
 
-
-
-        View rootView = inflater.inflate(R.layout.movie_list_fragment, container, false);
-
-        mGridView = (GridView)rootView.findViewById(R.id.gridview_moviesList);
         mMoviesAdapter = new PopularMoviesAdapter(getActivity(), R.layout.movie_item_picture, R.id.movieItemPictureImageView, mMoviesList);
         mGridView.setAdapter(mMoviesAdapter);
 
@@ -111,7 +109,6 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
                     getLoaderManager().restartLoader(MOVIE_LOADER, null, MovieListFragment.this);
 
             }
-
         });
 
         return rootView;
@@ -129,29 +126,21 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        //mPosition = mGridView.getFirstVisiblePosition();
-        //outState.putInt(SELECTED_KEY, mGridView.getFirstVisiblePosition());
-        outState.putInt(PAGE_KEY, mPage);
-        //we put the mMoviesList into the bundle to avoid querying again while rebuilding
-        outState.putParcelableArrayList(getString(R.string.key_movies_list), mMoviesList);
         super.onSaveInstanceState(outState);
+        //save the page loaded so far
+        outState.putInt(PAGE_KEY, mPage);
+        //put the mMoviesList into the bundle to avoid querying again while rebuilding
+        outState.putParcelableArrayList(getString(R.string.key_movies_list), mMoviesList);
     }
 
 
     @Override
-    public void onStart() {
-        super.onStart();
-        Utilities.checkConnectionStatus(getContext());
-    }
-
-    @Override
-    public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
+    public android.support.v4.content.Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
         return new FetchMoviesTask(getContext(), mPage, mChoice);
     }
 
-
     @Override
-    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
+    public void onLoadFinished(android.support.v4.content.Loader<List<Movie>> loader, List<Movie> data) {
         if (data != null) {
             //mMoviesAdapter.clear();
             for (Movie movie : data) {
@@ -164,8 +153,11 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Movie>> loader) {
+    public void onLoaderReset(android.support.v4.content.Loader<List<Movie>> loader) {
         mMoviesAdapter.clear();
     }
+
+
+
 
 }

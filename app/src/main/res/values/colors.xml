@@ -3,8 +3,9 @@
     <color name="colorPrimary">#3A628D</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="colorBackgoundTitle">#F38E2B</color>
+    <color name="colorBackgroundTitle">#F38E2B</color>
     <color name="colorTitle">#FFFFFF</color>
     <color name="colorText">#FFFFFF</color>
-    <color name="grey">@android:color/darker_gray</color>
+    <color name="greyReviews">#4F4F4F</color>
+
 </resources>

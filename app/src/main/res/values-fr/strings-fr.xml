@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Films </string>
     <string name="action_settings">Paramètres</string>
-    <string name="title_activity_detail_movie">Détail du Film</string>
 
     //Connectivity
     <string name="connectivity">Vous n\'etes connectés à aucun réseau, merci de vous connecter !</string>
@@ -14,8 +13,8 @@
 
     <string name="sort_by">Sort By</string>
     <string name="title_activity_settings">Paramètres</string>
+    <string name="textView_casting_list_title">Acteurs et Personnages :</string>
 
-    <string name="textView_actorsList_title">Acteurs et Personnages :</string>
     <string name="textView_genre_title">Genre :\u00A0</string>
 
     <string name="my_favorite_add_button">Ajouter à mes favoris</string>
@@ -35,4 +34,6 @@
 
     <string name="profil">Profil</string>
     <string name="favorite">Favoris</string>
+
+    <string name="textView_collection_title">Collection : </string>
 </resources>

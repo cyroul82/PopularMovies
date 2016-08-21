@@ -33,9 +33,12 @@ public class Cast implements Parcelable{
     @Expose
     private String profilePath;
 
+    private Person person;
+
     public Cast(){
 
     }
+
 
     protected Cast(Parcel in) {
         castId = in.readInt();
@@ -45,6 +48,7 @@ public class Cast implements Parcelable{
         name = in.readString();
         order = in.readInt();
         profilePath = in.readString();
+        person = in.readParcelable(Person.class.getClassLoader());
     }
 
     public static final Creator<Cast> CREATOR = new Creator<Cast>() {
@@ -185,6 +189,14 @@ public class Cast implements Parcelable{
         this.profilePath = profilePath;
     }
 
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -199,5 +211,6 @@ public class Cast implements Parcelable{
         dest.writeString(name);
         dest.writeInt(order);
         dest.writeString(profilePath);
+        dest.writeParcelable(person, flags);
     }
 }

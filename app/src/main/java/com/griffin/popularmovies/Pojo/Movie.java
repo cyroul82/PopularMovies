@@ -66,7 +66,7 @@ public class Movie implements Parcelable{
      * 
      */
     public Movie() {
-        detailMovie = new DetailMovie();
+
     }
 
     /**
@@ -86,7 +86,9 @@ public class Movie implements Parcelable{
      * @param video
      * @param popularity
      */
-    public Movie(boolean adult, String backdropPath, List<Integer> genreIds, int id, String originalLanguage, String originalTitle, String overview, String releaseDate, String posterPath, double popularity, String title, boolean video, double voteAverage, int voteCount) {
+    public Movie(boolean adult, String backdropPath, List<Integer> genreIds, int id, String originalLanguage,
+                 String originalTitle, String overview, String releaseDate, String posterPath, double popularity,
+                 String title, boolean video, double voteAverage, int voteCount, int isFavorite, DetailMovie detailMovie) {
         this.adult = adult;
         this.backdropPath = backdropPath;
         this.genreIds = genreIds;
@@ -101,6 +103,8 @@ public class Movie implements Parcelable{
         this.video = video;
         this.voteAverage = voteAverage;
         this.voteCount = voteCount;
+        this.isFavorite = isFavorite;
+        this.detailMovie = detailMovie;
     }
 
     protected Movie(Parcel in) {
@@ -119,6 +123,30 @@ public class Movie implements Parcelable{
         voteCount = in.readInt();
         isFavorite = in.readInt();
         detailMovie = in.readParcelable(DetailMovie.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByte((byte) (adult ? 1 : 0));
+        dest.writeString(backdropPath);
+        dest.writeInt(id);
+        dest.writeString(originalLanguage);
+        dest.writeString(originalTitle);
+        dest.writeString(overview);
+        dest.writeString(releaseDate);
+        dest.writeString(posterPath);
+        dest.writeDouble(popularity);
+        dest.writeString(title);
+        dest.writeByte((byte) (video ? 1 : 0));
+        dest.writeDouble(voteAverage);
+        dest.writeInt(voteCount);
+        dest.writeInt(isFavorite);
+        dest.writeParcelable(detailMovie, flags);
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -401,27 +429,5 @@ public class Movie implements Parcelable{
         this.detailMovie = detailMovie;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte((byte) (adult ? 1 : 0));
-        dest.writeString(backdropPath);
-        dest.writeInt(id);
-        dest.writeString(originalLanguage);
-        dest.writeString(originalTitle);
-        dest.writeString(overview);
-        dest.writeString(releaseDate);
-        dest.writeString(posterPath);
-        dest.writeDouble(popularity);
-        dest.writeString(title);
-        dest.writeByte((byte) (video ? 1 : 0));
-        dest.writeDouble(voteAverage);
-        dest.writeInt(voteCount);
-        dest.writeInt(isFavorite);
-        dest.writeParcelable(detailMovie, flags);
-    }
 }

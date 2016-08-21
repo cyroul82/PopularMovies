@@ -23,6 +23,7 @@ import com.griffin.popularmovies.Pojo.Genre;
 import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
+import com.griffin.popularmovies.detail_movie.DetailMovie;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,6 +57,9 @@ public class Utilities {
 
     public static Movie getMovieFromCursor(Cursor movieCursor){
         Movie movie = new Movie();
+        DetailMovie detailMovie = new DetailMovie();
+        movie.setDetail(detailMovie);
+
         movie.setId(movieCursor.getInt(DetailFavoriteFragment.COL_FAVORITE_MOVIE_ID));
         movie.setPosterPath(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_PICTURE));
         movie.setReleaseDate(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DATE));
@@ -63,6 +67,7 @@ public class Utilities {
         movie.setOriginalTitle(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_ORIGINAL_TITLE));
         movie.setOverview(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_OVERVIEW));
         movie.setVoteAverage(movieCursor.getDouble(DetailFavoriteFragment.COL_FAVORITE_MOVIE_RATING));
+
         movie.getDetailMovie().getMovieDetail().setRuntime(movieCursor.getInt(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_RUNTIME));
 
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -160,7 +165,7 @@ public class Utilities {
 
     /*  Set 2 parameters
     *   1 - CHOICE representing the key used in the query to www.themoviedb.org
-    *   2 - SELECTED_CHOICE the String of the spinner selected */
+    *   2 - SELECTED_CHOICE the String of the mSpinner selected */
     public static void setChoice (Context context, String choice){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor =  sharedPreferences.edit();
@@ -193,13 +198,13 @@ public class Utilities {
     }
 
 
-    //Get back the String choice from the spinner
+    //Get back the String choice from the mSpinner
     public static String getChoice(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getString(CHOICE, context.getString(R.string.pref_movies_popular));
     }
 
-    //This method is to ease the spinner.setSelection(int position), return the right position
+    //This method is to ease the mSpinner.setSelection(int position), return the right position
     public static int getSelectedChoiceNumber(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String choice =  sharedPreferences.getString(SELECTED_CHOICE, context.getString(R.string.key_movies_popular));
@@ -286,6 +291,29 @@ public class Utilities {
             cal.setTime(d);
             // gets back the year out of the date and cast it into a string
             year = month_name + " " + Integer.toString(cal.get(Calendar.YEAR)) ;
+        } catch (ParseException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+
+        }
+        return year;
+    }
+
+    public static String getYear(String date) {
+        // Creates the format style to match the json format
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        //SimpleDateFormat month_date = new SimpleDateFormat("MMMM", Locale.getDefault());
+        String year = null;
+        try {
+            // Creates the date with the format previously created
+            Date d = format.parse(date);
+            // Instancie le calendrier
+            Calendar cal = Calendar.getInstance();
+
+            //String month_name = month_date.format(cal.getTime());
+            // Sets up the calendar
+            cal.setTime(d);
+            // gets back the year out of the date and cast it into a string
+            year =  Integer.toString(cal.get(Calendar.YEAR)) ;
         } catch (ParseException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
 

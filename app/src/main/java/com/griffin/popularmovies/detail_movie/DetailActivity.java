@@ -4,31 +4,41 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.griffin.popularmovies.MainActivity;
 import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.R;
+import com.squareup.picasso.Picasso;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity {
 
+
+
     public static final String MOVIE_KEY = "movie";
+
+    @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout collapsingToolbarLayout;
+    @BindView(R.id.toolbar_detail_movie) Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_movie);
 
+        ButterKnife.bind(this);
+
+        //Get back the movie from the intent
         Movie movie = getIntent().getParcelableExtra(MOVIE_KEY);
-        CollapsingToolbarLayout collapsingToolbar =
-                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        
+
         setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null && collapsingToolbar != null){
+        if(getSupportActionBar() != null && collapsingToolbarLayout != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            collapsingToolbar.setTitle(movie.getTitle());
+            collapsingToolbarLayout.setTitle(movie.getTitle());
 
         }
 
@@ -53,18 +63,37 @@ public class DetailActivity extends AppCompatActivity {
                     .add(R.id.detail_movie_container, fragment, MainActivity.DETAIL_FRAGMENT_TAG)
                     .commit();
 
-            loadBackdrop(movie.getPosterPath());
+
         }
 
+        //run the loadToolbarImage method to display the view, outside the main thread
+        loadToolbarImage(movie.getPosterPath());
 
     }
+    //load the image using Glide library
+    private void loadToolbarImage(String posterPath) {
+        ImageView imageView = (ImageView) findViewById(R.id.toolbar_image_detail_movie);
 
-    private void loadBackdrop(String posterPath) {
-        final ImageView imageView = (ImageView) findViewById(R.id.backdrop);
         if(imageView != null) {
-            Glide.with(this).load(getString(R.string.IMAGE_BASE_URL) + posterPath).centerCrop().into(imageView);
+            Picasso.with(this).load(getString(R.string.IMAGE_BASE_URL_HIGH_QUALITY) + posterPath).fit().centerInside().into(imageView);
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
 
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 }

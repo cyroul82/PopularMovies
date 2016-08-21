@@ -5,8 +5,12 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.griffin.popularmovies.BuildConfig;
+import com.griffin.popularmovies.Pojo.Cast;
+import com.griffin.popularmovies.Pojo.Collection;
 import com.griffin.popularmovies.Pojo.Credits;
 import com.griffin.popularmovies.Pojo.MovieDetail;
+import com.griffin.popularmovies.Pojo.Part;
+import com.griffin.popularmovies.Pojo.Person;
 import com.griffin.popularmovies.Pojo.ReviewPage;
 import com.griffin.popularmovies.Pojo.Reviews;
 import com.griffin.popularmovies.Pojo.Trailer;
@@ -19,6 +23,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -126,13 +131,20 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
 
         try {
 
-            final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/";
+            final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/";
+
             Retrofit retrofit = new Retrofit.Builder().baseUrl(MOVIE_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
             MovieService movieService = retrofit.create(MovieService.class);
+
             Call<Trailer> callTrailer = movieService.getTrailer(mIdMovie, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
             Response responseCallTrailer = callTrailer.execute();
             Trailer trailer = (Trailer) responseCallTrailer.body();
-            List<TrailerDetail> trailerDetails = trailer.getResults();
+
+            List<TrailerDetail> trailerDetails = null;
+            if(trailer != null) {
+                trailerDetails = trailer.getResults();
+            }
+
             detailMovie.setTrailerDetails(trailerDetails);
 
             Call<MovieDetail> callMovieDetail = movieService.getMovieDetail(mIdMovie, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
@@ -143,21 +155,46 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
             Call<Credits> callCredits = movieService.getCredits(mIdMovie, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
             Response responseCallCredits = callCredits.execute();
             Credits credits = (Credits) responseCallCredits.body();
+
+
+                for (Cast cast : credits.getCast()) {
+                    Call<Person> callPerson = movieService.getPerson(cast.getId(), BuildConfig.MOVIE_DB_API_KEY);
+                    Response responseCallPerson = callPerson.execute();
+                    Person person = (Person) responseCallPerson.body();
+                    cast.setPerson(person);
+                }
+
             detailMovie.setCredits(credits);
 
             Call<ReviewPage> callReviewPage = movieService.getReviews(mIdMovie, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
             Response responseCallReviewPage = callReviewPage.execute();
             ReviewPage reviewPage = (ReviewPage) responseCallReviewPage.body();
-            List<Reviews> reviewsList = reviewPage.getResults();
+            List<Reviews> reviewsList = null;
+            if(reviewPage != null) {
+                 reviewsList = reviewPage.getResults();
+            }
             detailMovie.setReviewsList(reviewsList);
+
+            Object collectionObject = detailMovie.getMovieDetail().getBelongsToCollection();
+            if(collectionObject != null){
+                Map<String, ?> map = (Map<String, ?>) collectionObject;
+                Object object =map.get("id");
+                double idCollection = Double.parseDouble(object.toString());
+                Call<Collection> callCollection = movieService.getCollection(idCollection, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
+                Response responseCallCollection = callCollection.execute();
+                Collection collection = (Collection) responseCallCollection.body();
+
+                detailMovie.setCollection(collection);
+            }
+
 
         }
         catch (IOException e){
             Log.e(LOG_TAG, e.getMessage(), e);
         }
-        finally {
-            return detailMovie;
-        }
+
+        return detailMovie;
+
     }
 
 }

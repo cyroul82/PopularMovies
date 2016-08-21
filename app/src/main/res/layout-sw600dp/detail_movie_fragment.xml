@@ -1,8 +1,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:background="@drawable/detail_background"
             tools:context=".detail_movie.DetailFragment">
 
@@ -11,54 +11,45 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
+        <!--TextView
             android:id="@+id/textView_Title"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_gravity="center|start"
             android:gravity="center|start"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            style="@style/titleStyleTablet"/>
+            style="@style/titleStyle"/-->
 
         <TextView
+            android:id="@+id/textView_tagline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/textView_tagline"
-            android:textColor="@color/grey"
+            android:layout_gravity="center"
             android:layout_marginBottom="30dp"
-            android:layout_gravity="center|start"
-            android:gravity="center|start"
+            android:gravity="center"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/greyReviews"
+            android:textSize="18sp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textView_Genre"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:layout_marginBottom="10dp"/>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="right"
                 android:orientation="horizontal"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:gravity="right">
+                android:paddingRight="@dimen/activity_horizontal_margin">
 
                 <com.sackcentury.shinebuttonlib.ShineButton
+                    android:id="@+id/shineButton_favorite"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:id="@+id/shineButton_favorite"
-                    app:btn_fill_color="@color/colorBackgoundTitle"
                     app:btn_color="#FFFFFF"
+                    app:btn_fill_color="@color/colorBackgroundTitle"
                     app:siShape="@raw/heart"/>
 
             </LinearLayout>
@@ -68,144 +59,249 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:orientation="vertical">
+            android:paddingTop="@dimen/activity_vertical_margin">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <android.support.v7.widget.CardView
+                style="@style/CardViewStyle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="20dp" >
+                app:cardBackgroundColor="@color/cardview_dark_background">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:layout_marginRight="20dp"
-                    android:layout_weight="1">
+                    style="@style/CardView_ContentStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                    <ImageView
-                        android:id="@+id/imageView_Picture"
-                        android:layout_width="100dp"
-                        android:layout_height="match_parent"
-                        android:scaleType="fitStart"/>
+                    <LinearLayout
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="20dp"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/imageView_Picture"
+                                android:layout_width="100dp"
+                                android:layout_height="match_parent"
+                                android:scaleType="fitCenter"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textView_Year"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="10dp"
+                                android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+                            <TextView
+                                android:id="@+id/textView_Runtime"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:textSize="18sp"/>
+
+                            <TextView
+                                style="@style/titleParagraph"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/originalTitleTextView"/>
+
+                            <TextView
+                                android:id="@+id/textView_Original_Title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="10dp"
+                                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                            <TextView
+                                android:id="@+id/textView_Rating"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:drawableLeft="@drawable/ic_stars_white_24dp"
+                                android:drawablePadding="5dp"
+                                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+
+                    <TextView
+                        android:id="@+id/textView_Genre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
 
                 </LinearLayout>
 
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                style="@style/CardViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/cardview_dark_background">
+
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    style="@style/CardView_ContentStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/titleParagraph"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="fill_horizontal"
+                        android:text="@string/overviewText"/>
+
+
+                    <TextView
+                        android:id="@+id/textView_Overview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                style="@style/CardViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/cardViewCasting"
+                app:cardBackgroundColor="@color/cardview_dark_background">
+
+                <LinearLayout
+                    style="@style/CardView_ContentStyle"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                     <TextView
+                        style="@style/titleParagraph"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:id="@+id/textView_Year" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textSize="18sp"
                         android:layout_marginBottom="5dp"
-                        android:id="@+id/textView_Runtime"/>
+                        android:text="@string/textView_casting_list_title"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="@string/originalTitleTextView"
-                        style="@style/titleParagraph"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:id="@+id/textView_Original_Title"
-                        android:layout_marginBottom="10dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:id="@+id/textView_Rating"
-                        android:drawableLeft="@drawable/ic_stars_white_24dp"
-                        android:drawablePadding="5dp"/>
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerView_casting"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
 
                 </LinearLayout>
-            </LinearLayout>
+            </android.support.v7.widget.CardView>
 
-            <LinearLayout
+            <android.support.v7.widget.CardView
+                style="@style/CardViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="10dp">
+                android:id="@+id/cardViewCollection"
+                app:cardBackgroundColor="@color/cardview_dark_background">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/textView_casting_list_title"
-                    style="@style/titleParagraph"/>
-
-                <TextView
-                    android:id="@+id/textView_Casting"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="fill_horizontal"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/overviewText"
-                style="@style/titleParagraph"/>
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/textView_Overview"
-                android:layout_marginBottom="10dp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="10dp"
-                android:id="@+id/linearLayout_Trailer">
-
-                <TextView
+                <LinearLayout
+                    style="@style/CardView_ContentStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/trailerTitle"/>
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/titleParagraph"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:id="@+id/textView_Collection_main_title"
+                        android:text="@string/textView_collection_title"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerView_collection"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
 
 
-            </LinearLayout>
-
-            <LinearLayout
+            <android.support.v7.widget.CardView
+                style="@style/CardViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/linearLayout_Review">
+                android:id="@+id/cardViewTrailer"
+                app:cardBackgroundColor="@color/cardview_dark_background">
 
-                <TextView
+                <LinearLayout
+                    android:id="@+id/linearLayout_Trailer"
+                    style="@style/CardView_ContentStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/reviewTitle"/>
+                    android:orientation="vertical">
 
-            </LinearLayout>
+                    <TextView
+                        style="@style/titleParagraph"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="@string/trailerTitle"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerView_trailer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/cardViewReview"
+                style="@style/CardViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/cardview_dark_background">
+
+                <LinearLayout
+                    android:id="@+id/linearLayout_Review"
+                    style="@style/CardView_ContentStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/titleParagraph"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="@string/reviewTitle"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerView_review"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
 
         </LinearLayout>
 

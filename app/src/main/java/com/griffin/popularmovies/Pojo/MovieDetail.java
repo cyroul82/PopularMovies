@@ -89,6 +89,8 @@ public class MovieDetail implements Parcelable{
     @Expose
     private int voteCount;
 
+
+
     public MovieDetail(){
 
     }

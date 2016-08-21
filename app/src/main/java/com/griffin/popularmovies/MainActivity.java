@@ -26,6 +26,9 @@ import com.griffin.popularmovies.movie_list.FavoriteListFragment;
 import com.griffin.popularmovies.movie_list.MovieListFragment;
 import com.griffin.popularmovies.Pojo.Movie;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class MainActivity extends AppCompatActivity implements FavoriteListFragment.Callback, MovieListFragment.Callback, DetailFavoriteFragment
         .Callback  {
@@ -47,15 +50,14 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     private FavoriteListFragment favoriteListFragment;
     private MovieListFragment movieListFragment;
 
-    private Spinner spinner;
-    private int mSpinnerPosition;
 
     public static final String TITLE_BLANK_FRAGMENT_KEY = "title";
 
-    private DrawerLayout mDrawerLayout;
-
     private boolean isFavoriteFragment = false;
 
+    @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+    @BindView(R.id.sort_order_spinner) Spinner mSpinner;
+    @BindView(R.id.toolbar) Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,14 +65,12 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
 
         setContentView(R.layout.activity_main);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        spinner = (Spinner) findViewById(R.id.sort_order_spinner);
+        ButterKnife.bind(this);
 
         //Set the spinner with the preferences choice, saved from the previous use of the app or to  popular by default
-        spinner.setSelection(Utilities.getSelectedChoiceNumber(this));
+        mSpinner.setSelection(Utilities.getSelectedChoiceNumber(this));
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selected  = (String)parent.getSelectedItem();
@@ -119,7 +119,6 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             }
         });
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarDetailMovie);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);

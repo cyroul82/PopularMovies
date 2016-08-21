@@ -83,13 +83,13 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     public static final int COL_FAVORITE_MOVIE_DETAIL_REVIEWS = 13;
 
 
-    @BindView(R.id.textView_Title) TextView mTextViewTitle;
+    //@BindView(R.id.textView_Title) TextView mTextViewTitle;
     @BindView(R.id.imageView_Picture) ImageView mImageViewMoviePicture;
     @BindView(R.id.textView_Year) TextView mTextViewMovieYear;
     @BindView(R.id.textView_Original_Title) TextView mTextViewOriginalTitle;
     @BindView(R.id.textView_Overview) TextView mTextViewOverview;
     @BindView(R.id.textView_Rating) TextView mTextViewMovieRating;
-    @BindView(R.id.textView_Casting) TextView mTextViewCasting;
+    //@BindView(R.id.textView_Casting) TextView mTextViewCasting;
     @BindView(R.id.textView_Genre) TextView mTextViewGenre;
     @BindView(R.id.textView_Runtime) TextView mTextViewRuntime;
     @BindView(R.id.linearLayout_Trailer) LinearLayout mLinearLayoutTrailer;
@@ -208,7 +208,7 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
             mFavoriteButton.setChecked(true);
 
-            mTextViewTitle.setText(mMovie.getTitle());
+            //mTextViewTitle.setText(mMovie.getTitle());
 
             mTextViewOriginalTitle.setText(mMovie.getOriginalTitle());
 
@@ -246,7 +246,9 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
                 i++;
             }
 
-            mTextViewCasting.setText(sb.toString());
+            //1mTextViewCasting.setText(sb.toString());
+
+
 
         }
     }
