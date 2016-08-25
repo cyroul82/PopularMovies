@@ -1,8 +1,13 @@
 package com.griffin.popularmovies.detail_movie;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -16,7 +21,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,7 +33,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import com.griffin.popularmovies.Pojo.Cast;
-import com.griffin.popularmovies.Pojo.Collection;
 import com.griffin.popularmovies.Pojo.Genre;
 import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.Pojo.Part;
@@ -39,7 +45,6 @@ import com.griffin.popularmovies.adapter.CollectionAdapter;
 import com.griffin.popularmovies.adapter.ReviewMovieAdapter;
 import com.griffin.popularmovies.adapter.TrailerMovieAdapter;
 import com.griffin.popularmovies.task.FetchDetailMovieTask;
-import com.sackcentury.shinebuttonlib.ShineButton;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -50,7 +55,7 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<DetailMovie> {
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<DetailMovie>, OnClickListener {
 
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
 
@@ -61,7 +66,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static final int DETAIL_LOADER = 0;
 
-    ///@BindView(R.id.textView_Title) TextView mTitleTextView;
+
     @BindView(R.id.imageView_Picture)
     ImageView mImageViewMoviePicture;
     @BindView(R.id.textView_Year)
@@ -80,22 +85,34 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     LinearLayout mLinearLayoutTrailer;
     @BindView(R.id.linearLayout_Review)
     LinearLayout mLinearLayoutReview;
-    @BindView(R.id.shineButton_favorite)
-    ShineButton mFavoriteButton;
     @BindView(R.id.textView_tagline)
     TextView mTextViewTagline;
-    @BindView(R.id.textView_Collection_main_title) TextView mTextViewCollectionMainTitle;
+    @BindView(R.id.textView_Collection_main_title)
+    TextView mTextViewCollectionMainTitle;
     @BindView(R.id.cardViewReview)
     CardView mCardViewReview;
     @BindView(R.id.recyclerView_review)
     RecyclerView mRecyclerViewReview;
     @BindView(R.id.recyclerView_trailer)
     RecyclerView mRecyclerViewTrailer;
-    @BindView(R.id.recyclerView_casting) RecyclerView mRecyclerViewCasting;
-    @BindView(R.id.recyclerView_collection) RecyclerView mRecyclerViewCollection;
-    @BindView(R.id.cardViewCollection) CardView mCardViewCollection;
-    @BindView(R.id.cardViewCasting) CardView mCardViewCasting;
-    @BindView(R.id.cardViewTrailer) CardView mCardViewTrailer;
+    @BindView(R.id.recyclerView_casting)
+    RecyclerView mRecyclerViewCasting;
+    @BindView(R.id.recyclerView_collection)
+    RecyclerView mRecyclerViewCollection;
+    @BindView(R.id.cardViewCollection)
+    CardView mCardViewCollection;
+    @BindView(R.id.cardViewCasting)
+    CardView mCardViewCasting;
+    @BindView(R.id.cardViewTrailer)
+    CardView mCardViewTrailer;
+
+    @Nullable
+    @BindView(R.id.floatingButton_favorite)
+    FloatingActionButton mFloatingButtonFavorite;
+
+    @Nullable
+    @BindView(R.id.textView_movieTitle)
+    TextView mTextViewMovieTitle;
 
     private List<Reviews> mReviewsList;
     private List<TrailerDetail> mTrailerDetailList;
@@ -126,11 +143,17 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         //restore the previous state
         else {
             mMovie = savedInstanceState.getParcelable(MOVIE);
-            if(mMovie  != null){
+
+            if (mMovie != null) {
+
                 mReviewsList = mMovie.getDetailMovie().getReviewsList();
+
                 mTrailerDetailList = mMovie.getDetailMovie().getTrailerDetails();
+
                 mCastList = mMovie.getDetailMovie().getCredits().getCast();
+
                 mPartList = mMovie.getDetailMovie().getCollection().getParts();
+
             }
         }
     }
@@ -141,6 +164,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         outState.putParcelable(MOVIE, mMovie);
         super.onSaveInstanceState(outState);
     }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -160,17 +184,20 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.detail_movie_fragment, container, false);
+
         ButterKnife.bind(this, rootView);
+
+        if (mFloatingButtonFavorite != null) {
+            mFloatingButtonFavorite.setOnClickListener(this);
+        }
 
         Bundle arguments = getArguments();
         if (arguments != null && savedInstanceState == null) {
             mMovie = arguments.getParcelable(MOVIE);
         }
-        if(savedInstanceState != null){
-            setDetailUI();
+        if (savedInstanceState != null) {
+            setUI();
         }
-
-
 
         //connect recyclerView to a layout manager, and attach an adapter for the data to be displayed
         mRecyclerViewReview.setHasFixedSize(true);
@@ -192,8 +219,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mRecyclerViewTrailer.setLayoutManager(linearLayoutManagerTrailer);
 
         mTrailerMovieAdapter = new TrailerMovieAdapter(mTrailerDetailList);
-        mRecyclerViewTrailer.setAdapter(mTrailerMovieAdapter);
 
+        mRecyclerViewTrailer.setAdapter(mTrailerMovieAdapter);
         // use a linear layout manager , create the *** CASTING *** adapter and set it up to the recycler View
         LinearLayoutManager linearLayoutManagerCasting = new LinearLayoutManager(getContext());
         linearLayoutManagerCasting.setOrientation(LinearLayoutManager.VERTICAL);
@@ -209,45 +236,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         mCollectionAdapter = new CollectionAdapter(mPartList);
         mRecyclerViewCollection.setAdapter(mCollectionAdapter);
-
-
-        mFavoriteButton.init(getActivity());
-
-        mFavoriteButton.setOnClickListener(new View.OnClickListener() {
-
-            Movie movie = mMovie;
-
-            @Override
-            public void onClick(View v) {
-                if (mFavoriteButton.isChecked()) {
-                    Picasso.with(getContext()).load(getString(R.string.IMAGE_BASE_URL) + movie.getPosterPath()).into(new Target() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            String localUrl = Utilities.savePoster(bitmap, movie.getId(), getActivity().getApplicationContext());
-                            movie.setPosterPath(localUrl);
-                            movie.setFavorite(1);
-                        }
-
-                        @Override
-                        public void onBitmapFailed(Drawable errorDrawable) {
-
-                        }
-
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                        }
-                    });
-
-                    Utilities.addMovieToFavorite(movie, getContext());
-
-
-                } else {
-                    movie.setFavorite(0);
-                    Utilities.removeMovieFromFavorite(movie, getContext());
-                }
-            }
-        });
 
         return rootView;
     }
@@ -292,55 +280,49 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mMovie.setDetail(detailMovie);
 
         //clear the review List and add the new one to the adapter
-        if(mMovie.getDetailMovie().getReviewsList() != null) {
+        if (mMovie.getDetailMovie().getReviewsList() != null) {
             mReviewsList.clear();
             mReviewsList.addAll(mMovie.getDetailMovie().getReviewsList());
 
             mReviewMovieAdapter.notifyDataSetChanged();
-        }
-        else if(mMovie.getDetailMovie().getReviewsList() == null){
+        } else if (mMovie.getDetailMovie().getReviewsList() == null) {
             mCardViewReview.setVisibility(View.GONE);
         }
 
         //clear the trailer List and add the new one to the adapter
-        if(mMovie.getDetailMovie().getTrailerDetails() != null){
+        if (mMovie.getDetailMovie().getTrailerDetails() != null) {
             mTrailerDetailList.clear();
             mTrailerDetailList.addAll(mMovie.getDetailMovie().getTrailerDetails());
 
             mTrailerMovieAdapter.notifyDataSetChanged();
-        }
-        else if(mMovie.getDetailMovie().getTrailerDetails() == null){
+        } else if (mMovie.getDetailMovie().getTrailerDetails() == null) {
             mCardViewTrailer.setVisibility(View.GONE);
         }
 
 
         //clear the Casting List and add the new one to the adapter
-        if(mMovie.getDetailMovie().getCredits().getCast() != null) {
+        if (mMovie.getDetailMovie().getCredits().getCast() != null) {
             mCastList.clear();
             mCastList.addAll(mMovie.getDetailMovie().getCredits().getCast());
 
             mCastingAdapter.notifyDataSetChanged();
-        }
-        else if(mMovie.getDetailMovie().getCredits().getCast() == null) {
+        } else if (mMovie.getDetailMovie().getCredits().getCast() == null) {
             mCardViewCasting.setVisibility(View.GONE);
         }
 
         //clear the Casting List and add the new one to the adapter
-        if(mMovie.getDetailMovie().getCollection() != null && !mMovie.getDetailMovie().getCollection().getParts().isEmpty()) {
+        if (mMovie.getDetailMovie().getCollection() != null && !mMovie.getDetailMovie().getCollection().getParts().isEmpty()) {
             mPartList.clear();
             mPartList.addAll(mMovie.getDetailMovie().getCollection().getParts());
 
             mCollectionAdapter.notifyDataSetChanged();
             mTextViewCollectionMainTitle.setText(mMovie.getDetailMovie().getCollection().getName());
-        }
-        else if(mMovie.getDetailMovie().getCollection() == null || mMovie.getDetailMovie().getCollection().getParts().isEmpty()){
+        } else if (mMovie.getDetailMovie().getCollection() == null || mMovie.getDetailMovie().getCollection().getParts().isEmpty()) {
             mCardViewCollection.setVisibility(View.GONE);
         }
 
-
-
         //Display the UI with new elements
-        setDetailUI();
+        setUI();
 
         mProgressDialog.dismiss();
     }
@@ -350,7 +332,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     }
 
-    private void setDetailUI() {
+    private void setUI() {
+
+        if (mTextViewMovieTitle != null) {
+            mTextViewMovieTitle.setText(mMovie.getTitle());
+        }
 
         Picasso.with(getActivity())
                 .load(getString(R.string.IMAGE_BASE_URL) + mMovie.getPosterPath())
@@ -361,9 +347,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         String date = mMovie.getReleaseDate();
 
         mTextViewMovieYear.setText(Utilities.getMonthAndYear(date));
-
-        String title = mMovie.getTitle();
-        //mTitleTextView.setText(title);
 
         String originalTitle = mMovie.getOriginalTitle();
         mTextViewOriginalTitle.setText(originalTitle);
@@ -384,13 +367,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         String rating_text = String.format(getString(R.string.rating), rating);
         mTextViewMovieRating.setText(rating_text);
 
-        if (mMovie.getFavorite() == 0) {
+        /*if (mMovie.getFavorite() == 0) {
             mFavoriteButton.setChecked(false);
-        } else mFavoriteButton.setChecked(true);
+        } else mFavoriteButton.setChecked(true);*/
 
-
-        final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?";
-        final String PARAM = "v";
 
         //set Casting to movie Object and update UI
         int maxActors;
@@ -398,7 +378,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if (mMovie.getDetailMovie().getCredits().getCast().size() > mNumberMaxDisplayedActors) {
             maxActors = mNumberMaxDisplayedActors;
         } else maxActors = mMovie.getDetailMovie().getCredits().getCast().size();
-
 
 
         //Set genre Object and update UI
@@ -422,4 +401,40 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
 
+    @Override
+    public void onClick(View v) {
+
+        if (v.getId() == R.id.floatingButton_favorite) {
+
+            Picasso.with(getContext()).load(getString(R.string.IMAGE_BASE_URL) + mMovie.getPosterPath()).into(new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    String localUrl = Utilities.savePoster(bitmap, mMovie.getId(), getActivity().getApplicationContext());
+                    mMovie.setPosterPath(localUrl);
+                    mMovie.setFavorite(1);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                }
+            });
+
+            Utilities.addMovieToFavorite(mMovie, getContext());
+
+
+            Snackbar.make(v, getString(R.string.addFavorite), Snackbar.LENGTH_SHORT).show();
+
+            /*else {
+                movie.setFavorite(0);
+                Utilities.removeMovieFromFavorite(movie, getContext());
+            }*/
+        }
+
+    }
 }

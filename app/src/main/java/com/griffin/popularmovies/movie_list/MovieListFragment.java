@@ -69,7 +69,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
             mMoviesList = new ArrayList<>();
         }
         //restore the previous state
-        else {
+        if(savedInstanceState != null) {
             mMoviesList = savedInstanceState.getParcelableArrayList(getString(R.string.key_movies_list));
             mPage = savedInstanceState.getInt(PAGE_KEY);
         }
@@ -126,12 +126,15 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         //save the page loaded so far
         outState.putInt(PAGE_KEY, mPage);
         //put the mMoviesList into the bundle to avoid querying again while rebuilding
         outState.putParcelableArrayList(getString(R.string.key_movies_list), mMoviesList);
+
+        super.onSaveInstanceState(outState);
     }
+
+
 
 
     @Override

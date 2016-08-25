@@ -109,6 +109,7 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
 
         List<Movie> movieList = null;
         try {
+            Log.d(LOG_TAG, "in load in background");
             String BASE_URL = "https://api.themoviedb.org/3/";
 
             Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();

@@ -2,9 +2,12 @@ package com.griffin.popularmovies.detail_movie;
 
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -18,12 +21,13 @@ import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity {
 
-
-
     public static final String MOVIE_KEY = "movie";
 
     @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout collapsingToolbarLayout;
     @BindView(R.id.toolbar_detail_movie) Toolbar toolbar;
+    @BindView(R.id.floatingButton_favorite) FloatingActionButton favoriteButton;
+    private DetailFragment mDetailFragment;
+    private static final String DETAIL_FRAGMENT_KEY = "dfk";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +37,7 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         //Get back the movie from the intent
-        Movie movie = getIntent().getParcelableExtra(MOVIE_KEY);
+        final Movie movie = getIntent().getParcelableExtra(MOVIE_KEY);
 
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null && collapsingToolbarLayout != null){
@@ -56,15 +60,18 @@ public class DetailActivity extends AppCompatActivity {
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailFragment.MOVIE, movie);
 
-            DetailFragment fragment = new DetailFragment();
-            fragment.setArguments(arguments);
+            mDetailFragment = new DetailFragment();
+            mDetailFragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.detail_movie_container, fragment, MainActivity.DETAIL_FRAGMENT_TAG)
+                    .add(R.id.detail_movie_container, mDetailFragment, MainActivity.DETAIL_FRAGMENT_TAG)
                     .commit();
 
 
         }
+
+        favoriteButton.setOnClickListener(mDetailFragment);
+
 
         //run the loadToolbarImage method to display the view, outside the main thread
         loadToolbarImage(movie.getPosterPath());
@@ -91,9 +98,4 @@ public class DetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
 }

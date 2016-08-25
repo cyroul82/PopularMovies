@@ -90,7 +90,9 @@ public class FavoriteListFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(FAVORITE_LOADER, null, this);
+        if(savedInstanceState == null) {
+            getLoaderManager().initLoader(FAVORITE_LOADER, null, this);
+        }
     }
 
     @Override

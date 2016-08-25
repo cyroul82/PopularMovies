@@ -19,13 +19,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/detail_background"
-            style="@style/CardView_ContentStyle"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                style="@style/CardView_ContentStyle"
                 android:id="@+id/textViewReview_author"/>
+
         </LinearLayout>
 
         <LinearLayout
@@ -36,6 +38,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/textViewReview"/>
 
         </LinearLayout>

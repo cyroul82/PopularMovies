@@ -180,8 +180,6 @@ public class MovieProvider extends ContentProvider {
 
             }
 
-
-
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -205,13 +203,11 @@ public class MovieProvider extends ContentProvider {
             case MOVIE: {
                 rowsDeleted = db.delete(MovieContract.FavoriteEntry.TABLE_NAME, selection + " = ?", selectionArgs);
                 break;
-
             }
 
             case DETAIL: {
                 rowsDeleted = db.delete(MovieContract.DetailEntry.TABLE_NAME, selection + " = ?", selectionArgs);
                 break;
-
             }
 
             default:

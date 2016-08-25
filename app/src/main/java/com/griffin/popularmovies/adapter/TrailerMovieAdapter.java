@@ -1,5 +1,6 @@
 package com.griffin.popularmovies.adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.griffin.popularmovies.Pojo.TrailerDetail;
 import com.griffin.popularmovies.R;
+import com.griffin.popularmovies.detail_movie.DetailFragment;
 
 import java.util.List;
 
@@ -20,10 +22,6 @@ import java.util.List;
 public class TrailerMovieAdapter extends RecyclerView.Adapter<TrailerMovieAdapter.TrailerViewHolder> {
 
     private List<TrailerDetail> trailerDetailList;
-
-    public interface OnItemClickListener {
-        void onItemClick(TrailerDetail trailerDetail);
-    }
 
     public TrailerMovieAdapter(List<TrailerDetail> trailerDetailList) {
         this.trailerDetailList = trailerDetailList;
@@ -36,14 +34,22 @@ public class TrailerMovieAdapter extends RecyclerView.Adapter<TrailerMovieAdapte
     }
 
     @Override
-    public void onBindViewHolder(TrailerViewHolder holder, int position) {
-        final String YOUTUBE_BASE_URL="https://www.youtube.com/watch?";
-        final String PARAM = "v";
+    public void onBindViewHolder(final TrailerViewHolder holder, int position) {
         final TrailerDetail trailerDetail = trailerDetailList.get(position);
 
         TrailerViewHolder.buttonTrailer.setText(trailerDetail.getName());
+        TrailerViewHolder.buttonTrailer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String YOUTUBE_BASE_URL="https://www.youtube.com/watch?";
+                final String PARAM = "v";
 
 
+                Uri uri = Uri.parse(YOUTUBE_BASE_URL).buildUpon().appendQueryParameter(PARAM, trailerDetail.getKey()).build();
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                holder.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -51,15 +57,30 @@ public class TrailerMovieAdapter extends RecyclerView.Adapter<TrailerMovieAdapte
         return trailerDetailList.size();
     }
 
-    public static class TrailerViewHolder extends RecyclerView.ViewHolder{
 
-        static Button buttonTrailer;
 
+
+
+
+
+    public static class TrailerViewHolder extends RecyclerView.ViewHolder {
+
+        public static Button buttonTrailer;
+        public final Context mContext;
 
         public TrailerViewHolder(View itemView) {
             super(itemView);
+            mContext = itemView.getContext();
+
             buttonTrailer = (Button) itemView.findViewById(R.id.button_Trailer);
 
         }
+
+        public Context getContext(){
+            return mContext;
+        }
+
     }
+
+
 }

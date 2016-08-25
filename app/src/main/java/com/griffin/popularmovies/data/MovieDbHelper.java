@@ -42,14 +42,15 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.DetailEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 MovieContract.DetailEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " +
                 MovieContract.DetailEntry.COLUMN_MOVIE_ORIGINAL_TITLE + " TEXT NOT NULL, " +
-                MovieContract.DetailEntry.COLUMN_MOVIE_OVERVIEW + " TEXT NOT NULL, " +
+                MovieContract.DetailEntry.COLUMN_MOVIE_OVERVIEW + " TEXT, " +
                 MovieContract.DetailEntry.COLUMN_MOVIE_DATE + " TEXT NOT NULL, " +
                 MovieContract.DetailEntry.COLUMN_MOVIE_RATING + " TEXT NOT NULL, " +
                 MovieContract.DetailEntry.COLUMN_MOVIE_GENRE + " TEXT NOT NULL, " +
                 MovieContract.DetailEntry.COLUMN_MOVIE_RUNTIME + " TEXT NOT NULL, " +
-                MovieContract.DetailEntry.COLUMN_MOVIE_CASTING + " TEXT NOT NULL, " +
-                MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER + " TEXT NOT NULL, " +
-                MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS + " TEXT NOT NULL " +
+                MovieContract.DetailEntry.COLUMN_MOVIE_CASTING + " TEXT, " +
+                MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER + " TEXT, " +
+                MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS + " TEXT, " +
+                MovieContract.DetailEntry.COLUMN_MOVIE_TAGLINE + " TEXT" +
                 " );";
 
         db.execSQL(SQL_CREATE_MOVIE_TABLE);
@@ -64,7 +65,6 @@ public class MovieDbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + MovieContract.FavoriteEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + MovieContract.DetailEntry.TABLE_NAME);
         onCreate(db);
-
 
     }
 }

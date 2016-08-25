@@ -36,4 +36,8 @@
     <string name="favorite">Favoris</string>
 
     <string name="textView_collection_title">Collection : </string>
+
+    <string name="addFavorite">Le film a été ajouté à votre liste des favoris</string>
+
+    <string name="genre">Genre : </string>
 </resources>

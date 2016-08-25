@@ -77,4 +77,10 @@
 
     <string name="textView_collection_title">Collection : </string>
 
+    <string name="contentDescription_poster">Poster</string>
+
+    <string name="addFavorite">The movie has been added to your favorite list</string>
+
+    <string name="genre">Genre : </string>
+
 </resources>

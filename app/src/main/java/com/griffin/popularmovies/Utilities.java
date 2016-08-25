@@ -86,6 +86,8 @@ public class Utilities {
         List<Cast> castList = gson.fromJson(castingJSON, type);
         movie.getDetailMovie().getCredits().setCast(castList);
 
+        movie.getDetailMovie().getMovieDetail().setTagline(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_TAGLINE));
+
         return movie;
     }
 
@@ -127,9 +129,12 @@ public class Utilities {
             detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_ORIGINAL_TITLE, movie.getOriginalTitle());
             detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_OVERVIEW, movie.getOverview());
             detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RATING, Double.toString(movie.getVoteAverage()));
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS, movie.getDetailMovie().getReviewsList().toString());
+            if(movie.getDetailMovie().getReviewsList() != null) {
+                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS, movie.getDetailMovie().getReviewsList().toString());
+            }
             detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RUNTIME, movie.getDetailMovie().getMovieDetail().getRuntime());
             detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER, movie.getDetailMovie().getTrailerDetails().toString());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TAGLINE, movie.getDetailMovie().getMovieDetail().getTagline());
 
             // The resulting URI contains the ID for the row.  Extract the movieId from the Uri.
             Uri insertedDetailUri = context.getContentResolver().insert(MovieContract.DetailEntry.CONTENT_URI, detail);

@@ -40,8 +40,6 @@ public class MovieContract {
         public static final String COLUMN_MOVIE_ID = "movie_id";
         public static final String COLUMN_MOVIE_PICTURE = "movie_picture";
 
-
-
         //build the Uri upon the id
         public static Uri buildMovieUri(long id){
             return ContentUris.withAppendedId(BASE_CONTENT_URI, id);
@@ -59,7 +57,6 @@ public class MovieContract {
 
     //Database table column Names
     public static final class DetailEntry implements BaseColumns {
-
         //build uri
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_DETAIL).build();
 
@@ -82,6 +79,7 @@ public class MovieContract {
         public static final String COLUMN_MOVIE_CASTING = "movie_casting";
         public static final String COLUMN_MOVIE_TRAILER = "movie_videos";
         public static final String COLUMN_MOVIE_REVIEWS = "movie_reviews";
+        public static final String COLUMN_MOVIE_TAGLINE = "movie_tagline";
 
         //build the Uri upon the id
         public static Uri buildMovieDetailUri(long id){
