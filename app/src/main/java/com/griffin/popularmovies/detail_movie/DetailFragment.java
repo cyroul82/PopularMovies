@@ -1,10 +1,8 @@
 package com.griffin.popularmovies.detail_movie;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -49,6 +46,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -71,6 +69,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     ImageView mImageViewMoviePicture;
     @BindView(R.id.textView_Year)
     TextView mTextViewMovieYear;
+    @BindView(R.id.textView_Original_Title_Text)
+    TextView mTextViewOriginalTitleText;
     @BindView(R.id.textView_Original_Title)
     TextView mTextViewOriginalTitle;
     @BindView(R.id.textView_Overview)
@@ -86,7 +86,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @BindView(R.id.linearLayout_Review)
     LinearLayout mLinearLayoutReview;
     @BindView(R.id.textView_tagline)
-    TextView mTextViewTagline;
+    TextView mTextViewTagLine;
     @BindView(R.id.textView_Collection_main_title)
     TextView mTextViewCollectionMainTitle;
     @BindView(R.id.cardViewReview)
@@ -114,10 +114,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @BindView(R.id.textView_movieTitle)
     TextView mTextViewMovieTitle;
 
-    private List<Reviews> mReviewsList;
-    private List<TrailerDetail> mTrailerDetailList;
-    private List<Cast> mCastList;
-    private List<Part> mPartList;
+    private List<Reviews> mReviewsList = new ArrayList<>();
+    private List<TrailerDetail> mTrailerDetailList = new ArrayList<>();
+    private List<Cast> mCastList = new ArrayList<>();
+    private List<Part> mPartList = new ArrayList<>();
 
     private ReviewMovieAdapter mReviewMovieAdapter;
     private TrailerMovieAdapter mTrailerMovieAdapter;
@@ -132,27 +132,30 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         super.onCreate(savedInstanceState);
 
         // if no previous state
-        if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE)) {
-            mMovie = null;
-            mReviewsList = new ArrayList<>();
-            mTrailerDetailList = new ArrayList<>();
-            mCastList = new ArrayList<>();
-            mPartList = new ArrayList<>();
-        }
+        if (savedInstanceState != null && savedInstanceState.containsKey(MOVIE)) {
 
-        //restore the previous state
-        else {
             mMovie = savedInstanceState.getParcelable(MOVIE);
 
             if (mMovie != null) {
 
-                mReviewsList = mMovie.getDetailMovie().getReviewsList();
+                if (mMovie.getDetailMovie() != null) {
 
-                mTrailerDetailList = mMovie.getDetailMovie().getTrailerDetails();
+                    if (mMovie.getDetailMovie().getReviewsList() != null) {
+                        mReviewsList = mMovie.getDetailMovie().getReviewsList();
+                    }
 
-                mCastList = mMovie.getDetailMovie().getCredits().getCast();
+                    if (mMovie.getDetailMovie().getTrailerDetails() != null) {
+                        mTrailerDetailList = mMovie.getDetailMovie().getTrailerDetails();
+                    }
 
-                mPartList = mMovie.getDetailMovie().getCollection().getParts();
+                    if (mMovie.getDetailMovie().getCredits() != null) {
+                        mCastList = mMovie.getDetailMovie().getCredits().getCast();
+                    }
+
+                    if (mMovie.getDetailMovie().getCollection() != null) {
+                        mPartList = mMovie.getDetailMovie().getCollection().getParts();
+                    }
+                }
 
             }
         }
@@ -262,6 +265,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             mProgressDialog.show();
 
+
             getLoaderManager().initLoader(DETAIL_LOADER, null, this);
         }
 
@@ -270,7 +274,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<DetailMovie> onCreateLoader(int id, Bundle args) {
-
         return new FetchDetailMovieTask(getActivity(), mMovie.getId());
     }
 
@@ -280,33 +283,32 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mMovie.setDetail(detailMovie);
 
         //clear the review List and add the new one to the adapter
-        if (mMovie.getDetailMovie().getReviewsList() != null) {
+        if (mMovie.getDetailMovie().getReviewsList() != null && !mMovie.getDetailMovie().getReviewsList().isEmpty()) {
             mReviewsList.clear();
             mReviewsList.addAll(mMovie.getDetailMovie().getReviewsList());
-
             mReviewMovieAdapter.notifyDataSetChanged();
-        } else if (mMovie.getDetailMovie().getReviewsList() == null) {
+
+        } else {
             mCardViewReview.setVisibility(View.GONE);
         }
 
         //clear the trailer List and add the new one to the adapter
-        if (mMovie.getDetailMovie().getTrailerDetails() != null) {
+        if (mMovie.getDetailMovie().getTrailerDetails() != null && !mMovie.getDetailMovie().getTrailerDetails().isEmpty()) {
             mTrailerDetailList.clear();
             mTrailerDetailList.addAll(mMovie.getDetailMovie().getTrailerDetails());
-
             mTrailerMovieAdapter.notifyDataSetChanged();
-        } else if (mMovie.getDetailMovie().getTrailerDetails() == null) {
+
+        } else {
             mCardViewTrailer.setVisibility(View.GONE);
         }
 
-
         //clear the Casting List and add the new one to the adapter
-        if (mMovie.getDetailMovie().getCredits().getCast() != null) {
+        if (mMovie.getDetailMovie().getCredits().getCast() != null && !mMovie.getDetailMovie().getCredits().getCast().isEmpty()) {
             mCastList.clear();
             mCastList.addAll(mMovie.getDetailMovie().getCredits().getCast());
 
             mCastingAdapter.notifyDataSetChanged();
-        } else if (mMovie.getDetailMovie().getCredits().getCast() == null) {
+        } else {
             mCardViewCasting.setVisibility(View.GONE);
         }
 
@@ -317,7 +319,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             mCollectionAdapter.notifyDataSetChanged();
             mTextViewCollectionMainTitle.setText(mMovie.getDetailMovie().getCollection().getName());
-        } else if (mMovie.getDetailMovie().getCollection() == null || mMovie.getDetailMovie().getCollection().getParts().isEmpty()) {
+
+        } else {
             mCardViewCollection.setVisibility(View.GONE);
         }
 
@@ -334,66 +337,74 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private void setUI() {
 
+        //set the title text, only on tablet display !
         if (mTextViewMovieTitle != null) {
             mTextViewMovieTitle.setText(mMovie.getTitle());
         }
 
+        //load the picture using picasso library
         Picasso.with(getActivity())
                 .load(getString(R.string.IMAGE_BASE_URL) + mMovie.getPosterPath())
                 .fit()
                 .centerInside()
                 .into(mImageViewMoviePicture);
 
-        String date = mMovie.getReleaseDate();
 
+        //Set the month and the year of the movie text
+        String date = mMovie.getReleaseDate();
         mTextViewMovieYear.setText(Utilities.getMonthAndYear(date));
 
-        String originalTitle = mMovie.getOriginalTitle();
-        mTextViewOriginalTitle.setText(originalTitle);
+        //set the original title text
+        if(!mMovie.getOriginalTitle().equals(mMovie.getTitle())){
+            String originalTitle = mMovie.getOriginalTitle();
+            mTextViewOriginalTitle.setText(originalTitle);
+        }
+        else {
+            mTextViewOriginalTitle.setVisibility(View.GONE);
+            mTextViewOriginalTitleText.setVisibility(View.GONE);
+        }
 
-        String tagline = mMovie.getDetailMovie().getMovieDetail().getTagline();
-        if (tagline != null) {
-            if (tagline.isEmpty()) {
-                mTextViewTagline.setVisibility(View.GONE);
+
+        //set the tagline text
+        String tagLine = mMovie.getDetailMovie().getMovieDetail().getTagline();
+        if (tagLine != null) {
+            if (tagLine.isEmpty()) {
+                mTextViewTagLine.setVisibility(View.GONE);
             } else {
-                mTextViewTagline.setText(tagline);
+                mTextViewTagLine.setText(tagLine);
             }
         }
 
+        //set the overview text
         String overview = mMovie.getOverview();
         mTextViewOverview.setText(overview);
 
+        //set the rating text
         String rating = Double.toString(mMovie.getVoteAverage());
         String rating_text = String.format(getString(R.string.rating), rating);
         mTextViewMovieRating.setText(rating_text);
 
-        /*if (mMovie.getFavorite() == 0) {
-            mFavoriteButton.setChecked(false);
-        } else mFavoriteButton.setChecked(true);*/
-
-
-        //set Casting to movie Object and update UI
-        int maxActors;
-        int mNumberMaxDisplayedActors = 5;
-        if (mMovie.getDetailMovie().getCredits().getCast().size() > mNumberMaxDisplayedActors) {
-            maxActors = mNumberMaxDisplayedActors;
-        } else maxActors = mMovie.getDetailMovie().getCredits().getCast().size();
-
-
         //Set genre Object and update UI
         List<Genre> genres = mMovie.getDetailMovie().getMovieDetail().getGenres();
-        StringBuilder sb = new StringBuilder();
 
+        if(genres != null && !genres.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
 
-        for (Genre genre : genres) {
-            sb.append(genre.getName());
-
-            if (genres.iterator().hasNext()) {
-                sb.append(" / ");
+            Iterator<Genre> iteratorGenre = genres.iterator();
+            while (iteratorGenre.hasNext()) {
+                Genre genre = iteratorGenre.next();
+                sb.append(genre.getName());
+                if (iteratorGenre.hasNext()) {
+                    sb.append(" / ");
+                }
             }
+            mTextViewGenre.setText(sb);
+        }
+        else {
+            mTextViewGenre.setVisibility(View.GONE);
         }
 
-        mTextViewGenre.setText(sb);
+
 
         String runtime = String.format(getString(R.string.runtime), mMovie.getDetailMovie().getMovieDetail().getRuntime());
         mTextViewRuntime.setText(runtime);

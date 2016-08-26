@@ -16,11 +16,14 @@ import com.griffin.popularmovies.Pojo.Reviews;
 import com.griffin.popularmovies.Pojo.Trailer;
 import com.griffin.popularmovies.Pojo.TrailerDetail;
 import com.griffin.popularmovies.Service.MovieService;
+import com.griffin.popularmovies.Utilities;
+import com.griffin.popularmovies.adapter.CastingAdapter;
 import com.griffin.popularmovies.detail_movie.DetailMovie;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -40,21 +43,9 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
 
     private final String LOG_TAG = FetchDetailMovieTask.class.getSimpleName();
 
-    private final static String CREDITS = "credits";
-    private final static String TRAILER = "videos";
-    private final static String REVIEWS = "reviews";
     private final static String LANGUAGE_SYSTEM = Locale.getDefault().getLanguage().toString();
-    private final static String LANGUAGE_CALLBACK = "en";
 
-    // These two need to be declared outside the try/catch
-    // so that they can be closed in the finally block.
-    private HttpURLConnection mUrlConnection = null;
-    private BufferedReader mReader = null;
-
-    // Will contain the raw JSON response as a string.
-    private String mDetailMoviesJsonStr = null;
-
-    public FetchDetailMovieTask (Context context, int idMovie){
+    public FetchDetailMovieTask(Context context, int idMovie) {
         super(context);
         mIdMovie = idMovie;
 
@@ -76,7 +67,7 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
             deliverResult(detailMovie);
         }
 
-        if (takeContentChanged() || detailMovie == null ) {
+        if (takeContentChanged() || detailMovie == null) {
             // If the data has changed since the last time it was loaded
             // or is not currently available, start a load.
             detailMovie = new DetailMovie();
@@ -87,7 +78,8 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
     /**
      * Handles a request to stop the Loader.
      */
-    @Override protected void onStopLoading() {
+    @Override
+    protected void onStopLoading() {
         // Attempt to cancel the current load task if possible.
         cancelLoad();
     }
@@ -95,7 +87,8 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
     /**
      * Handles a request to cancel a load.
      */
-    @Override public void onCanceled(DetailMovie movie) {
+    @Override
+    public void onCanceled(DetailMovie movie) {
         super.onCanceled(movie);
     }
 
@@ -121,7 +114,7 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
     /**
      * Take the String representing the complete detail Movies in JSON Format and
      * pull out the data we need to construct the Strings needed for the wireframes.
-     *
+     * <p/>
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it
      * into an Object hierarchy for us.
      */
@@ -129,71 +122,7 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
     @Override
     public DetailMovie loadInBackground() {
 
-        try {
-
-            final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/";
-
-            Retrofit retrofit = new Retrofit.Builder().baseUrl(MOVIE_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
-            MovieService movieService = retrofit.create(MovieService.class);
-
-            Call<Trailer> callTrailer = movieService.getTrailer(mIdMovie, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
-            Response responseCallTrailer = callTrailer.execute();
-            Trailer trailer = (Trailer) responseCallTrailer.body();
-
-            List<TrailerDetail> trailerDetails = null;
-            if(trailer != null) {
-                trailerDetails = trailer.getResults();
-            }
-
-            detailMovie.setTrailerDetails(trailerDetails);
-
-            Call<MovieDetail> callMovieDetail = movieService.getMovieDetail(mIdMovie, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
-            Response responseCallMovieDetail = callMovieDetail.execute();
-            MovieDetail movieDetail = (MovieDetail) responseCallMovieDetail.body();
-            detailMovie.setMovieDetail(movieDetail);
-
-            Call<Credits> callCredits = movieService.getCredits(mIdMovie, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
-            Response responseCallCredits = callCredits.execute();
-            Credits credits = (Credits) responseCallCredits.body();
-
-
-                for (Cast cast : credits.getCast()) {
-                    Call<Person> callPerson = movieService.getPerson(cast.getId(), BuildConfig.MOVIE_DB_API_KEY);
-                    Response responseCallPerson = callPerson.execute();
-                    Person person = (Person) responseCallPerson.body();
-                    cast.setPerson(person);
-                }
-
-            detailMovie.setCredits(credits);
-
-            Call<ReviewPage> callReviewPage = movieService.getReviews(mIdMovie, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
-            Response responseCallReviewPage = callReviewPage.execute();
-            ReviewPage reviewPage = (ReviewPage) responseCallReviewPage.body();
-            List<Reviews> reviewsList = null;
-            if(reviewPage != null) {
-                 reviewsList = reviewPage.getResults();
-            }
-            detailMovie.setReviewsList(reviewsList);
-
-            Object collectionObject = detailMovie.getMovieDetail().getBelongsToCollection();
-            if(collectionObject != null){
-                Map<String, ?> map = (Map<String, ?>) collectionObject;
-                Object object =map.get("id");
-                double idCollection = Double.parseDouble(object.toString());
-                Call<Collection> callCollection = movieService.getCollection(idCollection, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
-                Response responseCallCollection = callCollection.execute();
-                Collection collection = (Collection) responseCallCollection.body();
-
-                detailMovie.setCollection(collection);
-            }
-
-
-        }
-        catch (IOException e){
-            Log.e(LOG_TAG, e.getMessage(), e);
-        }
-
-        return detailMovie;
+       return Utilities.getMovieDetail(mIdMovie);
 
     }
 

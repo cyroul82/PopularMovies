@@ -1,14 +1,20 @@
 package com.griffin.popularmovies.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.telecom.Call;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.griffin.popularmovies.Pojo.Collection;
+import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.Pojo.Part;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
+import com.griffin.popularmovies.detail_movie.DetailMovie;
 
 import java.util.List;
 
@@ -33,12 +39,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Part part = partList.get(position);
+        final Part part = partList.get(position);
         ViewHolder.textViewTitle.setText(part.getTitle());
         if(part.getReleaseDate() != null) {
             String year = Utilities.getYear(part.getReleaseDate());
             ViewHolder.textViewYear.setText(year);
         }
+
+
     }
 
 
@@ -51,9 +59,13 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Vi
 
         static TextView textViewTitle;
         static TextView textViewYear;
+        static LinearLayout customButton;
+        static Context mContext;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            mContext = itemView.getContext();
+            customButton = (LinearLayout) itemView.findViewById(R.id.casting_custom_button);
             textViewTitle = (TextView) itemView.findViewById(R.id.textView_collection_title);
             textViewYear = (TextView) itemView.findViewById(R.id.textView_collection_year);
         }

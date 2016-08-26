@@ -19,8 +19,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.griffin.popularmovies.Pojo.Cast;
+import com.griffin.popularmovies.Pojo.Collection;
+import com.griffin.popularmovies.Pojo.Credits;
 import com.griffin.popularmovies.Pojo.Genre;
 import com.griffin.popularmovies.Pojo.Movie;
+import com.griffin.popularmovies.Pojo.MovieDetail;
+import com.griffin.popularmovies.Pojo.Person;
+import com.griffin.popularmovies.Pojo.ReviewPage;
+import com.griffin.popularmovies.Pojo.Reviews;
+import com.griffin.popularmovies.Pojo.Trailer;
+import com.griffin.popularmovies.Pojo.TrailerDetail;
+import com.griffin.popularmovies.Service.MovieService;
+import com.griffin.popularmovies.adapter.CastingAdapter;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
 import com.griffin.popularmovies.detail_movie.DetailMovie;
@@ -37,6 +47,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by griffin on 18/07/16.
@@ -53,6 +69,8 @@ public class Utilities {
     private static final int UPCOMIG_CHOICE = 2;
     private static final int NOw_PLAYING_CHOICE = 3;
     private static final int FAVORITE_CHOICE = 4;
+
+    private final static String LANGUAGE_SYSTEM = Locale.getDefault().getLanguage().toString();
 
 
     public static Movie getMovieFromCursor(Cursor movieCursor){
@@ -341,6 +359,86 @@ public class Utilities {
             //Not connected
             Toast.makeText(context, R.string.connectivity, Toast.LENGTH_LONG).show();
         }
+    }
+
+
+    public static DetailMovie getMovieDetail(int movieId) {
+        DetailMovie detailMovie = new DetailMovie();
+
+        try {
+
+
+            final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/";
+
+            Retrofit retrofit = new Retrofit.Builder().baseUrl(MOVIE_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+            MovieService movieService = retrofit.create(MovieService.class);
+
+            Call<Trailer> callTrailer = movieService.getTrailer(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
+            Response responseCallTrailer = callTrailer.execute();
+            Trailer trailer = (Trailer) responseCallTrailer.body();
+
+            List<TrailerDetail> trailerDetails = null;
+            if (trailer != null) {
+                trailerDetails = trailer.getResults();
+            }
+            detailMovie.setTrailerDetails(trailerDetails);
+
+
+            Call<MovieDetail> callMovieDetail = movieService.getMovieDetail(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
+            Response responseCallMovieDetail = callMovieDetail.execute();
+            MovieDetail movieDetail = (MovieDetail) responseCallMovieDetail.body();
+            detailMovie.setMovieDetail(movieDetail);
+
+
+            Call<Credits> callCredits = movieService.getCredits(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
+            Response responseCallCredits = callCredits.execute();
+            Credits credits = (Credits) responseCallCredits.body();
+
+            int castingMax;
+            if(credits.getCast().size() < CastingAdapter.MAX_CASTING_TO_DISPLAY){
+                castingMax = credits.getCast().size()-1;
+            }
+            else {
+                castingMax = CastingAdapter.MAX_CASTING_TO_DISPLAY;
+            }
+            for (int i=0 ; i < castingMax ; i++){
+                Cast cast = credits.getCast().get(i);
+                Call<Person> callPerson = movieService.getPerson(cast.getId(), BuildConfig.MOVIE_DB_API_KEY);
+                Response responseCallPerson = callPerson.execute();
+                Person person = (Person) responseCallPerson.body();
+                cast.setPerson(person);
+            }
+
+            detailMovie.setCredits(credits);
+
+            Call<ReviewPage> callReviewPage = movieService.getReviews(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
+            Response responseCallReviewPage = callReviewPage.execute();
+            ReviewPage reviewPage = (ReviewPage) responseCallReviewPage.body();
+            List<Reviews> reviewsList = null;
+            if (reviewPage != null) {
+                reviewsList = reviewPage.getResults();
+            }
+
+            detailMovie.setReviewsList(reviewsList);
+
+            Object collectionObject = detailMovie.getMovieDetail().getBelongsToCollection();
+            if (collectionObject != null) {
+                Map<String, ?> map = (Map<String, ?>) collectionObject;
+                Object object = map.get("id");
+                double idCollection = Double.parseDouble(object.toString());
+                Call<Collection> callCollection = movieService.getCollection(idCollection, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
+                Response responseCallCollection = callCollection.execute();
+                Collection collection = (Collection) responseCallCollection.body();
+
+                detailMovie.setCollection(collection);
+
+            }
+
+        } catch (IOException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+        }
+
+        return detailMovie;
     }
 
 

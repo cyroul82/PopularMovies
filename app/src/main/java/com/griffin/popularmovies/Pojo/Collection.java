@@ -50,6 +50,7 @@ public class Collection implements Parcelable {
     };
 
     public Collection() {
+
     }
 
     /**

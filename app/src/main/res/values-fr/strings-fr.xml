@@ -7,13 +7,13 @@
     <string name="connectivity">Vous n\'etes connectés à aucun réseau, merci de vous connecter !</string>
 
     //Original Title
-    <string name="originalTitleTextView">Titre Original : </string>
+    <string name="originalTitleTextView">Titre Original </string>
     //Overview
-    <string name="overviewText">Synopsis : </string>
+    <string name="overviewText">Synopsis </string>
 
     <string name="sort_by">Sort By</string>
     <string name="title_activity_settings">Paramètres</string>
-    <string name="textView_casting_list_title">Acteurs et Personnages :</string>
+    <string name="textView_casting_list_title">Acteurs et Personnages </string>
 
     <string name="textView_genre_title">Genre :\u00A0</string>
 
@@ -29,15 +29,15 @@
     <string name="key_movies_favorite">Mes Favoris</string>
     <string name="action_favorite">Favoris</string>
 
-    <string name="reviewTitle">Critiques :</string>
-    <string name="trailerTitle">Videos :</string>
+    <string name="reviewTitle">Critiques </string>
+    <string name="trailerTitle">Videos </string>
 
     <string name="profil">Profil</string>
     <string name="favorite">Favoris</string>
 
-    <string name="textView_collection_title">Collection : </string>
+    <string name="textView_collection_title">Collection </string>
 
     <string name="addFavorite">Le film a été ajouté à votre liste des favoris</string>
 
-    <string name="genre">Genre : </string>
+    <string name="genre">Genre </string>
 </resources>

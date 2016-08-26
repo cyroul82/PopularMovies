@@ -7,9 +7,9 @@
     <string name="connectivity">You are offline, please connect to Internet !</string>
 
     //Original Title
-    <string name="originalTitleTextView">Original Title : </string>
+    <string name="originalTitleTextView">Original Title </string>
     //Overview
-    <string name="overviewText">Overview : </string>
+    <string name="overviewText">Overview </string>
 
     <string name="sort_by">Sort By</string>
 
@@ -45,8 +45,8 @@
         <item>favorite</item>
     </string-array>
 
-    <string name="textView_casting_list_title">Casting and Character : </string>
-    <string name="textView_genre_title">Genre : </string>
+    <string name="textView_casting_list_title">Casting and Character </string>
+    <string name="textView_genre_title">Genre </string>
 
     <string name="title_activity_settings">Settings</string>
 
@@ -65,8 +65,8 @@
 
     <string name="reviews" translatable="false">\nAuthor : %1$s \n \n%2$s</string>
 
-    <string name="reviewTitle">Reviews :</string>
-    <string name="trailerTitle">Videos :</string>
+    <string name="reviewTitle">Reviews </string>
+    <string name="trailerTitle">Videos </string>
     <string name="runtime" translatable="false">%1$s min</string>
 
     <string name="IMAGE_BASE_URL" translatable="false">http://image.tmdb.org/t/p/w185</string>
@@ -75,12 +75,12 @@
     <string name="profil">Profil</string>
     <string name="favorite">Favorite</string>
 
-    <string name="textView_collection_title">Collection : </string>
+    <string name="textView_collection_title">Collection </string>
 
     <string name="contentDescription_poster">Poster</string>
 
     <string name="addFavorite">The movie has been added to your favorite list</string>
 
-    <string name="genre">Genre : </string>
+    <string name="genre">Genre </string>
 
 </resources>

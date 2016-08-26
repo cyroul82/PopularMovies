@@ -109,7 +109,6 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
 
         List<Movie> movieList = null;
         try {
-            Log.d(LOG_TAG, "in load in background");
             String BASE_URL = "https://api.themoviedb.org/3/";
 
             Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
@@ -118,7 +117,9 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
                     .getDefault().getLanguage(), mPage);
             Response response = callMoviePojo.execute();
             MoviePage moviePage = (MoviePage) response.body();
-            movieList = moviePage.getResults();
+            if(moviePage != null) {
+                movieList = moviePage.getResults();
+            }
             return movieList;
         }
         catch (IOException e){

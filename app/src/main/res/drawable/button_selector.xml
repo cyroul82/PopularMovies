@@ -2,12 +2,43 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <item android:state_pressed="true"
-          android:drawable="@color/greyReviews"/>
+    <item android:state_activated="true">
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="90"
+                android:endColor="#569874"
+                android:startColor="#325691"
+                android:type="linear"/>
 
-    <item android:state_activated="true"
-          android:drawable="@android:color/holo_blue_light"/>
+            <corners android:radius="10dp"/>
+        </shape>
+    </item>
 
-    <item android:drawable="@drawable/detail_background"/>
+
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="90"
+                android:endColor="#569874"
+                android:startColor="#325691"
+                android:type="linear"/>
+
+            <corners android:radius="10dp"/>
+        </shape>
+    </item>
+
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="90"
+                android:endColor="#16272f"
+                android:startColor="#27425f"
+                android:type="linear"/>
+
+            <corners android:radius="10dp"/>
+        </shape>
+    </item>
+
+
 
 </selector>

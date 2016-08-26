@@ -52,9 +52,7 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                        android:layout_marginStart="@dimen/activity_horizontal_margin"
-                        android:layout_weight="1"
+                        android:layout_marginRight="@dimen/spacing_large"
                         android:orientation="horizontal">
 
                         <ImageView
@@ -69,7 +67,6 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
                         android:orientation="vertical">
 
                         <TextView
@@ -90,6 +87,7 @@
                             style="@style/titleParagraph"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/textView_Original_Title_Text"
                             android:text="@string/originalTitleTextView"/>
 
                         <TextView
@@ -114,13 +112,13 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/CardView_ContentStyle"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/genre"
+                        android:layout_marginRight="5dp"
                         style="@style/titleParagraph"/>
 
                     <TextView
