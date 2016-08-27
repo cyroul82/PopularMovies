@@ -1,15 +1,18 @@
 package com.griffin.popularmovies.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.griffin.popularmovies.Pojo.Cast;
 import com.griffin.popularmovies.R;
+import com.griffin.popularmovies.detail_movie.CastActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -38,7 +41,7 @@ public class CastingAdapter extends RecyclerView.Adapter<CastingAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Cast cast = castList.get(position);
+        final Cast cast = castList.get(position);
         ViewHolder.textViewCasting.setText(cast.getName());
         StringBuilder casting = new StringBuilder();
         casting.append("  (").append(cast.getCharacter()).append(")");
@@ -50,6 +53,15 @@ public class CastingAdapter extends RecyclerView.Adapter<CastingAdapter.ViewHold
                     .centerInside()
                     .into(ViewHolder.circleImageViewProfile);
         }
+
+        ViewHolder.customButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, CastActivity.class);
+                intent.putExtra(CastActivity.CAST_KEY, cast);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -68,12 +80,14 @@ public class CastingAdapter extends RecyclerView.Adapter<CastingAdapter.ViewHold
         static TextView textViewCasting;
         static TextView textViewCharacter;
         static CircleImageView circleImageViewProfile;
+        static LinearLayout customButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
             textViewCasting = (TextView) itemView.findViewById(R.id.textView_casting_adapter);
             textViewCharacter = (TextView) itemView.findViewById(R.id.textView_character_adapter);
             circleImageViewProfile = (CircleImageView) itemView.findViewById(R.id.casting_profile_image);
+            customButton = (LinearLayout)itemView.findViewById(R.id.casting_custom_button);
         }
     }
 }
