@@ -58,11 +58,7 @@ public class TrailerMovieAdapter extends RecyclerView.Adapter<TrailerMovieAdapte
     }
 
 
-
-
-
-
-
+    //inner class ViewHolder of Trailer
     public static class TrailerViewHolder extends RecyclerView.ViewHolder {
 
         public static Button buttonTrailer;

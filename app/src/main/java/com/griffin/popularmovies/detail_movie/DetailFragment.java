@@ -272,6 +272,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     }
 
+
     @Override
     public Loader<DetailMovie> onCreateLoader(int id, Bundle args) {
         return new FetchDetailMovieTask(getActivity(), mMovie.getId());
