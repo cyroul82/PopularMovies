@@ -1,6 +1,5 @@
 package com.griffin.popularmovies.detail_movie;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -17,14 +16,12 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DetailFavoriteActivity extends AppCompatActivity {
-
-    public static final String MOVIE_KEY = "movie";
+public class DetailFavoriteActivity extends AppCompatActivity implements DetailFavoriteFragment.CallbackDetailFavoriteFragment {
 
     @BindView(R.id.collapsing_toolbar)
-    CollapsingToolbarLayout collapsingToolbarLayout;
+    CollapsingToolbarLayout mCollapsingToolbarLayout;
     @BindView(R.id.toolbar_detail_movie)
-    Toolbar toolbar;
+    Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +33,8 @@ public class DetailFavoriteActivity extends AppCompatActivity {
         //Get back the movie from the intent
         //Movie movie = getIntent().getParcelableExtra(MOVIE_KEY);
 
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null && collapsingToolbarLayout != null) {
+        setSupportActionBar(mToolbar);
+        if (getSupportActionBar() != null && mCollapsingToolbarLayout != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
@@ -57,17 +54,6 @@ public class DetailFavoriteActivity extends AppCompatActivity {
                     .commit();
         }
 
-        //run the loadToolbarImage method to display the view, outside the main thread
-        //loadToolbarImage(movie.getPosterPath());
-    }
-
-    //load the image using Glide library
-    private void loadToolbarImage(Movie movie) {
-        ImageView imageView = (ImageView) findViewById(R.id.toolbar_image_detail_movie);
-
-        if (imageView != null) {
-            imageView.setImageBitmap(Utilities.getPoster(movie.getPosterPath(), movie.getId()));
-        }
     }
 
     @Override
@@ -82,4 +68,13 @@ public class DetailFavoriteActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void setTitleAndPosterOnActivity(String title, String posterPath, int idMovie) {
+
+        mCollapsingToolbarLayout.setTitle(title);
+
+        ImageView imageView = (ImageView) findViewById(R.id.toolbar_image_detail_movie);
+        imageView.setImageBitmap(Utilities.getPoster(posterPath, idMovie));
+
+    }
 }

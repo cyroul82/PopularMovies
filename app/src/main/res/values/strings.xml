@@ -71,6 +71,7 @@
 
     <string name="IMAGE_BASE_URL" translatable="false">http://image.tmdb.org/t/p/w185</string>
     <string name="IMAGE_BASE_URL_HIGH_QUALITY" translatable="false">http://image.tmdb.org/t/p/w500</string>
+    <string name="BASE_URL" translatable="false">https://api.themoviedb.org/3/</string>
 
     <string name="profil">Profil</string>
     <string name="favorite">Favorite</string>
@@ -82,5 +83,6 @@
     <string name="addFavorite">The movie has been added to your favorite list</string>
 
     <string name="genre">Genre </string>
+    <string name="title_activity_cast_detail">CastDetailActivity</string>
 
 </resources>

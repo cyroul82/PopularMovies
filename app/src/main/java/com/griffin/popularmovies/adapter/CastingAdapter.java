@@ -28,6 +28,7 @@ public class CastingAdapter extends RecyclerView.Adapter<CastingAdapter.ViewHold
     private Context mContext;
     public static final int MAX_CASTING_TO_DISPLAY = 5;
 
+
     public CastingAdapter(List<Cast> castList, Context context){
         this.castList = castList;
         mContext = context;

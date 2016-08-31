@@ -35,6 +35,15 @@
                 android:value=".MainActivity"/>
         </activity>
         <activity
+            android:name=".detail_movie.CastActivity"
+            android:parentActivityName=".detail_movie.DetailActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".detail_movie.DetailActivity"/>
+        </activity>
+        <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity">
@@ -58,8 +67,6 @@
             android:exported="false"
             android:syncable="true"/>
 
-        <activity android:name=".detail_movie.CastActivity">
-        </activity>
     </application>
 
 </manifest>

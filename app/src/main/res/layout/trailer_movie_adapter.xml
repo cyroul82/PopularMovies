@@ -11,6 +11,8 @@
         android:id="@+id/button_Trailer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingStart="@dimen/spacing_medium"
+        android:paddingEnd="@dimen/spacing_medium"
         android:background="@drawable/button_selector"
         android:drawableLeft="@drawable/ic_play_circle_outline_white_24dp"/>
 

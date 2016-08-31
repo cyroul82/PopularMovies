@@ -89,6 +89,8 @@ public class MovieDetail implements Parcelable{
     @Expose
     private int voteCount;
 
+    private int isFavorite ;
+
 
 
     public MovieDetail(){
@@ -120,6 +122,7 @@ public class MovieDetail implements Parcelable{
         video = in.readByte() != 0;
         voteAverage = in.readDouble();
         voteCount = in.readInt();
+        isFavorite = in.readInt();
     }
 
     public static final Creator<MovieDetail> CREATOR = new Creator<MovieDetail>() {
@@ -334,7 +337,7 @@ public class MovieDetail implements Parcelable{
 
     /**
      * 
-     * @return
+     * @returndest.writeInt(isFavorite);
      *     The popularity
      */
     public double getPopularity() {
@@ -584,6 +587,14 @@ public class MovieDetail implements Parcelable{
         this.voteCount = voteCount;
     }
 
+    public int getFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(int favorite) {
+        isFavorite = favorite;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -615,5 +626,6 @@ public class MovieDetail implements Parcelable{
         dest.writeByte((byte) (video ? 1 : 0));
         dest.writeDouble(voteAverage);
         dest.writeInt(voteCount);
+        dest.writeInt(isFavorite);
     }
 }

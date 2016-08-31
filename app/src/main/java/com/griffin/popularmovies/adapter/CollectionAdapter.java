@@ -2,20 +2,21 @@ package com.griffin.popularmovies.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.telecom.Call;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.griffin.popularmovies.Pojo.Collection;
-import com.griffin.popularmovies.Pojo.Movie;
+import com.bumptech.glide.util.Util;
+import com.griffin.popularmovies.MainActivity;
 import com.griffin.popularmovies.Pojo.Part;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
-import com.griffin.popularmovies.detail_movie.DetailMovie;
+import com.griffin.popularmovies.movie_list.MovieListFragment;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -23,10 +24,23 @@ import java.util.List;
  */
 public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.ViewHolder> {
 
-    List<Part> partList;
+    private List<Part> partList;
+    private Context mContext;
+    private CallbackCollectionAdapter callbackCollectionAdapter;
 
-    public CollectionAdapter(List<Part> partList) {
+    public interface CallbackCollectionAdapter {
+
+        void onCollectionMovieClicked(int idMovie);
+    }
+
+    public void setCallback(CallbackCollectionAdapter callbackCollectionAdapter){
+
+        this.callbackCollectionAdapter = callbackCollectionAdapter;
+    }
+
+    public CollectionAdapter(List<Part> partList, Context context) {
         this.partList = partList;
+        mContext = context;
     }
 
     @Override
@@ -40,11 +54,18 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Vi
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Part part = partList.get(position);
+
         ViewHolder.textViewTitle.setText(part.getTitle());
         if(part.getReleaseDate() != null) {
             String year = Utilities.getYear(part.getReleaseDate());
             ViewHolder.textViewYear.setText(year);
         }
+        ViewHolder.customButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callbackCollectionAdapter.onCollectionMovieClicked(part.getId());
+            }
+        });
 
 
     }
@@ -59,15 +80,15 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Vi
 
         static TextView textViewTitle;
         static TextView textViewYear;
+        static Context context;
         static LinearLayout customButton;
-        static Context mContext;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mContext = itemView.getContext();
-            customButton = (LinearLayout) itemView.findViewById(R.id.casting_custom_button);
+            context = itemView.getContext();
             textViewTitle = (TextView) itemView.findViewById(R.id.textView_collection_title);
             textViewYear = (TextView) itemView.findViewById(R.id.textView_collection_year);
+            customButton = (LinearLayout) itemView.findViewById(R.id.collection_custom_button);
         }
     }
 }

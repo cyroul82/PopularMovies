@@ -4,9 +4,9 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               style="@android:style/Widget.Button"
-              android:background="@drawable/button_selector"
               android:gravity="start|center_vertical"
               android:id="@+id/casting_custom_button"
+              android:background="@drawable/button_selector"
               android:layout_marginBottom="@dimen/spacing_medium">
 
     <de.hdodenhof.circleimageview.CircleImageView

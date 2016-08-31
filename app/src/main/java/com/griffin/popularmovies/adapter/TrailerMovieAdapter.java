@@ -22,14 +22,16 @@ import java.util.List;
 public class TrailerMovieAdapter extends RecyclerView.Adapter<TrailerMovieAdapter.TrailerViewHolder> {
 
     private List<TrailerDetail> trailerDetailList;
+    private Context mContext;
 
-    public TrailerMovieAdapter(List<TrailerDetail> trailerDetailList) {
+    public TrailerMovieAdapter(List<TrailerDetail> trailerDetailList, Context context) {
         this.trailerDetailList = trailerDetailList;
+        mContext = context;
     }
 
     @Override
     public TrailerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.trailer_movie_adapter, parent , false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.trailer_movie_adapter, parent, false);
         return new TrailerViewHolder(itemView);
     }
 
@@ -41,13 +43,13 @@ public class TrailerMovieAdapter extends RecyclerView.Adapter<TrailerMovieAdapte
         TrailerViewHolder.buttonTrailer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String YOUTUBE_BASE_URL="https://www.youtube.com/watch?";
+                final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?";
                 final String PARAM = "v";
 
 
                 Uri uri = Uri.parse(YOUTUBE_BASE_URL).buildUpon().appendQueryParameter(PARAM, trailerDetail.getKey()).build();
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                holder.getContext().startActivity(intent);
+                mContext.startActivity(intent);
             }
         });
     }
@@ -58,24 +60,15 @@ public class TrailerMovieAdapter extends RecyclerView.Adapter<TrailerMovieAdapte
     }
 
 
-    //inner class ViewHolder of Trailer
     public static class TrailerViewHolder extends RecyclerView.ViewHolder {
 
         public static Button buttonTrailer;
-        public final Context mContext;
 
         public TrailerViewHolder(View itemView) {
             super(itemView);
-            mContext = itemView.getContext();
-
             buttonTrailer = (Button) itemView.findViewById(R.id.button_Trailer);
 
         }
-
-        public Context getContext(){
-            return mContext;
-        }
-
     }
 
 

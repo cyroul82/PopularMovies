@@ -1,5 +1,6 @@
 package com.griffin.popularmovies.Service;
 
+import com.griffin.popularmovies.Pojo.CastFilmography;
 import com.griffin.popularmovies.Pojo.Collection;
 import com.griffin.popularmovies.Pojo.Credits;
 import com.griffin.popularmovies.Pojo.MovieDetail;
@@ -48,5 +49,9 @@ public interface MovieService {
     //Get the actor profile picture
     @GET("collection/{id}")
     Call<Collection> getCollection(@Path("id") double id, @Query("api_key") String apiKey, @Query("language") String language);
+
+    //Get Filmography
+    @GET("person/{id}/movie_credits")
+    Call<CastFilmography> getFilmography(@Path("id") int id, @Query("api_key") String apiKey, @Query("language") String language);
 
 }

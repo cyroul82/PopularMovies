@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_marginStart="@dimen/spacing_medium"
+              android:layout_marginEnd="@dimen/spacing_medium"
+              android:layout_marginTop="@dimen/spacing_medium"
+              android:layout_marginBottom="@dimen/spacing_medium"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/filmography_imageView"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@string/contentDescription_poster"
+        android:scaleType="fitCenter"/>
+
+    <TextView
+        android:id="@+id/filmography_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/spacing_xsmall"/>
+
+    <TextView
+        android:id="@+id/filmography_year"
+        android:layout_width="match_parent"
+        android:gravity="center_horizontal"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

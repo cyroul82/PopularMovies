@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
+import com.griffin.popularmovies.adapter.CollectionAdapter;
 import com.griffin.popularmovies.detail_movie.DetailFavoriteActivity;
 import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
 import com.griffin.popularmovies.detail_movie.DetailActivity;
@@ -30,8 +31,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity implements FavoriteListFragment.Callback, MovieListFragment.Callback, DetailFavoriteFragment
-        .Callback {
+public class MainActivity extends AppCompatActivity implements FavoriteListFragment.Callback, MovieListFragment.CallbackMovieListFragment, DetailFavoriteFragment
+        .Callback, CollectionAdapter.CallbackCollectionAdapter {
 
     private boolean mTwoPane;
 
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     public static final String MOVIE_LIST_FRAGMENT_TAG = "MLFTAG";
     public static final String FAVORITE_MOVIE_LIST_FRAGMENT_TAG = "FMFTAG";
     private static final String BLANK_FRAGMENT_TAG = "BFTAG";
+    public static final String ACTOR_FRAGMENT_TAG = "FMFTAG";
 
 
     private FavoriteListFragment favoriteListFragment;
@@ -308,21 +310,22 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     }
 
     @Override
-    public void onItemSelected(Movie movie) {
+    public void onItemSelected(int idMovie) {
         if (mTwoPane) {
             Bundle args = new Bundle();
-            args.putParcelable(DetailFragment.MOVIE, movie);
+            args.putInt(DetailFragment.DETAIL_MOVIE, idMovie);
+            args.putBoolean(DetailFragment.IS_DETAIL_FRAGMENT_FROM_ACTIVITY, false);
 
             detailFragment = new DetailFragment();
             detailFragment.setArguments(args);
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.detail_movie_container, detailFragment, DETAIL_FRAGMENT_TAG)
-                    .addToBackStack(null)
+                    .addToBackStack(Integer.toString(idMovie))
                     .commit();
         } else {
             Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-            intent.putExtra(DetailActivity.MOVIE_KEY, movie);
+            intent.putExtra(DetailActivity.MOVIE_KEY, idMovie);
             startActivity(intent);
         }
     }
@@ -344,4 +347,9 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                 .commit();
     }
 
+
+    @Override
+    public void onCollectionMovieClicked(int idMovie) {
+        onItemSelected(idMovie);
+    }
 }

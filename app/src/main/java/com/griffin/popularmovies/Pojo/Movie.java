@@ -57,9 +57,8 @@ public class Movie implements Parcelable{
     @Expose
     private int voteCount;
 
-    private int isFavorite ;
 
-    private DetailMovie detailMovie;
+
 
     /**
      * No args constructor for use in serialization
@@ -88,7 +87,7 @@ public class Movie implements Parcelable{
      */
     public Movie(boolean adult, String backdropPath, List<Integer> genreIds, int id, String originalLanguage,
                  String originalTitle, String overview, String releaseDate, String posterPath, double popularity,
-                 String title, boolean video, double voteAverage, int voteCount, int isFavorite, DetailMovie detailMovie) {
+                 String title, boolean video, double voteAverage, int voteCount) {
         this.adult = adult;
         this.backdropPath = backdropPath;
         this.genreIds = genreIds;
@@ -103,8 +102,6 @@ public class Movie implements Parcelable{
         this.video = video;
         this.voteAverage = voteAverage;
         this.voteCount = voteCount;
-        this.isFavorite = isFavorite;
-        this.detailMovie = detailMovie;
     }
 
     protected Movie(Parcel in) {
@@ -121,8 +118,6 @@ public class Movie implements Parcelable{
         video = in.readByte() != 0;
         voteAverage = in.readDouble();
         voteCount = in.readInt();
-        isFavorite = in.readInt();
-        detailMovie = in.readParcelable(DetailMovie.class.getClassLoader());
     }
 
     @Override
@@ -145,8 +140,6 @@ public class Movie implements Parcelable{
         dest.writeByte((byte) (video ? 1 : 0));
         dest.writeDouble(voteAverage);
         dest.writeInt(voteCount);
-        dest.writeInt(isFavorite);
-        dest.writeParcelable(detailMovie, flags);
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -413,21 +406,7 @@ public class Movie implements Parcelable{
         this.voteCount = voteCount;
     }
 
-    public int getFavorite() {
-        return isFavorite;
-    }
 
-    public void setFavorite(int favorite) {
-        isFavorite = favorite;
-    }
-
-    public DetailMovie getDetailMovie() {
-        return detailMovie;
-    }
-
-    public void setDetail(DetailMovie detailMovie) {
-        this.detailMovie = detailMovie;
-    }
 
 
 }

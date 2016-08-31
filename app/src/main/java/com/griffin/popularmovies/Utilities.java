@@ -12,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -70,48 +71,47 @@ public class Utilities {
     private static final int NOw_PLAYING_CHOICE = 3;
     private static final int FAVORITE_CHOICE = 4;
 
-    private final static String LANGUAGE_SYSTEM = Locale.getDefault().getLanguage().toString();
+    public final static String LANGUAGE_SYSTEM = Locale.getDefault().getLanguage();
 
 
-    public static Movie getMovieFromCursor(Cursor movieCursor){
-        Movie movie = new Movie();
+    public static DetailMovie getDetailMovieFromCursor(Cursor movieCursor) {
         DetailMovie detailMovie = new DetailMovie();
-        movie.setDetail(detailMovie);
 
-        movie.setId(movieCursor.getInt(DetailFavoriteFragment.COL_FAVORITE_MOVIE_ID));
-        movie.setPosterPath(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_PICTURE));
-        movie.setReleaseDate(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DATE));
-        movie.setTitle(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_TITLE));
-        movie.setOriginalTitle(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_ORIGINAL_TITLE));
-        movie.setOverview(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_OVERVIEW));
-        movie.setVoteAverage(movieCursor.getDouble(DetailFavoriteFragment.COL_FAVORITE_MOVIE_RATING));
+        detailMovie.getMovieDetail().setId(movieCursor.getInt(DetailFavoriteFragment.COL_FAVORITE_MOVIE_ID));
+        detailMovie.getMovieDetail().setPosterPath(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_PICTURE));
+        detailMovie.getMovieDetail().setReleaseDate(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DATE));
+        detailMovie.getMovieDetail().setTitle(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_TITLE));
+        detailMovie.getMovieDetail().setOriginalTitle(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_ORIGINAL_TITLE));
+        detailMovie.getMovieDetail().setOverview(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_OVERVIEW));
+        detailMovie.getMovieDetail().setVoteAverage(movieCursor.getDouble(DetailFavoriteFragment.COL_FAVORITE_MOVIE_RATING));
 
-        movie.getDetailMovie().getMovieDetail().setRuntime(movieCursor.getInt(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_RUNTIME));
+        detailMovie.getMovieDetail().setRuntime(movieCursor.getInt(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_RUNTIME));
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
 
 
-        Type type = new TypeToken<List<Genre>>() {}.getType();
+        Type type = new TypeToken<List<Genre>>() {
+        }.getType();
         String genreJSON = movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_GENRE);
         System.out.println(genreJSON);
         List<Genre> genres = gson.fromJson(genreJSON, type);
-        movie.getDetailMovie().getMovieDetail().setGenres(genres);
+        detailMovie.getMovieDetail().setGenres(genres);
 
 
-        type = new TypeToken<List<Cast>>() {}.getType();
+        type = new TypeToken<List<Cast>>() {
+        }.getType();
         String castingJSON = movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_CASTING);
         List<Cast> castList = gson.fromJson(castingJSON, type);
-        movie.getDetailMovie().getCredits().setCast(castList);
+        detailMovie.getCredits().setCast(castList);
 
-        movie.getDetailMovie().getMovieDetail().setTagline(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_TAGLINE));
+        detailMovie.getMovieDetail().setTagline(movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_TAGLINE));
 
-        return movie;
+        return detailMovie;
     }
 
 
-
-    public static void addMovieToFavorite(Movie movie, Context context)  {
+    public static void addMovieToFavorite(DetailMovie detailMovie, Context context) {
 
         //long movieRowId;
 
@@ -124,7 +124,7 @@ public class Utilities {
                 /* The filter returning only the row COLUMN_MOVIE_ID with the clause ? = movie_id(declared in the next parameter (selectionArgs)) */
                 MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + " = ?",
                 //only one clause movie_id
-                new String[]{Long.toString(movie.getId())},
+                new String[]{Long.toString(detailMovie.getMovieDetail().getId())},
                 null);
 
         if (movieCursor.moveToFirst()) {
@@ -133,26 +133,26 @@ public class Utilities {
         } else {
 
             ContentValues detail = new ContentValues();
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TITLE, movie.getTitle());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TITLE, detailMovie.getMovieDetail().getTitle());
 
             Gson gson = new GsonBuilder().create();
-            String casting = gson.toJson(movie.getDetailMovie().getCredits().getCast());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_CASTING,casting);
+            String casting = gson.toJson(detailMovie.getCredits().getCast());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_CASTING, casting);
 
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_DATE, movie.getReleaseDate());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_DATE, detailMovie.getMovieDetail().getReleaseDate());
 
-            String genre = gson.toJson(movie.getDetailMovie().getMovieDetail().getGenres());
+            String genre = gson.toJson(detailMovie.getMovieDetail().getGenres());
             detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_GENRE, genre);
 
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_ORIGINAL_TITLE, movie.getOriginalTitle());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_OVERVIEW, movie.getOverview());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RATING, Double.toString(movie.getVoteAverage()));
-            if(movie.getDetailMovie().getReviewsList() != null) {
-                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS, movie.getDetailMovie().getReviewsList().toString());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_ORIGINAL_TITLE, detailMovie.getMovieDetail().getOriginalTitle());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_OVERVIEW, detailMovie.getMovieDetail().getOverview());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RATING, Double.toString(detailMovie.getMovieDetail().getVoteAverage()));
+            if (detailMovie.getReviewsList() != null) {
+                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS, detailMovie.getReviewsList().toString());
             }
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RUNTIME, movie.getDetailMovie().getMovieDetail().getRuntime());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER, movie.getDetailMovie().getTrailerDetails().toString());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TAGLINE, movie.getDetailMovie().getMovieDetail().getTagline());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RUNTIME, detailMovie.getMovieDetail().getRuntime());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER, detailMovie.getTrailerDetails().toString());
+            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TAGLINE, detailMovie.getMovieDetail().getTagline());
 
             // The resulting URI contains the ID for the row.  Extract the movieId from the Uri.
             Uri insertedDetailUri = context.getContentResolver().insert(MovieContract.DetailEntry.CONTENT_URI, detail);
@@ -165,22 +165,22 @@ public class Utilities {
 
             // Then add the data, along with the corresponding name of the data type,
             // so the content provider knows what kind of value is being inserted.
-            values.put(MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY,insertedRowId);
-            values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID, movie.getId());
+            values.put(MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY, insertedRowId);
+            values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID, detailMovie.getMovieDetail().getId());
 
 
-            values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE, movie.getPosterPath());
+            values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE, detailMovie.getMovieDetail().getPosterPath());
 
             // Finally, insert movie data into the database.
             //Uri insertedUri =
-            context.getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI,values);
+            context.getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI, values);
 
         }
         movieCursor.close();
     }
 
 
-    public static void removeMovieFromFavorite(Movie movie, Context context){
+    public static void removeMovieFromFavorite(Movie movie, Context context) {
         context.getContentResolver().delete(MovieContract.FavoriteEntry.CONTENT_URI,
                 MovieContract.FavoriteEntry.COLUMN_MOVIE_ID,
                 new String[]{Integer.toString(movie.getId())});
@@ -189,30 +189,30 @@ public class Utilities {
     /*  Set 2 parameters
     *   1 - CHOICE representing the key used in the query to www.themoviedb.org
     *   2 - SELECTED_CHOICE the String of the mSpinner selected */
-    public static void setChoice (Context context, String choice){
+    public static void setChoice(Context context, String choice) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor =  sharedPreferences.edit();
-        if(choice.equals(context.getString(R.string.key_movies_popular))){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if (choice.equals(context.getString(R.string.key_movies_popular))) {
             editor.putString(CHOICE, context.getString(R.string.pref_movies_popular));
             editor.putString(SELECTED_CHOICE, choice);
             editor.commit();
         }
-        if(choice.equals(context.getString(R.string.key_movies_top_rated))){
+        if (choice.equals(context.getString(R.string.key_movies_top_rated))) {
             editor.putString(SELECTED_CHOICE, choice);
             editor.putString(CHOICE, context.getString(R.string.pref_movies_top_rated));
             editor.commit();
         }
-        if(choice.equals(context.getString(R.string.key_movies_upcoming))){
+        if (choice.equals(context.getString(R.string.key_movies_upcoming))) {
             editor.putString(SELECTED_CHOICE, choice);
             editor.putString(CHOICE, context.getString(R.string.pref_movies_upcoming));
             editor.commit();
         }
-        if(choice.equals(context.getString(R.string.key_movies_now_playing))){
+        if (choice.equals(context.getString(R.string.key_movies_now_playing))) {
             editor.putString(SELECTED_CHOICE, choice);
             editor.putString(CHOICE, context.getString(R.string.pref_movies_now_playing));
             editor.commit();
         }
-        if(choice.equals(context.getString(R.string.key_movies_favorite))){
+        if (choice.equals(context.getString(R.string.key_movies_favorite))) {
             editor.putString(SELECTED_CHOICE, choice);
             editor.putString(CHOICE, context.getString(R.string.pref_movies_favorite));
             editor.commit();
@@ -222,51 +222,50 @@ public class Utilities {
 
 
     //Get back the String choice from the mSpinner
-    public static String getChoice(Context context){
+    public static String getChoice(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getString(CHOICE, context.getString(R.string.pref_movies_popular));
     }
 
     //This method is to ease the mSpinner.setSelection(int position), return the right position
-    public static int getSelectedChoiceNumber(Context context){
+    public static int getSelectedChoiceNumber(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String choice =  sharedPreferences.getString(SELECTED_CHOICE, context.getString(R.string.key_movies_popular));
-        if(choice.equals(context.getString(R.string.key_movies_popular))){
+        String choice = sharedPreferences.getString(SELECTED_CHOICE, context.getString(R.string.key_movies_popular));
+        if (choice.equals(context.getString(R.string.key_movies_popular))) {
             return POPULAR_CHOICE;
         }
-        if(choice.equals(context.getString(R.string.key_movies_top_rated))){
+        if (choice.equals(context.getString(R.string.key_movies_top_rated))) {
             return TOP_RATED_CHOICE;
         }
-        if(choice.equals(context.getString(R.string.key_movies_upcoming))){
+        if (choice.equals(context.getString(R.string.key_movies_upcoming))) {
             return UPCOMIG_CHOICE;
         }
-        if(choice.equals(context.getString(R.string.key_movies_now_playing))){
+        if (choice.equals(context.getString(R.string.key_movies_now_playing))) {
             return NOw_PLAYING_CHOICE;
         }
-        if(choice.equals(context.getString(R.string.key_movies_favorite))){
+        if (choice.equals(context.getString(R.string.key_movies_favorite))) {
             return FAVORITE_CHOICE;
-        }
-        else return POPULAR_CHOICE;
+        } else return POPULAR_CHOICE;
     }
 
-    public static String getSelectedChoice(Context context){
+    public static String getSelectedChoice(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getString(SELECTED_CHOICE, context.getString(R.string.key_movies_popular));
     }
 
 
-    public static int isMovieFavorite(int idMovie, Context context){
+    public static int isMovieFavorite(int idMovie, Context context) {
         int isFavorite = 0;
         Cursor cursor = context.getContentResolver().query(MovieContract.FavoriteEntry.CONTENT_URI, null, MovieContract.FavoriteEntry
                 .COLUMN_MOVIE_ID + " = ?", new String[]{Integer.toString(idMovie)}, null);
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             isFavorite = 1;
         }
         cursor.close();
         return isFavorite;
     }
 
-    public static String savePoster(Bitmap bitmapImage, int idMovie, Context context){
+    public static String savePoster(Bitmap bitmapImage, int idMovie, Context context) {
         ContextWrapper cw = new ContextWrapper(context.getApplicationContext());
         // path to /data/data/yourapp/app_data/imageDir
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
@@ -289,10 +288,9 @@ public class Utilities {
     public static Bitmap getPoster(String path, int idMovie) {
         Bitmap bitmap = null;
         try {
-            File file=new File(path, Integer.toString(idMovie));
+            File file = new File(path, Integer.toString(idMovie));
             bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return bitmap;
@@ -313,7 +311,7 @@ public class Utilities {
             // Sets up the calendar
             cal.setTime(d);
             // gets back the year out of the date and cast it into a string
-            year = month_name + " " + Integer.toString(cal.get(Calendar.YEAR)) ;
+            year = month_name + " " + Integer.toString(cal.get(Calendar.YEAR));
         } catch (ParseException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
 
@@ -336,7 +334,7 @@ public class Utilities {
             // Sets up the calendar
             cal.setTime(d);
             // gets back the year out of the date and cast it into a string
-            year =  Integer.toString(cal.get(Calendar.YEAR)) ;
+            year = Integer.toString(cal.get(Calendar.YEAR));
         } catch (ParseException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
 
@@ -344,31 +342,28 @@ public class Utilities {
         return year;
     }
 
-    public static void checkConnectionStatus(Context context){
-        ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static void checkConnectionStatus(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        if(networkInfo != null){
-            if(networkInfo.getType() == ConnectivityManager.TYPE_WIFI){
+        if (networkInfo != null) {
+            if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
                 //Connected with wifi
-            }
-            else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE){
+            } else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
                 //Connected with mobile
             }
-        }
-        else {
+        } else {
             //Not connected
             Toast.makeText(context, R.string.connectivity, Toast.LENGTH_LONG).show();
         }
     }
 
 
-    public static DetailMovie getMovieDetail(int movieId) {
-        DetailMovie detailMovie = new DetailMovie();
+    public static DetailMovie getMovieDetail(int movieId, DetailMovie detailMovie, Context context) {
 
         try {
 
 
-            final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/";
+            String MOVIE_BASE_URL = context.getResources().getString(R.string.BASE_URL);
 
             Retrofit retrofit = new Retrofit.Builder().baseUrl(MOVIE_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
             MovieService movieService = retrofit.create(MovieService.class);
@@ -394,19 +389,23 @@ public class Utilities {
             Response responseCallCredits = callCredits.execute();
             Credits credits = (Credits) responseCallCredits.body();
 
-            int castingMax;
-            if(credits.getCast().size() < CastingAdapter.MAX_CASTING_TO_DISPLAY){
-                castingMax = credits.getCast().size()-1;
-            }
-            else {
-                castingMax = CastingAdapter.MAX_CASTING_TO_DISPLAY;
-            }
-            for (int i=0 ; i < castingMax ; i++){
-                Cast cast = credits.getCast().get(i);
-                Call<Person> callPerson = movieService.getPerson(cast.getId(), BuildConfig.MOVIE_DB_API_KEY);
-                Response responseCallPerson = callPerson.execute();
-                Person person = (Person) responseCallPerson.body();
-                cast.setPerson(person);
+
+            if (credits != null) {
+                int castingMax;
+
+                if (credits.getCast().size() < CastingAdapter.MAX_CASTING_TO_DISPLAY) {
+                    castingMax = credits.getCast().size() - 1;
+                } else {
+                    castingMax = CastingAdapter.MAX_CASTING_TO_DISPLAY;
+                }
+
+                for (int i = 0; i < castingMax; i++) {
+                    Cast cast = credits.getCast().get(i);
+                    Call<Person> callPerson = movieService.getPerson(cast.getId(), BuildConfig.MOVIE_DB_API_KEY);
+                    Response responseCallPerson = callPerson.execute();
+                    Person person = (Person) responseCallPerson.body();
+                    cast.setPerson(person);
+                }
             }
 
             detailMovie.setCredits(credits);
@@ -421,6 +420,7 @@ public class Utilities {
 
             detailMovie.setReviewsList(reviewsList);
 
+
             Object collectionObject = detailMovie.getMovieDetail().getBelongsToCollection();
             if (collectionObject != null) {
                 Map<String, ?> map = (Map<String, ?>) collectionObject;
@@ -434,6 +434,7 @@ public class Utilities {
 
             }
 
+
         } catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
         }
@@ -441,8 +442,13 @@ public class Utilities {
         return detailMovie;
     }
 
-
-
+    //http://stackoverflow.com/questions/33575731/gridlayoutmanager-how-to-auto-fit-columns  RITEN
+    public static int calculateNoOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int noOfColumns = (int) (dpWidth / 180);
+        return noOfColumns;
+    }
 
 
 }

@@ -9,23 +9,20 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 //@Generated("org.jsonschema2pojo")
-public class Crew implements Parcelable {
+public class CastFilmographyDetail implements Parcelable {
 
     @SerializedName("adult")
     @Expose
     private boolean adult;
+    @SerializedName("character")
+    @Expose
+    private String character;
     @SerializedName("credit_id")
     @Expose
     private String creditId;
-    @SerializedName("department")
-    @Expose
-    private String department;
     @SerializedName("id")
     @Expose
     private int id;
-    @SerializedName("job")
-    @Expose
-    private String job;
     @SerializedName("original_title")
     @Expose
     private String originalTitle;
@@ -39,27 +36,45 @@ public class Crew implements Parcelable {
     @Expose
     private String title;
 
-    protected Crew(Parcel in) {
+
+
+    protected CastFilmographyDetail(Parcel in) {
         adult = in.readByte() != 0;
+        character = in.readString();
         creditId = in.readString();
-        department = in.readString();
         id = in.readInt();
-        job = in.readString();
         originalTitle = in.readString();
         posterPath = in.readString();
         releaseDate = in.readString();
         title = in.readString();
     }
 
-    public static final Creator<Crew> CREATOR = new Creator<Crew>() {
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByte((byte) (adult ? 1 : 0));
+        dest.writeString(character);
+        dest.writeString(creditId);
+        dest.writeInt(id);
+        dest.writeString(originalTitle);
+        dest.writeString(posterPath);
+        dest.writeString(releaseDate);
+        dest.writeString(title);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<CastFilmographyDetail> CREATOR = new Creator<CastFilmographyDetail>() {
         @Override
-        public Crew createFromParcel(Parcel in) {
-            return new Crew(in);
+        public CastFilmographyDetail createFromParcel(Parcel in) {
+            return new CastFilmographyDetail(in);
         }
 
         @Override
-        public Crew[] newArray(int size) {
-            return new Crew[size];
+        public CastFilmographyDetail[] newArray(int size) {
+            return new CastFilmographyDetail[size];
         }
     };
 
@@ -84,6 +99,24 @@ public class Crew implements Parcelable {
     /**
      * 
      * @return
+     *     The character
+     */
+    public String getCharacter() {
+        return character;
+    }
+
+    /**
+     * 
+     * @param character
+     *     The character
+     */
+    public void setCharacter(String character) {
+        this.character = character;
+    }
+
+    /**
+     * 
+     * @return
      *     The creditId
      */
     public String getCreditId() {
@@ -102,24 +135,6 @@ public class Crew implements Parcelable {
     /**
      * 
      * @return
-     *     The department
-     */
-    public String getDepartment() {
-        return department;
-    }
-
-    /**
-     * 
-     * @param department
-     *     The department
-     */
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-
-    /**
-     * 
-     * @return
      *     The id
      */
     public int getId() {
@@ -133,24 +148,6 @@ public class Crew implements Parcelable {
      */
     public void setId(int id) {
         this.id = id;
-    }
-
-    /**
-     * 
-     * @return
-     *     The job
-     */
-    public String getJob() {
-        return job;
-    }
-
-    /**
-     * 
-     * @param job
-     *     The job
-     */
-    public void setJob(String job) {
-        this.job = job;
     }
 
     /**
@@ -225,21 +222,4 @@ public class Crew implements Parcelable {
         this.title = title;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte((byte) (adult ? 1 : 0));
-        dest.writeString(creditId);
-        dest.writeString(department);
-        dest.writeInt(id);
-        dest.writeString(job);
-        dest.writeString(originalTitle);
-        dest.writeString(posterPath);
-        dest.writeString(releaseDate);
-        dest.writeString(title);
-    }
 }

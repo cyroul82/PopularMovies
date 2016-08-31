@@ -2,36 +2,9 @@ package com.griffin.popularmovies.task;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
 
-import com.griffin.popularmovies.BuildConfig;
-import com.griffin.popularmovies.Pojo.Cast;
-import com.griffin.popularmovies.Pojo.Collection;
-import com.griffin.popularmovies.Pojo.Credits;
-import com.griffin.popularmovies.Pojo.MovieDetail;
-import com.griffin.popularmovies.Pojo.Part;
-import com.griffin.popularmovies.Pojo.Person;
-import com.griffin.popularmovies.Pojo.ReviewPage;
-import com.griffin.popularmovies.Pojo.Reviews;
-import com.griffin.popularmovies.Pojo.Trailer;
-import com.griffin.popularmovies.Pojo.TrailerDetail;
-import com.griffin.popularmovies.Service.MovieService;
 import com.griffin.popularmovies.Utilities;
-import com.griffin.popularmovies.adapter.CastingAdapter;
 import com.griffin.popularmovies.detail_movie.DetailMovie;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by griffin on 21/07/16.
@@ -42,8 +15,6 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
     private DetailMovie detailMovie;
 
     private final String LOG_TAG = FetchDetailMovieTask.class.getSimpleName();
-
-    private final static String LANGUAGE_SYSTEM = Locale.getDefault().getLanguage().toString();
 
     public FetchDetailMovieTask(Context context, int idMovie) {
         super(context);
@@ -122,7 +93,7 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
     @Override
     public DetailMovie loadInBackground() {
 
-       return Utilities.getMovieDetail(mIdMovie);
+       return Utilities.getMovieDetail(mIdMovie, detailMovie, getContext());
 
     }
 

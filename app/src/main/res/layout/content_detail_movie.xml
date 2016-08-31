@@ -5,6 +5,4 @@
     android:id="@+id/detail_movie_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".detail_movie.DetailActivity"
-    tools:ignore="MergeRootFrame"/>
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"/>

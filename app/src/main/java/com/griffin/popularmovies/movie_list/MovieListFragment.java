@@ -1,9 +1,7 @@
 package com.griffin.popularmovies.movie_list;
 
-import android.content.Loader;
 import android.os.Bundle;
 
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.view.LayoutInflater;
@@ -11,9 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+
 import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.Utilities;
+import com.griffin.popularmovies.adapter.CollectionAdapter;
 import com.griffin.popularmovies.adapter.PopularMoviesAdapter;
 import com.griffin.popularmovies.task.FetchMoviesTask;
 
@@ -26,7 +25,7 @@ import butterknife.ButterKnife;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MovieListFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Movie>>{
+public class MovieListFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Movie>> {
 
     private PopularMoviesAdapter mMoviesAdapter = null;
 
@@ -42,9 +41,10 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
     private int mPage = 1;
 
-    @BindView(R.id.gridview_moviesList) GridView mGridView;
+    @BindView(R.id.gridview_moviesList)
+    GridView mGridView;
 
-    public MovieListFragment(){
+    public MovieListFragment() {
 
     }
 
@@ -53,11 +53,11 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
      * implement. This mechanism allows activities to be notified of item
      * selections.
      */
-    public interface Callback {
+    public interface CallbackMovieListFragment {
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        void onItemSelected(Movie movie);
+        void onItemSelected(int idMovie);
     }
 
     @Override
@@ -65,11 +65,11 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         super.onCreate(savedInstanceState);
 
         // Creates a new List of movies if no previous state
-        if(savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.key_movies_list))){
+        if (savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.key_movies_list))) {
             mMoviesList = new ArrayList<>();
         }
         //restore the previous state
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             mMoviesList = savedInstanceState.getParcelableArrayList(getString(R.string.key_movies_list));
             mPage = savedInstanceState.getInt(PAGE_KEY);
         }
@@ -93,20 +93,22 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
         //set up the OnClick Listener to gridViewMovies
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    //get the movie back from the adapter
-                    Movie movie = mMoviesAdapter.getItem(position);
-                    ((Callback)getActivity()).onItemSelected(movie);
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //get the movie back from the adapter
+                Movie movie = mMoviesAdapter.getItem(position);
+                ((CallbackMovieListFragment) getActivity()).onItemSelected(movie.getId());
 
-                }
-            });
+            }
+        });
 
-        mGridView.setOnScrollListener(new EndlessScrolling(8, mPage) {
+        mGridView.setOnScrollListener(new EndlessScrolling(12, mPage) {
             @Override
             public void loadMore(int page, int totalItemsCount) {
-                    mPage = page;
-                    getLoaderManager().restartLoader(MOVIE_LOADER, null, MovieListFragment.this);
+                mPage++;
+                getLoaderManager().restartLoader(MOVIE_LOADER, null, MovieListFragment.this);
+
+
 
             }
         });
@@ -119,7 +121,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         super.onActivityCreated(savedInstanceState);
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null || mMoviesList == null) {
             getLoaderManager().initLoader(MOVIE_LOADER, null, this);
         }
     }
@@ -135,8 +137,6 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     }
 
 
-
-
     @Override
     public android.support.v4.content.Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
         return new FetchMoviesTask(getContext(), mPage, mChoice);
@@ -147,9 +147,6 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         if (data != null) {
             //mMoviesAdapter.clear();
             for (Movie movie : data) {
-                if (Utilities.isMovieFavorite(movie.getId(), getContext()) == 1){
-                    movie.setFavorite(1);
-                }
                 mMoviesAdapter.add(movie);
             }
         }
@@ -159,8 +156,6 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     public void onLoaderReset(android.support.v4.content.Loader<List<Movie>> loader) {
         mMoviesAdapter.clear();
     }
-
-
 
 
 }

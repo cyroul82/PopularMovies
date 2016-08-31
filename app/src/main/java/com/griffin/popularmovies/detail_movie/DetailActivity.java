@@ -1,33 +1,34 @@
 package com.griffin.popularmovies.detail_movie;
 
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.griffin.popularmovies.MainActivity;
-import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements DetailFragment.CallbackDetailFragment{
 
     public static final String MOVIE_KEY = "movie";
+    public static final String DETAIL_FRAGMENT_TAG = "dft";
 
-    @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout collapsingToolbarLayout;
-    @BindView(R.id.toolbar_detail_movie) Toolbar toolbar;
-    @BindView(R.id.floatingButton_favorite) FloatingActionButton favoriteButton;
+
+    @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbarLayout;
+    @BindView(R.id.toolbar_detail_movie) Toolbar mToolbar;
+    @BindView(R.id.floatingButton_favorite) FloatingActionButton mFavoriteButton;
     private DetailFragment mDetailFragment;
-    private static final String DETAIL_FRAGMENT_KEY = "dfk";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +38,11 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         //Get back the movie from the intent
-        final Movie movie = getIntent().getParcelableExtra(MOVIE_KEY);
+        int idMovie = getIntent().getIntExtra(MOVIE_KEY, 0);
 
-        setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null && collapsingToolbarLayout != null){
+        setSupportActionBar(mToolbar);
+        if(getSupportActionBar() != null && mCollapsingToolbarLayout != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            collapsingToolbarLayout.setTitle(movie.getTitle());
-
         }
 
         if (savedInstanceState == null) {
@@ -58,31 +57,47 @@ public class DetailActivity extends AppCompatActivity {
             */
 
             Bundle arguments = new Bundle();
-            arguments.putParcelable(DetailFragment.MOVIE, movie);
+            arguments.putInt(DetailFragment.DETAIL_MOVIE, idMovie);
+            arguments.putBoolean(DetailFragment.IS_DETAIL_FRAGMENT_FROM_ACTIVITY, true);
 
             mDetailFragment = new DetailFragment();
             mDetailFragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.detail_movie_container, mDetailFragment, MainActivity.DETAIL_FRAGMENT_TAG)
+                    .addToBackStack(Integer.toString(idMovie))
                     .commit();
-
 
         }
 
-        favoriteButton.setOnClickListener(mDetailFragment);
+        if(savedInstanceState != null){
+            mDetailFragment = (DetailFragment)getSupportFragmentManager().getFragment(savedInstanceState, DETAIL_FRAGMENT_TAG);
+        }
 
-
-        //run the loadToolbarImage method to display the view, outside the main thread
-        loadToolbarImage(movie.getPosterPath());
+        mFavoriteButton.setOnClickListener(mDetailFragment);
 
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        getSupportFragmentManager().putFragment(outState, DETAIL_FRAGMENT_TAG, mDetailFragment);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mDetailFragment = (DetailFragment)getSupportFragmentManager().getFragment(savedInstanceState, DETAIL_FRAGMENT_TAG);
+    }
+
+
     //load the image using Glide library
     private void loadToolbarImage(String posterPath) {
         ImageView imageView = (ImageView) findViewById(R.id.toolbar_image_detail_movie);
 
         if(imageView != null) {
-            Picasso.with(this).load(getString(R.string.IMAGE_BASE_URL_HIGH_QUALITY) + posterPath).fit().centerInside().into(imageView);
+            Picasso.with(this).load(getString(R.string.IMAGE_BASE_URL) + posterPath).fit().centerInside().into(imageView);
         }
     }
 
@@ -96,6 +111,24 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 1){
+            finish();
+        }
+        else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void setTitleAndPosterOnActivity(String title, String posterPath) {
+
+        mCollapsingToolbarLayout.setTitle(title);
+        //run the loadToolbarImage method to display the view, outside the main thread
+        loadToolbarImage(posterPath);
     }
 
 }
