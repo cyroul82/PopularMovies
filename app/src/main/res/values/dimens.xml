@@ -13,4 +13,7 @@
     <dimen name="detail_backdrop_height">250dp</dimen>
 
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="cover_width">120dp</dimen>
+    <dimen name="cover_height">180dp</dimen>
 </resources>

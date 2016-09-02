@@ -245,7 +245,6 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             //Get the fragmentManager and replace the movieListFragment to the fragment container
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, movieListFragment, MOVIE_LIST_FRAGMENT_TAG)
-                    .addToBackStack(null)
                     .commit();
 
         }
@@ -253,7 +252,6 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             //Get the fragmentManager and replace the FavoriteListFragment to the fragment container
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, favoriteListFragment, FAVORITE_MOVIE_LIST_FRAGMENT_TAG)
-                    .addToBackStack(null)
                     .commit();
         }
 

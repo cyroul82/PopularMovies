@@ -265,6 +265,7 @@ public class Utilities {
         return isFavorite;
     }
 
+    //Save picture into the mobile within the app folder (MODE PRIVATE)
     public static String savePoster(Bitmap bitmapImage, int idMovie, Context context) {
         ContextWrapper cw = new ContextWrapper(context.getApplicationContext());
         // path to /data/data/yourapp/app_data/imageDir
@@ -361,7 +362,6 @@ public class Utilities {
     public static DetailMovie getMovieDetail(int movieId, DetailMovie detailMovie, Context context) {
 
         try {
-
 
             String MOVIE_BASE_URL = context.getResources().getString(R.string.BASE_URL);
 

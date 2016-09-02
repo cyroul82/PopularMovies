@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:coverflow="http://schemas.android.com/tools"
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
@@ -132,6 +133,18 @@
                     android:layout_height="wrap_content"/>
 
             </android.support.v7.widget.CardView>
+
+            <com.martinappl.components.ui.containers.FeatureCoverFlow
+                android:id="@+id/coverflow"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                coverflow:coverHeight="@dimen/cover"
+                coverflow:coverWidth="@dimen/cover_width"
+                coverflow:maxScaleFactor="1.5"
+                coverflow:reflectionGap="0px"
+                coverflow:rotationThreshold="0.5"
+                coverflow:scalingThreshold="0.5"
+                 />
 
         </LinearLayout>
 

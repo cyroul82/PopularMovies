@@ -13,6 +13,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,8 +23,10 @@ import com.griffin.popularmovies.Pojo.CastFilmography;
 import com.griffin.popularmovies.Pojo.CastFilmographyDetail;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
+import com.griffin.popularmovies.adapter.FilmographyActorAdapter;
 import com.griffin.popularmovies.adapter.FilmographyAdapter;
 import com.griffin.popularmovies.task.FetchFilmography;
+import com.martinappl.components.ui.containers.FeatureCoverFlow;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -59,7 +63,11 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
     @BindView(R.id.recyclerView_filmography)
     RecyclerView mRecyclerViewFilmography;
 
+    @BindView(R.id.coverflow)
+    FeatureCoverFlow mCoverFlow;
+
     private FilmographyAdapter mFilmographyAdapter;
+    private FilmographyActorAdapter adap;
 
     private ArrayList<CastFilmographyDetail> mCastMovieList = new ArrayList<>();
 
@@ -95,6 +103,10 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
         mFilmographyAdapter = new FilmographyAdapter(mCastMovieList, this);
         mRecyclerViewFilmography.setAdapter(mFilmographyAdapter);
 
+
+       /* adap = new FilmographyActorAdapter(this);
+        adap.setData(mCastMovieList);
+        mCoverFlow.setAdapter(adap);*/
 
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
@@ -147,6 +159,12 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
                 mCastMovieList.clear();
                 mCastMovieList.addAll(data.getCast());
                 mFilmographyAdapter.notifyDataSetChanged();
+                //adap.notifyDataSetChanged();
+
+
+
+
+
             }
         }
     }
