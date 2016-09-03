@@ -83,6 +83,9 @@
     <string name="addFavorite">The movie has been added to your favorite list</string>
 
     <string name="genre">Genre </string>
-    <string name="title_activity_cast_detail">CastDetailActivity</string>
+    <string name="title_activity_cast_detail" translatable="false">CastDetailActivity</string>
+
+    <string name="search_title">Search</string>
+    <string name="search_hint">look for a movie ?</string>
 
 </resources>

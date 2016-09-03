@@ -45,9 +45,6 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private Cast mCast;
 
-    private int columnWidth;
-    GridLayoutManager gridLayoutManagerFilmography;
-
     @BindView(R.id.cast_birthday)
     TextView mBirthday;
     @BindView(R.id.cast_deathday)
@@ -102,7 +99,6 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
 
         mFilmographyAdapter = new FilmographyAdapter(mCastMovieList, this);
         mRecyclerViewFilmography.setAdapter(mFilmographyAdapter);
-
 
        /* adap = new FilmographyActorAdapter(this);
         adap.setData(mCastMovieList);
@@ -160,10 +156,6 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
                 mCastMovieList.addAll(data.getCast());
                 mFilmographyAdapter.notifyDataSetChanged();
                 //adap.notifyDataSetChanged();
-
-
-
-
 
             }
         }

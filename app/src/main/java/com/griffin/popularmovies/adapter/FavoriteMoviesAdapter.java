@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.widget.ImageView;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.movie_list.FavoriteListFragment;
+
+import java.io.FileNotFoundException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,6 +25,8 @@ public class FavoriteMoviesAdapter extends CursorAdapter {
 
     private static final int VIEW_TYPE_COUNT = 1;
     private static final int VIEW_TYPE = 0;
+
+    private static final String LOG_TAG = FavoriteMoviesAdapter.class.getSimpleName();
 
     static class ViewHolder {
         @BindView(R.id.movieItemPictureImageView) ImageView moviePicture;
@@ -53,8 +58,14 @@ public class FavoriteMoviesAdapter extends CursorAdapter {
         //get the url Picture from cursor
         String urlPicture = cursor.getString(FavoriteListFragment.COLUMN_MOVIE_PICTURE);
 
-        Bitmap bitmap = Utilities.getPoster(urlPicture, cursor.getInt(FavoriteListFragment.COLUMN_MOVIE_ID));
-        viewHolder.moviePicture.setImageBitmap(bitmap);
+        try {
+            Bitmap bitmap = Utilities.getPoster(urlPicture, cursor.getInt(FavoriteListFragment.COLUMN_MOVIE_ID));
+            viewHolder.moviePicture.setImageBitmap(bitmap);
+        }
+        catch (FileNotFoundException e) {
+            Log.d(LOG_TAG, e.getMessage());
+        }
+
 
     }
 

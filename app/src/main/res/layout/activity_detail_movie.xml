@@ -25,6 +25,7 @@
             app:expandedTitleMarginStart="48dp"
             app:expandedTitleMarginEnd="64dp">
 
+
             <ImageView
                 android:id="@+id/toolbar_image_detail_movie"
                 android:layout_width="match_parent"

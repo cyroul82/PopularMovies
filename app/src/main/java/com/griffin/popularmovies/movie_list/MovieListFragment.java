@@ -39,8 +39,10 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     private static final String MOVIE_LIST_KEY = "movie_list_key";
 
     public static final String CHOICE = "choice";
+    public static final String SEARCH = "search";
 
-    private String mChoice;
+    private String mChoice = null;
+    private String mSearch = null;
 
     private int mPage = 1;
 
@@ -74,7 +76,14 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         //restore the previous state
         if (savedInstanceState != null) {
             mMoviesList = savedInstanceState.getParcelableArrayList(MOVIE_LIST_KEY);
-            mPage = savedInstanceState.getInt(PAGE_KEY);
+            if(savedInstanceState.containsKey(SEARCH)){
+                mSearch = savedInstanceState.getString(SEARCH);
+            }
+            if(savedInstanceState.containsKey(CHOICE)){
+                mChoice = savedInstanceState.getString(CHOICE);
+                mPage = savedInstanceState.getInt(PAGE_KEY);
+            }
+
         }
     }
 
@@ -86,10 +95,21 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
         ButterKnife.bind(this, rootView);
 
-        //Get back the arguments
-        Bundle args = getArguments();
-        //Set up the variable mChoice
-        mChoice = args.getString(CHOICE);
+        if(savedInstanceState == null) {
+            //Get back the arguments
+            Bundle args = getArguments();
+            if (args != null) {
+                if (args.containsKey(CHOICE)) {
+                    //Set up the variable mChoice
+                    mChoice = args.getString(CHOICE);
+                }
+                if (args.containsKey(SEARCH)) {
+                    mSearch = args.getString(SEARCH);
+                }
+            }
+        }
+
+
 
         mMoviesAdapter = new PopularMoviesAdapter(getActivity(), R.layout.movie_item_picture, R.id.movieItemPictureImageView, mMoviesList);
         mGridView.setAdapter(mMoviesAdapter);
@@ -105,14 +125,16 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
             }
         });
 
-        mGridView.setOnScrollListener(new EndlessScrolling(12) {
-            @Override
-            public void loadMore(int page, int totalItemsCount) {
-                mPage++;
-                getLoaderManager().restartLoader(MOVIE_LOADER, null, MovieListFragment.this);
+        if(mChoice != null) {
+            mGridView.setOnScrollListener(new EndlessScrolling(12) {
+                @Override
+                public void loadMore(int page, int totalItemsCount) {
+                    mPage++;
+                    getLoaderManager().restartLoader(MOVIE_LOADER, null, MovieListFragment.this);
 
-            }
-        });
+                }
+            });
+        }
 
         return rootView;
     }
@@ -129,8 +151,15 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        //save the page loaded so far
-        outState.putInt(PAGE_KEY, mPage);
+        if(mChoice != null) {
+            //save the page loaded so far
+            outState.putInt(PAGE_KEY, mPage);
+            outState.putString(CHOICE, mChoice);
+        }
+
+        if(mSearch != null){
+            outState.putString(SEARCH, mSearch);
+        }
         //put the mMoviesList into the bundle to avoid querying again while rebuilding
         outState.putParcelableArrayList(MOVIE_LIST_KEY, new ArrayList<Parcelable>(mMoviesList));
 
@@ -140,7 +169,13 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public android.support.v4.content.Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
-        return new FetchMoviesTask(getContext(), mPage, mChoice);
+        if(mChoice != null) {
+            return new FetchMoviesTask(getContext(), mPage, mChoice);
+        }
+        if(mSearch != null){
+            return new FetchMoviesTask(getContext(), mSearch);
+        }
+        else return null;
     }
 
     @Override

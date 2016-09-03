@@ -27,12 +27,12 @@
                 android:background="?attr/colorPrimary"
                 app:popupTheme="@style/AppTheme.PopupOverlay">
 
-                <Spinner
+                <!--Spinner
                     android:id="@+id/sort_order_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:entries="@array/sorting_choice_entries"
-                    android:popupBackground="@color/colorPrimary"/>
+                    android:popupBackground="@color/colorPrimary"/-->
 
             </android.support.v7.widget.Toolbar>
 

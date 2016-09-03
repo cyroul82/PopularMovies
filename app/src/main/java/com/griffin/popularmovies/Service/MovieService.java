@@ -59,4 +59,7 @@ public interface MovieService {
     @GET("movie/{id}/images")
     Call<MovieImages> getMovieImages(@Path("id") int id, @Query("api_key") String apiKey);
 
+    //Search by movie title
+    @GET("search/movie")
+    Call<MoviePage> getSearchMovie(@Query("api_key") String apiKey, @Query("query") String querySearch);
 }

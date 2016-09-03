@@ -2,9 +2,12 @@ package com.griffin.popularmovies.task;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
+import android.util.Log;
 
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.detail_movie.DetailMovie;
+
+import java.io.IOException;
 
 /**
  * Created by griffin on 21/07/16.
@@ -12,7 +15,7 @@ import com.griffin.popularmovies.detail_movie.DetailMovie;
 public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
 
     private int mIdMovie;
-    private DetailMovie detailMovie;
+    private DetailMovie mDetailMovie;
 
     private final String LOG_TAG = FetchDetailMovieTask.class.getSimpleName();
 
@@ -32,16 +35,16 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
      */
     @Override
     protected void onStartLoading() {
-        if (detailMovie != null) {
+        if (mDetailMovie != null) {
             // If we currently have a result available, deliver it
             // immediately.
-            deliverResult(detailMovie);
+            deliverResult(mDetailMovie);
         }
 
-        if (takeContentChanged() || detailMovie == null) {
+        if (takeContentChanged() || mDetailMovie == null) {
             // If the data has changed since the last time it was loaded
             // or is not currently available, start a load.
-            detailMovie = new DetailMovie();
+            mDetailMovie = new DetailMovie();
             forceLoad();
         }
     }
@@ -69,9 +72,9 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
         onStopLoading();
 
         // At this point we can release the resources associated with 'mData'.
-        if (detailMovie != null) {
-            releaseResources(detailMovie);
-            detailMovie = null;
+        if (mDetailMovie != null) {
+            releaseResources(mDetailMovie);
+            mDetailMovie = null;
         }
 
     }
@@ -92,9 +95,12 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
 
     @Override
     public DetailMovie loadInBackground() {
-
-       return Utilities.getMovieDetail(mIdMovie, detailMovie, getContext());
-
+        try {
+            return Utilities.getMovieDetail(mIdMovie, mDetailMovie, getContext());
+        } catch (IOException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+        }
+        return null;
     }
 
 }

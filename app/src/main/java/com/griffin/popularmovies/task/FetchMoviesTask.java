@@ -35,13 +35,19 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
 
     private int mPage;
 
-    private String mChoice;
+    private String mChoice = null;
+    private String mSearch = null;
 
 
     public FetchMoviesTask (Context context, int page, String choice){
         super(context);
         mPage = page;
         mChoice = choice;
+    }
+
+    public FetchMoviesTask (Context context, String search){
+        super(context);
+        mSearch = search;
     }
 
     @Override
@@ -108,25 +114,43 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
     public List<Movie> loadInBackground() {
 
         List<Movie> movieList = null;
-        try {
-            String BASE_URL = "https://api.themoviedb.org/3/";
+        String BASE_URL = "https://api.themoviedb.org/3/";
 
-            Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
-            MovieService movieService = retrofit.create(MovieService.class);
-            Call<MoviePage> callMoviePojo = movieService.getMoviesPage(mChoice, BuildConfig.MOVIE_DB_API_KEY, Locale
-                    .getDefault().getLanguage(), mPage);
-            Response response = callMoviePojo.execute();
-            MoviePage moviePage = (MoviePage) response.body();
-            if(moviePage != null) {
-                movieList = moviePage.getResults();
+        if(mChoice != null) {
+            try {
+
+                Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+                MovieService movieService = retrofit.create(MovieService.class);
+                Call<MoviePage> callMoviePojo = movieService.getMoviesPage(mChoice, BuildConfig.MOVIE_DB_API_KEY, Locale
+                        .getDefault().getLanguage(), mPage);
+                Response response = callMoviePojo.execute();
+                MoviePage moviePage = (MoviePage) response.body();
+                if (moviePage != null) {
+                    movieList = moviePage.getResults();
+                }
+                return movieList;
+            } catch (IOException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
             }
-            return movieList;
         }
-        catch (IOException e){
-            Log.e(LOG_TAG, e.getMessage(), e);
+
+        if(mSearch != null){
+            try {
+
+                Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+                MovieService movieService = retrofit.create(MovieService.class);
+                Call<MoviePage> callMoviePojo = movieService.getSearchMovie(BuildConfig.MOVIE_DB_API_KEY, mSearch);
+                Response response = callMoviePojo.execute();
+                MoviePage moviePage = (MoviePage) response.body();
+                if (moviePage != null) {
+                    movieList = moviePage.getResults();
+                }
+                return movieList;
+            } catch (IOException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+            }
         }
 
         return null;
-
     }
 }

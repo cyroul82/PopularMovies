@@ -35,6 +35,7 @@ import com.griffin.popularmovies.MainActivity;
 import com.griffin.popularmovies.Pojo.Cast;
 import com.griffin.popularmovies.Pojo.Genre;
 import com.griffin.popularmovies.Pojo.Part;
+import com.griffin.popularmovies.Pojo.Poster;
 import com.griffin.popularmovies.Pojo.Reviews;
 import com.griffin.popularmovies.Pojo.TrailerDetail;
 import com.griffin.popularmovies.Utilities;
@@ -156,15 +157,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     .replace(R.id.detail_movie_container, df, MainActivity.DETAIL_FRAGMENT_TAG)
                     .addToBackStack(Integer.toString(idMovie))
                     .commit();
-            return;
-
-
         }
     }
 
 
     public interface CallbackDetailFragment {
-        void setTitleAndPosterOnActivity(String title, String posterPath);
+        void setTitleAndPosterOnActivity(String title, String posterPath, List<Poster> posterList);
     }
 
 
@@ -469,7 +467,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if (mIsDetailFragmentFromActivity) {
             ((CallbackDetailFragment) getActivity()).setTitleAndPosterOnActivity(mDetailMovie.getMovieDetail().getTitle(), mDetailMovie
                     .getMovieDetail()
-                    .getPosterPath());
+                    .getPosterPath(), mDetailMovie.getMovieImages().getPosters());
         }
 
     }

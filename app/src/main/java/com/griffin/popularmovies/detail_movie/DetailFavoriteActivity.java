@@ -73,8 +73,8 @@ public class DetailFavoriteActivity extends AppCompatActivity implements DetailF
 
         mCollapsingToolbarLayout.setTitle(title);
 
-        ImageView imageView = (ImageView) findViewById(R.id.toolbar_image_detail_movie);
-        imageView.setImageBitmap(Utilities.getPoster(posterPath, idMovie));
+        //ImageView imageView = (ImageView) findViewById(R.id.toolbar_image_detail_movie);
+        //imageView.setImageBitmap(Utilities.getPoster(posterPath, idMovie));
 
     }
 }

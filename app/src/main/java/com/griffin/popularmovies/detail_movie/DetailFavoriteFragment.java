@@ -13,6 +13,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +32,8 @@ import com.griffin.popularmovies.adapter.TrailerMovieAdapter;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.Pojo.Movie;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
@@ -41,7 +44,7 @@ import butterknife.ButterKnife;
  */
 public class DetailFavoriteFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
-    private final static String TAG = DetailFavoriteFragment.class.getSimpleName();
+    private final static String LOG_TAG = DetailFavoriteFragment.class.getSimpleName();
 
     public static final String FAVORITE_MOVIE = "FAVORITE_MOVIE";
     private Uri mUriMovie;
@@ -49,8 +52,6 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     private ShareActionProvider mShareActionProvider;
 
     private static final int DETAIL_LOADER = 1;
-
-    private final int mNumberMaxDisplayedActors = 5;
 
     private static final String[] DETAIL_COLUMNS = {
             MovieContract.DetailEntry.TABLE_NAME + "." + MovieContract.DetailEntry._ID,
@@ -134,7 +135,9 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
         super.onCreate(savedInstanceState);
         if(savedInstanceState != null && savedInstanceState.containsKey(FAVORITE_MOVIE)){
             mDetailMovie = savedInstanceState.getParcelable(FAVORITE_MOVIE);
-            mTrailerDetailList = mDetailMovie.getTrailerDetails();
+            if (mDetailMovie != null){
+                mTrailerDetailList = mDetailMovie.getTrailerDetails();
+            }
         }
     }
 
@@ -250,7 +253,13 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
         mTextViewTagline.setText(mDetailMovie.getMovieDetail().getTagline());
 
-        mImageViewMoviePicture.setImageBitmap(Utilities.getPoster(mDetailMovie.getMovieDetail().getPosterPath(), mDetailMovie.getMovieDetail().getId()));
+        try {
+
+            mImageViewMoviePicture.setImageBitmap(Utilities.getPoster(mDetailMovie.getMovieDetail().getPosterPath(), mDetailMovie.getMovieDetail().getId()));
+        }
+        catch(FileNotFoundException e){
+            Log.d(LOG_TAG, e.getMessage());
+        }
 
         mTextViewMovieYear.setText(Utilities.getMonthAndYear(mDetailMovie.getMovieDetail().getReleaseDate()));
 

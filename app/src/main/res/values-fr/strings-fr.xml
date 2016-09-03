@@ -40,4 +40,10 @@
     <string name="addFavorite">Le film a été ajouté à votre liste des favoris</string>
 
     <string name="genre">Genre </string>
+
+    <string name="search_title">Recherche</string>
+
+    <string name="search_hint">Recherche un film ? </string>
+
+    <string name="contentDescription_poster">Poster</string>
 </resources>

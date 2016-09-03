@@ -1,5 +1,6 @@
 package com.griffin.popularmovies;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -8,13 +9,16 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.SearchView;
 import android.widget.Spinner;
 
 import com.griffin.popularmovies.adapter.CollectionAdapter;
@@ -26,6 +30,9 @@ import com.griffin.popularmovies.movie_list.BlankFragment;
 import com.griffin.popularmovies.movie_list.FavoriteListFragment;
 import com.griffin.popularmovies.movie_list.MovieListFragment;
 import com.griffin.popularmovies.Pojo.Movie;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,10 +64,12 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
 
     private boolean isFavoriteFragment = false;
 
+    private String mChoice;
+
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
-    @BindView(R.id.sort_order_spinner)
-    Spinner mSpinner;
+    /*@BindView(R.id.sort_order_spinner)
+    Spinner mSpinner;*/
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -74,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
         ButterKnife.bind(this);
 
 
-        //Set the spinner with the preferences choice, saved from the previous use of the app or to  popular by default
+       /* //Set the spinner with the preferences choice, saved from the previous use of the app or to  popular by default
         mSpinner.setSelection(Utilities.getSelectedChoiceNumber(this));
 
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -82,11 +91,11 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selected = (String) parent.getSelectedItem();
 
-                /*  if the selected choice is different from the previous one,
+                *//*  if the selected choice is different from the previous one,
                      then we save the selected into preferences
                      set the "right panel" on tablet to a new new Blank Fragment
 
-                */
+                *//*
 
                 if (!selected.equals(Utilities.getSelectedChoice(getApplicationContext()))) {
                     //Save the choice to the preferences
@@ -124,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
-        });
+        });*/
 
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -137,10 +146,62 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(MenuItem menuItem) {
-                    Snackbar.make(mDrawerLayout, menuItem.getTitle() + " pressed", Snackbar.LENGTH_LONG).show();
-                    menuItem.setChecked(true);
-                    mDrawerLayout.closeDrawers();
-                    return true;
+                    int itemId = menuItem.getItemId();
+                    switch (itemId){
+                        case R.id.drawer_popular:{
+                            //Save the choice to the preferences
+                            Utilities.setChoice(getApplicationContext(), getString(R.string.key_movies_popular));
+                            setMovieListFragment();
+
+                            menuItem.setChecked(true);
+                            mDrawerLayout.closeDrawers();
+                            return true;
+                        }
+                        case R.id.drawer_top_rated:{
+                            //Save the choice to the preferences
+                            Utilities.setChoice(getApplicationContext(), getString(R.string.key_movies_top_rated));
+                            setMovieListFragment();
+
+                            menuItem.setChecked(true);
+                            mDrawerLayout.closeDrawers();
+                            return true;
+                        }
+                        case R.id.drawer_upcoming: {
+                            //Save the choice to the preferences
+                            Utilities.setChoice(getApplicationContext(), getString(R.string.key_movies_upcoming));
+                            setMovieListFragment();
+
+                            menuItem.setChecked(true);
+                            mDrawerLayout.closeDrawers();
+                            return true;
+                        }
+                        case R.id.drawer_this_week: {
+                            //Save the choice to the preferences
+                            Utilities.setChoice(getApplicationContext(), getString(R.string.key_movies_now_playing));
+                            setMovieListFragment();
+
+                            menuItem.setChecked(true);
+                            mDrawerLayout.closeDrawers();
+                            return true;
+                        }
+                        case R.id.drawer_favourite: {
+                            //Save the choice to the preferences
+                            Utilities.setChoice(getApplicationContext(), getString(R.string.key_movies_favorite));
+
+                            //Create a new Object FavoriteListFragment
+                            favoriteListFragment = new FavoriteListFragment();
+                            isFavoriteFragment = true;
+
+                            menuItem.setChecked(true);
+                            mDrawerLayout.closeDrawers();
+                            return true;
+                        }
+                        default:{
+                            mDrawerLayout.closeDrawers();
+                            return false;
+                        }
+                    }
+
                 }
             });
         }
@@ -205,6 +266,17 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
         }
     }
 
+    private void setMovieListFragment(){
+        //Create a new Object MovieListFragment
+        movieListFragment = new MovieListFragment();
+        Bundle args = new Bundle();
+        args.putString(MovieListFragment.CHOICE, Utilities.getChoice(getApplicationContext()));
+        //Set the arguments with the previous Bundle
+        movieListFragment.setArguments(args);
+        isFavoriteFragment = false;
+        onStart();
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
 
@@ -263,6 +335,40 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        final MenuItem searchItem = menu.findItem(R.id.search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //votre code ici
+                //Create a new Object MovieListFragment
+                movieListFragment = new MovieListFragment();
+                String encodedString = null ;
+                try {
+                    encodedString = URLEncoder.encode(query, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    Log.e(LOG_TAG, e.getMessage());
+                }
+                Bundle args = new Bundle();
+                args.putString(MovieListFragment.SEARCH, encodedString);
+                //Set the arguments with the previous Bundle
+                movieListFragment.setArguments(args);
+                isFavoriteFragment = false;
+
+                onStart();
+                //Collapse the search View
+                invalidateOptionsMenu();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
         return true;
     }
 

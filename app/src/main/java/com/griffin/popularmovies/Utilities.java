@@ -25,6 +25,7 @@ import com.griffin.popularmovies.Pojo.Credits;
 import com.griffin.popularmovies.Pojo.Genre;
 import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.Pojo.MovieDetail;
+import com.griffin.popularmovies.Pojo.MovieImages;
 import com.griffin.popularmovies.Pojo.Person;
 import com.griffin.popularmovies.Pojo.ReviewPage;
 import com.griffin.popularmovies.Pojo.Reviews;
@@ -286,14 +287,11 @@ public class Utilities {
         return directory.getAbsolutePath();
     }
 
-    public static Bitmap getPoster(String path, int idMovie) {
+    public static Bitmap getPoster(String path, int idMovie) throws FileNotFoundException {
         Bitmap bitmap = null;
-        try {
-            File file = new File(path, Integer.toString(idMovie));
-            bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        File file = new File(path, Integer.toString(idMovie));
+        bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+
         return bitmap;
 
     }
@@ -323,7 +321,6 @@ public class Utilities {
     public static String getYear(String date) {
         // Creates the format style to match the json format
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        //SimpleDateFormat month_date = new SimpleDateFormat("MMMM", Locale.getDefault());
         String year = null;
         try {
             // Creates the date with the format previously created
@@ -359,85 +356,85 @@ public class Utilities {
     }
 
 
-    public static DetailMovie getMovieDetail(int movieId, DetailMovie detailMovie, Context context) {
+    public static DetailMovie getMovieDetail(int movieId, DetailMovie detailMovie, Context context) throws IOException {
 
-        try {
+        String MOVIE_BASE_URL = context.getResources().getString(R.string.BASE_URL);
 
-            String MOVIE_BASE_URL = context.getResources().getString(R.string.BASE_URL);
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(MOVIE_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        MovieService movieService = retrofit.create(MovieService.class);
 
-            Retrofit retrofit = new Retrofit.Builder().baseUrl(MOVIE_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
-            MovieService movieService = retrofit.create(MovieService.class);
+        Call<Trailer> callTrailer = movieService.getTrailer(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
+        Response responseCallTrailer = callTrailer.execute();
+        Trailer trailer = (Trailer) responseCallTrailer.body();
 
-            Call<Trailer> callTrailer = movieService.getTrailer(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
-            Response responseCallTrailer = callTrailer.execute();
-            Trailer trailer = (Trailer) responseCallTrailer.body();
-
-            List<TrailerDetail> trailerDetails = null;
-            if (trailer != null) {
-                trailerDetails = trailer.getResults();
-            }
-            detailMovie.setTrailerDetails(trailerDetails);
-
-
-            Call<MovieDetail> callMovieDetail = movieService.getMovieDetail(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
-            Response responseCallMovieDetail = callMovieDetail.execute();
-            MovieDetail movieDetail = (MovieDetail) responseCallMovieDetail.body();
-            detailMovie.setMovieDetail(movieDetail);
-
-
-            Call<Credits> callCredits = movieService.getCredits(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
-            Response responseCallCredits = callCredits.execute();
-            Credits credits = (Credits) responseCallCredits.body();
-
-
-            if (credits != null) {
-                int castingMax;
-
-                if (credits.getCast().size() < CastingAdapter.MAX_CASTING_TO_DISPLAY) {
-                    castingMax = credits.getCast().size() - 1;
-                } else {
-                    castingMax = CastingAdapter.MAX_CASTING_TO_DISPLAY;
-                }
-
-                for (int i = 0; i < castingMax; i++) {
-                    Cast cast = credits.getCast().get(i);
-                    Call<Person> callPerson = movieService.getPerson(cast.getId(), BuildConfig.MOVIE_DB_API_KEY);
-                    Response responseCallPerson = callPerson.execute();
-                    Person person = (Person) responseCallPerson.body();
-                    cast.setPerson(person);
-                }
-            }
-
-            detailMovie.setCredits(credits);
-
-            Call<ReviewPage> callReviewPage = movieService.getReviews(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
-            Response responseCallReviewPage = callReviewPage.execute();
-            ReviewPage reviewPage = (ReviewPage) responseCallReviewPage.body();
-            List<Reviews> reviewsList = null;
-            if (reviewPage != null) {
-                reviewsList = reviewPage.getResults();
-            }
-
-            detailMovie.setReviewsList(reviewsList);
-
-
-            Object collectionObject = detailMovie.getMovieDetail().getBelongsToCollection();
-            if (collectionObject != null) {
-                Map<String, ?> map = (Map<String, ?>) collectionObject;
-                Object object = map.get("id");
-                double idCollection = Double.parseDouble(object.toString());
-                Call<Collection> callCollection = movieService.getCollection(idCollection, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
-                Response responseCallCollection = callCollection.execute();
-                Collection collection = (Collection) responseCallCollection.body();
-
-                detailMovie.setCollection(collection);
-
-            }
-
-
-        } catch (IOException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
+        List<TrailerDetail> trailerDetails = null;
+        if (trailer != null) {
+            trailerDetails = trailer.getResults();
         }
+        detailMovie.setTrailerDetails(trailerDetails);
+
+
+        Call<MovieDetail> callMovieDetail = movieService.getMovieDetail(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
+        Response responseCallMovieDetail = callMovieDetail.execute();
+        MovieDetail movieDetail = (MovieDetail) responseCallMovieDetail.body();
+        detailMovie.setMovieDetail(movieDetail);
+
+
+        Call<Credits> callCredits = movieService.getCredits(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
+        Response responseCallCredits = callCredits.execute();
+        Credits credits = (Credits) responseCallCredits.body();
+
+
+        if (credits != null) {
+            int castingMax;
+
+            if (credits.getCast().size() < CastingAdapter.MAX_CASTING_TO_DISPLAY) {
+                castingMax = credits.getCast().size() - 1;
+            } else {
+                castingMax = CastingAdapter.MAX_CASTING_TO_DISPLAY;
+            }
+
+            for (int i = 0; i < castingMax; i++) {
+                Cast cast = credits.getCast().get(i);
+                Call<Person> callPerson = movieService.getPerson(cast.getId(), BuildConfig.MOVIE_DB_API_KEY);
+                Response responseCallPerson = callPerson.execute();
+                Person person = (Person) responseCallPerson.body();
+                cast.setPerson(person);
+            }
+        }
+
+        detailMovie.setCredits(credits);
+
+        Call<ReviewPage> callReviewPage = movieService.getReviews(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
+        Response responseCallReviewPage = callReviewPage.execute();
+        ReviewPage reviewPage = (ReviewPage) responseCallReviewPage.body();
+        List<Reviews> reviewsList = null;
+        if (reviewPage != null) {
+            reviewsList = reviewPage.getResults();
+        }
+
+        detailMovie.setReviewsList(reviewsList);
+
+
+        Object collectionObject = detailMovie.getMovieDetail().getBelongsToCollection();
+        if (collectionObject != null) {
+            Map<String, ?> map = (Map<String, ?>) collectionObject;
+            Object object = map.get("id");
+            double idCollection = Double.parseDouble(object.toString());
+            Call<Collection> callCollection = movieService.getCollection(idCollection, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
+            Response responseCallCollection = callCollection.execute();
+            Collection collection = (Collection) responseCallCollection.body();
+
+            detailMovie.setCollection(collection);
+
+        }
+
+        Call<MovieImages> callMovieImages = movieService.getMovieImages(movieId, BuildConfig.MOVIE_DB_API_KEY);
+        Response responseCallMovieImages = callMovieImages.execute();
+        MovieImages movieImages = (MovieImages) responseCallMovieImages.body();
+
+        detailMovie.setMovieImages(movieImages);
+
 
         return detailMovie;
     }
