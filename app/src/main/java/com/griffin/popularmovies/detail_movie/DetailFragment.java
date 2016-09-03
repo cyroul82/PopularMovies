@@ -1,8 +1,14 @@
 package com.griffin.popularmovies.detail_movie;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -48,6 +54,9 @@ import com.griffin.popularmovies.task.FetchDetailMovieTask;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -129,6 +138,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private CastingAdapter mCastingAdapter;
     private CollectionAdapter mCollectionAdapter;
 
+    private static final String SHORTBRAIN_SHARE_HASHTAG = " #Shortbrain";
+    private String mShareMovie;
+
     private boolean mIsDetailFragmentFromActivity;
     public static final String IS_DETAIL_FRAGMENT_FROM_ACTIVITY = "idffa";
 
@@ -160,13 +172,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         }
     }
 
-
     public interface CallbackDetailFragment {
         void setTitleAndPosterOnActivity(String title, String posterPath, List<Poster> posterList);
     }
 
 
     public DetailFragment() {
+        //To display the menu , do not forget !!!
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -179,7 +192,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mDetailMovie = savedInstanceState.getParcelable(DETAIL_MOVIE);
 
             if (mDetailMovie != null) {
-
 
                 if (mDetailMovie.getReviewsList() != null) {
                     mReviewsList = mDetailMovie.getReviewsList();
@@ -226,8 +238,20 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         // Get the provider and hold onto it to set/change the share intent.
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuShare);
 
+        if (mShareMovie != null) {
+            mShareActionProvider.setShareIntent(createShareMovie());
+        }
 
     }
+
+    private Intent createShareMovie(){
+        final Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "\n" + mShareMovie + "\n" + SHORTBRAIN_SHARE_HASHTAG);
+        return shareIntent;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -285,6 +309,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mRecyclerViewCollection.setLayoutManager(linearLayoutManagerCollection);
 
         //Sort the list by Year ???
+        //TODO: doesn't seem to work !!! ? to finish
         Collections.sort(mPartList, new Comparator<Part>() {
 
             @Override
@@ -323,7 +348,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mProgressDialog.setMessage("Loading data...");
 
             mProgressDialog.show();
-
 
             getLoaderManager().initLoader(DETAIL_LOADER, null, this);
         }
@@ -384,6 +408,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         //Display the UI with new elements
         setUI();
+
+        mShareMovie = String.format("%s \n%s", mDetailMovie.getMovieDetail().getTitle(), mDetailMovie.getMovieDetail().getOverview());
+
+        // If onCreateOptionsMenu has already happened, we need to update the share intent now.
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(createShareMovie());
+        }
 
         mProgressDialog.dismiss();
     }

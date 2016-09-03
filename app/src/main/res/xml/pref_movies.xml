@@ -6,7 +6,6 @@
         android:key="@string/pref_movies_sorting_key"
         android:entries="@array/sorting_choice_entries"
         android:entryValues="@array/sorting_choice_values"
-        android:defaultValue="@string/pref_movies_popular"
-        />
+        android:defaultValue="@string/pref_movies_popular"/>
 
 </PreferenceScreen>

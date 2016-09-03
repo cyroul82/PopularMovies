@@ -11,7 +11,12 @@ import com.griffin.popularmovies.Service.MovieService;
 import com.griffin.popularmovies.Utilities;
 
 
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -153,4 +158,5 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
 
         return null;
     }
+
 }

@@ -1,9 +1,11 @@
 package com.griffin.popularmovies.detail_movie;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -32,7 +34,6 @@ import com.griffin.popularmovies.adapter.TrailerMovieAdapter;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.Pojo.Movie;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,9 +92,9 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     public static final int COL_FAVORITE_MOVIE_DETAIL_REVIEWS = 13;
     public static final int COL_FAVORITE_MOVIE_TAGLINE = 14;
 
-
+    @Nullable
     @BindView(R.id.textView_movieTitle) TextView mTextViewMovieTitle;
-    @BindView(R.id.textView_tagline) TextView mTextViewTagline;
+    @BindView(R.id.textView_tagline) TextView mTextViewTagLine;
     @BindView(R.id.imageView_Picture) ImageView mImageViewMoviePicture;
     @BindView(R.id.textView_Year) TextView mTextViewMovieYear;
     @BindView(R.id.textView_Original_Title) TextView mTextViewOriginalTitle;
@@ -108,6 +109,12 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     private List<TrailerDetail> mTrailerDetailList = new ArrayList<>();
 
     private TrailerMovieAdapter mTrailerMovieAdapter;
+
+    private boolean mIsDetailFavoriteFragmentFromActivity;
+    public static final String IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY = "idfffa";
+
+    private static final String SHORTBRAIN_SHARE_HASHTAG = " #Shortbrain";
+    private String mShareMovie;
 
 
     public DetailFavoriteFragment() {
@@ -133,7 +140,9 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(savedInstanceState != null && savedInstanceState.containsKey(FAVORITE_MOVIE)){
+        if(savedInstanceState != null && savedInstanceState.containsKey(FAVORITE_MOVIE) && savedInstanceState.containsKey
+                (IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY)){
+            mIsDetailFavoriteFragmentFromActivity = savedInstanceState.getBoolean(IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY);
             mDetailMovie = savedInstanceState.getParcelable(FAVORITE_MOVIE);
             if (mDetailMovie != null){
                 mTrailerDetailList = mDetailMovie.getTrailerDetails();
@@ -144,6 +153,7 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(FAVORITE_MOVIE, mDetailMovie);
+        outState.putBoolean(IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY, mIsDetailFavoriteFragmentFromActivity);
         super.onSaveInstanceState(outState);
     }
 
@@ -157,12 +167,24 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
         // Get the provider and hold onto it to set/change the share intent.
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+        if (mShareMovie != null) {
+            mShareActionProvider.setShareIntent(createShareMovie());
+        }
+    }
+
+    private Intent createShareMovie(){
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, mShareMovie + "\n" + SHORTBRAIN_SHARE_HASHTAG);
+        return shareIntent;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.detail_movie_favorite_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.detail_movie_fragment, container, false);
 
         ButterKnife.bind(this, rootView);
 
@@ -170,6 +192,7 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
         if (arguments != null) {
             //content://com.griffin.popularmovies/favorite/1  -> the number represents the selected movie in the the gridView
             mUriMovie = arguments.getParcelable(FAVORITE_MOVIE);
+            mIsDetailFavoriteFragmentFromActivity = arguments.getBoolean(IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY);
         }
         if(savedInstanceState != null){
             setUI();
@@ -184,16 +207,6 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
         mTrailerMovieAdapter = new TrailerMovieAdapter(mTrailerDetailList, getContext());
         mRecyclerViewTrailer.setAdapter(mTrailerMovieAdapter);
 
-        /*mFavoriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!mFavoriteButton.isChecked()) {
-                    Utilities.removeMovieFromFavorite(mMovie, getContext());
-                    ((CallbackMovieListFragment)getActivity()).onFavoriteMovieClick(mMovie, getContext().getApplicationContext());
-                }
-            }
-        });*/
-
         return rootView;
     }
 
@@ -203,7 +216,7 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if(savedInstanceState == null) {
-            getLoaderManager().initLoader(DETAIL_LOADER, savedInstanceState, this);
+            getLoaderManager().initLoader(DETAIL_LOADER, null, this);
         }
 
     }
@@ -239,6 +252,13 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
                 mCardViewTrailer.setVisibility(View.GONE);
             }
             setUI();
+
+            mShareMovie = String.format("%s \n%s", mDetailMovie.getMovieDetail().getTitle(), mDetailMovie.getMovieDetail().getOverview());
+
+            // If onCreateOptionsMenu has already happened, we need to update the share intent now.
+            if (mShareActionProvider != null) {
+                mShareActionProvider.setShareIntent(createShareMovie());
+            }
         }
     }
 
@@ -249,9 +269,13 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
     private void setUI(){
 
-        mTextViewMovieTitle.setText(mDetailMovie.getMovieDetail().getTitle());
+        //set the title text, only on tablet display !
+        if (mTextViewMovieTitle != null) {
+            mTextViewMovieTitle.setText(mDetailMovie.getMovieDetail().getTitle());
+        }
 
-        mTextViewTagline.setText(mDetailMovie.getMovieDetail().getTagline());
+
+        mTextViewTagLine.setText(mDetailMovie.getMovieDetail().getTagline());
 
         try {
 
@@ -284,7 +308,9 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
         //Set genre Object and update UI
         mTextViewGenre.setText(sb.toString());
 
-        ((CallbackDetailFavoriteFragment)getActivity()).setTitleAndPosterOnActivity(mDetailMovie.getMovieDetail().getTitle(),
-                mDetailMovie.getMovieDetail().getPosterPath(), mDetailMovie.getMovieDetail().getId());
+        if(mIsDetailFavoriteFragmentFromActivity) {
+            ((CallbackDetailFavoriteFragment) getActivity()).setTitleAndPosterOnActivity(mDetailMovie.getMovieDetail().getTitle(),
+                    mDetailMovie.getMovieDetail().getPosterPath(), mDetailMovie.getMovieDetail().getId());
+        }
     }
 }

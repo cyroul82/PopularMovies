@@ -187,73 +187,19 @@ public class Utilities {
                 new String[]{Integer.toString(movie.getId())});
     }
 
-    /*  Set 2 parameters
-    *   1 - CHOICE representing the key used in the query to www.themoviedb.org
-    *   2 - SELECTED_CHOICE the String of the mSpinner selected */
+
     public static void setChoice(Context context, String choice) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        if (choice.equals(context.getString(R.string.key_movies_popular))) {
-            editor.putString(CHOICE, context.getString(R.string.pref_movies_popular));
-            editor.putString(SELECTED_CHOICE, choice);
-            editor.commit();
-        }
-        if (choice.equals(context.getString(R.string.key_movies_top_rated))) {
-            editor.putString(SELECTED_CHOICE, choice);
-            editor.putString(CHOICE, context.getString(R.string.pref_movies_top_rated));
-            editor.commit();
-        }
-        if (choice.equals(context.getString(R.string.key_movies_upcoming))) {
-            editor.putString(SELECTED_CHOICE, choice);
-            editor.putString(CHOICE, context.getString(R.string.pref_movies_upcoming));
-            editor.commit();
-        }
-        if (choice.equals(context.getString(R.string.key_movies_now_playing))) {
-            editor.putString(SELECTED_CHOICE, choice);
-            editor.putString(CHOICE, context.getString(R.string.pref_movies_now_playing));
-            editor.commit();
-        }
-        if (choice.equals(context.getString(R.string.key_movies_favorite))) {
-            editor.putString(SELECTED_CHOICE, choice);
-            editor.putString(CHOICE, context.getString(R.string.pref_movies_favorite));
-            editor.commit();
-        }
-
+        editor.putString(CHOICE, choice);
+        editor.apply();
     }
-
 
     //Get back the String choice from the mSpinner
     public static String getChoice(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getString(CHOICE, context.getString(R.string.pref_movies_popular));
     }
-
-    //This method is to ease the mSpinner.setSelection(int position), return the right position
-    public static int getSelectedChoiceNumber(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String choice = sharedPreferences.getString(SELECTED_CHOICE, context.getString(R.string.key_movies_popular));
-        if (choice.equals(context.getString(R.string.key_movies_popular))) {
-            return POPULAR_CHOICE;
-        }
-        if (choice.equals(context.getString(R.string.key_movies_top_rated))) {
-            return TOP_RATED_CHOICE;
-        }
-        if (choice.equals(context.getString(R.string.key_movies_upcoming))) {
-            return UPCOMIG_CHOICE;
-        }
-        if (choice.equals(context.getString(R.string.key_movies_now_playing))) {
-            return NOw_PLAYING_CHOICE;
-        }
-        if (choice.equals(context.getString(R.string.key_movies_favorite))) {
-            return FAVORITE_CHOICE;
-        } else return POPULAR_CHOICE;
-    }
-
-    public static String getSelectedChoice(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPreferences.getString(SELECTED_CHOICE, context.getString(R.string.key_movies_popular));
-    }
-
 
     public static int isMovieFavorite(int idMovie, Context context) {
         int isFavorite = 0;

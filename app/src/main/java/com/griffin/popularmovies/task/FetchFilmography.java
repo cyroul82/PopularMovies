@@ -38,9 +38,13 @@ public class FetchFilmography extends AsyncTaskLoader<CastFilmography> {
 
         try {
 
+
+
             Retrofit retrofit = new Retrofit.Builder().baseUrl(getContext().getResources().getString(R.string.BASE_URL))
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
+
+
 
             MovieService movieService = retrofit.create(MovieService.class);
 

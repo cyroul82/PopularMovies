@@ -46,14 +46,9 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     public static final String MOVIE_LIST_FRAGMENT_TAG = "MLFTAG";
     public static final String FAVORITE_MOVIE_LIST_FRAGMENT_TAG = "FMFTAG";
     private static final String BLANK_FRAGMENT_TAG = "BFTAG";
-    public static final String ACTOR_FRAGMENT_TAG = "FMFTAG";
-
 
     private FavoriteListFragment favoriteListFragment;
     private MovieListFragment movieListFragment;
-    private DetailFragment detailFragment;
-    private DetailFavoriteFragment detailFavoriteFragment;
-    private BlankFragment blankFragment;
 
     public static final String TITLE_BLANK_FRAGMENT_KEY = "title";
 
@@ -61,8 +56,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
-    /*@BindView(R.id.sort_order_spinner)
-    Spinner mSpinner;*/
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -74,59 +68,6 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-
-
-       /* //Set the spinner with the preferences choice, saved from the previous use of the app or to  popular by default
-        mSpinner.setSelection(Utilities.getSelectedChoiceNumber(this));
-
-        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selected = (String) parent.getSelectedItem();
-
-                *//*  if the selected choice is different from the previous one,
-                     then we save the selected into preferences
-                     set the "right panel" on tablet to a new new Blank Fragment
-
-                *//*
-
-                if (!selected.equals(Utilities.getSelectedChoice(getApplicationContext()))) {
-                    //Save the choice to the preferences
-                    Utilities.setChoice(getApplicationContext(), selected);
-
-                    //if selected choice equals Favorite
-                    if (selected.equals(getResources().getString(R.string.key_movies_favorite))) {
-                        //Create a new Object FavoriteListFragment
-                        favoriteListFragment = new FavoriteListFragment();
-                        isFavoriteFragment = true;
-                    }
-                    //else if selected choice is different than Favorite
-                    else {
-                        //Create a new Object MovieListFragment
-                        movieListFragment = new MovieListFragment();
-                        Bundle args = new Bundle();
-                        args.putString(MovieListFragment.CHOICE, Utilities.getChoice(getApplicationContext()));
-                        //Set the arguments with the previous Bundle
-                        movieListFragment.setArguments(args);
-                        isFavoriteFragment = false;
-                    }
-
-                    //if on Tablet
-                    if (mTwoPane) {
-                        //set up a blank fragment on the right panel as presentation page !!!
-                        setBlankFragment();
-                    }
-
-                    onStart();
-                }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });*/
 
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -143,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                     switch (itemId){
                         case R.id.drawer_popular:{
                             //Save the choice to the preferences
-                            String choice = getString(R.string.key_movies_popular);
+                            String choice = getString(R.string.pref_movies_popular);
                             Utilities.setChoice(getApplicationContext(), choice);
                             setMovieListFragment(choice);
 
@@ -153,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                         }
                         case R.id.drawer_top_rated:{
                             //Save the choice to the preferences
-                            String choice = getString(R.string.key_movies_top_rated);
+                            String choice = getString(R.string.pref_movies_top_rated);
                             Utilities.setChoice(getApplicationContext(), choice);
                             setMovieListFragment(choice);
 
@@ -163,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                         }
                         case R.id.drawer_upcoming: {
                             //Save the choice to the preferences
-                            String choice = getString(R.string.key_movies_upcoming);
+                            String choice = getString(R.string.pref_movies_upcoming);
                             Utilities.setChoice(getApplicationContext(), choice);
                             setMovieListFragment(choice);
 
@@ -173,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                         }
                         case R.id.drawer_this_week: {
                             //Save the choice to the preferences
-                            String choice = getString(R.string.key_movies_now_playing);
+                            String choice = getString(R.string.pref_movies_now_playing);
                             Utilities.setChoice(getApplicationContext(), choice);
                             setMovieListFragment(choice);
 
@@ -183,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                         }
                         case R.id.drawer_favorite: {
                             //Save the choice to the preferences
-                            String choice = getString(R.string.key_movies_favorite);
+                            String choice = getString(R.string.pref_movies_favorite);
                             Utilities.setChoice(getApplicationContext(), choice);
 
                             //Create a new Object FavoriteListFragment
@@ -215,9 +156,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             // adding or replacing the detail fragment using a
             // fragment transaction.
             if (savedInstanceState == null) {
-                setBlankFragment();
-            } else {
-
+                setBlankFragment(Utilities.getChoice(this));
             }
         } else {
             mTwoPane = false;
@@ -253,7 +192,6 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                 isFavoriteFragment = true;
                 getFavoriteMovieListFragment(savedInstanceState);
             }
-
         }
     }
 
@@ -267,6 +205,9 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
         movieListFragment.setArguments(args);
         isFavoriteFragment = false;
         onStart();
+        if(mTwoPane){
+            setBlankFragment(choice);
+        }
     }
 
     //get back the movie list fragment from manager
@@ -360,6 +301,10 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                 isFavoriteFragment = false;
 
                 onStart();
+
+                if(mTwoPane){
+                    setBlankFragment(getString(R.string.search_title));
+                }
                 //Collapse the search View
                 invalidateOptionsMenu();
                 return false;
@@ -402,7 +347,8 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
         if (mTwoPane) {
             Bundle args = new Bundle();
             args.putParcelable(DetailFavoriteFragment.FAVORITE_MOVIE, movieUri);
-            detailFavoriteFragment = new DetailFavoriteFragment();
+            args.putBoolean(DetailFavoriteFragment.IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY, false);
+            DetailFavoriteFragment detailFavoriteFragment = new DetailFavoriteFragment();
             detailFavoriteFragment.setArguments(args);
 
             getSupportFragmentManager().beginTransaction()
@@ -422,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             args.putInt(DetailFragment.DETAIL_MOVIE, idMovie);
             args.putBoolean(DetailFragment.IS_DETAIL_FRAGMENT_FROM_ACTIVITY, false);
 
-            detailFragment = new DetailFragment();
+            DetailFragment detailFragment = new DetailFragment();
             detailFragment.setArguments(args);
 
             getSupportFragmentManager().beginTransaction()
@@ -440,13 +386,13 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     //Remove the movie from the favorite list
     @Override
     public void onFavoriteMovieClick(Movie movie, Context context) {
-        setBlankFragment();
+        setBlankFragment("blank");
     }
 
-    private void setBlankFragment() {
+    private void setBlankFragment(String title) {
         Bundle b = new Bundle();
-        b.putString(TITLE_BLANK_FRAGMENT_KEY, Utilities.getSelectedChoice(this));
-        blankFragment = new BlankFragment();
+        b.putString(TITLE_BLANK_FRAGMENT_KEY, title);
+        BlankFragment blankFragment = new BlankFragment();
         blankFragment.setArguments(b);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.detail_movie_container, blankFragment, BLANK_FRAGMENT_TAG)

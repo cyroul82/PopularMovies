@@ -45,6 +45,7 @@ public class DetailFavoriteActivity extends AppCompatActivity implements DetailF
 
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailFavoriteFragment.FAVORITE_MOVIE, getIntent().getData());
+            arguments.putBoolean(DetailFavoriteFragment.IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY, true);
 
             DetailFavoriteFragment fragment = new DetailFavoriteFragment();
             fragment.setArguments(arguments);

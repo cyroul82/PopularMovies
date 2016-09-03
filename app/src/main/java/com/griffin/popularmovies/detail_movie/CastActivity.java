@@ -60,8 +60,8 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
     @BindView(R.id.recyclerView_filmography)
     RecyclerView mRecyclerViewFilmography;
 
-    @BindView(R.id.coverflow)
-    FeatureCoverFlow mCoverFlow;
+    /*@BindView(R.id.coverflow)
+    FeatureCoverFlow mCoverFlow;*/
 
     private FilmographyAdapter mFilmographyAdapter;
     private FilmographyActorAdapter adap;
