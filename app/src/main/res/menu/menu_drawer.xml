@@ -6,25 +6,25 @@
         <item
             android:id="@+id/drawer_popular"
             android:checked="true"
-            android:icon="@drawable/ic_person_white_24dp"
+            android:icon="@drawable/ic_video_library_white_24dp"
             android:title="@string/key_movies_popular"/>
 
         <item
             android:id="@+id/drawer_top_rated"
             android:checked="true"
-            android:icon="@drawable/ic_person_white_24dp"
+            android:icon="@drawable/ic_video_library_white_24dp"
             android:title="@string/key_movies_top_rated"/>
 
         <item
             android:id="@+id/drawer_upcoming"
             android:checked="true"
-            android:icon="@drawable/ic_person_white_24dp"
+            android:icon="@drawable/ic_video_library_white_24dp"
             android:title="@string/key_movies_upcoming"/>
 
         <item
             android:id="@+id/drawer_this_week"
             android:checked="true"
-            android:icon="@drawable/ic_person_white_24dp"
+            android:icon="@drawable/ic_video_library_white_24dp"
             android:title="@string/key_movies_now_playing"/>
 
         <item

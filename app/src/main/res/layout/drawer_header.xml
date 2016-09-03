@@ -17,7 +17,7 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="172dp"
+                android:layout_height="200dp"
                 android:background="@drawable/detail_background"
                 android:orientation="vertical"
                 android:paddingTop="@dimen/status_bar_height"
@@ -41,7 +41,7 @@
         android:layout_above="@+id/email"
         android:layout_marginLeft="@dimen/spacing_large"
         android:layout_marginStart="@dimen/spacing_large"
-        android:text="Username"
+        android:text="Project\nAndroid Developer Nanodegree\nUdacity "
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
     <TextView
         android:id="@+id/email"
@@ -51,7 +51,7 @@
         android:layout_marginLeft="@dimen/spacing_large"
         android:layout_marginStart="@dimen/spacing_large"
         android:layout_marginBottom="@dimen/spacing_large"
-        android:text="username@mymail.com"
+        android:text="www.github.com/cyroul82"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
 </RelativeLayout>
