@@ -182,11 +182,12 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     public void onLoadFinished(android.support.v4.content.Loader<List<Movie>> loader, List<Movie> data) {
 
         if (data != null) {
-            //mMoviesAdapter.clear();
+            if(mSearch != null) {
+                mMoviesAdapter.clear();
+            }
 
             for (Movie movie : data) {
                 mMoviesAdapter.add(movie);
-
             }
         }
         mMoviesAdapter.notifyDataSetChanged();

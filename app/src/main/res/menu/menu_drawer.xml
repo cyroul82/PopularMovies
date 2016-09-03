@@ -28,7 +28,7 @@
             android:title="@string/key_movies_now_playing"/>
 
         <item
-            android:id="@+id/drawer_favourite"
+            android:id="@+id/drawer_favorite"
             android:icon="@drawable/ic_favorite_black_24dp"
             android:title="@string/favorite"/>
 

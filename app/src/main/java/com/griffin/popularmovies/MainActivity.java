@@ -1,35 +1,30 @@
 package com.griffin.popularmovies;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.SearchView;
-import android.widget.Spinner;
 
+import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.adapter.CollectionAdapter;
+import com.griffin.popularmovies.detail_movie.DetailActivity;
 import com.griffin.popularmovies.detail_movie.DetailFavoriteActivity;
 import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
-import com.griffin.popularmovies.detail_movie.DetailActivity;
 import com.griffin.popularmovies.detail_movie.DetailFragment;
 import com.griffin.popularmovies.movie_list.BlankFragment;
 import com.griffin.popularmovies.movie_list.FavoriteListFragment;
 import com.griffin.popularmovies.movie_list.MovieListFragment;
-import com.griffin.popularmovies.Pojo.Movie;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -63,8 +58,6 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     public static final String TITLE_BLANK_FRAGMENT_KEY = "title";
 
     private boolean isFavoriteFragment = false;
-
-    private String mChoice;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -150,8 +143,9 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                     switch (itemId){
                         case R.id.drawer_popular:{
                             //Save the choice to the preferences
-                            Utilities.setChoice(getApplicationContext(), getString(R.string.key_movies_popular));
-                            setMovieListFragment();
+                            String choice = getString(R.string.key_movies_popular);
+                            Utilities.setChoice(getApplicationContext(), choice);
+                            setMovieListFragment(choice);
 
                             menuItem.setChecked(true);
                             mDrawerLayout.closeDrawers();
@@ -159,8 +153,9 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                         }
                         case R.id.drawer_top_rated:{
                             //Save the choice to the preferences
-                            Utilities.setChoice(getApplicationContext(), getString(R.string.key_movies_top_rated));
-                            setMovieListFragment();
+                            String choice = getString(R.string.key_movies_top_rated);
+                            Utilities.setChoice(getApplicationContext(), choice);
+                            setMovieListFragment(choice);
 
                             menuItem.setChecked(true);
                             mDrawerLayout.closeDrawers();
@@ -168,8 +163,9 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                         }
                         case R.id.drawer_upcoming: {
                             //Save the choice to the preferences
-                            Utilities.setChoice(getApplicationContext(), getString(R.string.key_movies_upcoming));
-                            setMovieListFragment();
+                            String choice = getString(R.string.key_movies_upcoming);
+                            Utilities.setChoice(getApplicationContext(), choice);
+                            setMovieListFragment(choice);
 
                             menuItem.setChecked(true);
                             mDrawerLayout.closeDrawers();
@@ -177,20 +173,23 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                         }
                         case R.id.drawer_this_week: {
                             //Save the choice to the preferences
-                            Utilities.setChoice(getApplicationContext(), getString(R.string.key_movies_now_playing));
-                            setMovieListFragment();
+                            String choice = getString(R.string.key_movies_now_playing);
+                            Utilities.setChoice(getApplicationContext(), choice);
+                            setMovieListFragment(choice);
 
                             menuItem.setChecked(true);
                             mDrawerLayout.closeDrawers();
                             return true;
                         }
-                        case R.id.drawer_favourite: {
+                        case R.id.drawer_favorite: {
                             //Save the choice to the preferences
-                            Utilities.setChoice(getApplicationContext(), getString(R.string.key_movies_favorite));
+                            String choice = getString(R.string.key_movies_favorite);
+                            Utilities.setChoice(getApplicationContext(), choice);
 
                             //Create a new Object FavoriteListFragment
                             favoriteListFragment = new FavoriteListFragment();
                             isFavoriteFragment = true;
+                            onStart();
 
                             menuItem.setChecked(true);
                             mDrawerLayout.closeDrawers();
@@ -206,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             });
         }
 
-
+        // setup if using a tablet
         if (findViewById(R.id.detail_movie_container) != null) {
             // The detail container view will be present only in the large-screen layouts
             // (res/layout-sw600dp). If this view is present, then the activity should be
@@ -238,14 +237,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
 
             //then if choice is not equals favorite
             else {
-                //create a bundle and add the choice
-                Bundle args = new Bundle();
-                args.putString(MovieListFragment.CHOICE, choice);
-
-                //Create a new movieListFragment Object
-                movieListFragment = new MovieListFragment();
-                //Set the arguments with the previous Bundle
-                movieListFragment.setArguments(args);
+                setMovieListFragment(choice);
                 isFavoriteFragment = false;
             }
 
@@ -254,27 +246,38 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(MOVIE_LIST_FRAGMENT_TAG)) {
                 isFavoriteFragment = false;
-                movieListFragment = (MovieListFragment) getSupportFragmentManager().getFragment(savedInstanceState, MOVIE_LIST_FRAGMENT_TAG);
+                getMovieListFragment(savedInstanceState);
             }
 
             if (savedInstanceState.containsKey(FAVORITE_MOVIE_LIST_FRAGMENT_TAG)) {
                 isFavoriteFragment = true;
-                favoriteListFragment = (FavoriteListFragment) getSupportFragmentManager().getFragment(savedInstanceState,
-                        FAVORITE_MOVIE_LIST_FRAGMENT_TAG);
+                getFavoriteMovieListFragment(savedInstanceState);
             }
 
         }
     }
 
-    private void setMovieListFragment(){
+    //Set the movie List fragment with the choice from the navigation
+    private void setMovieListFragment(String choice){
         //Create a new Object MovieListFragment
         movieListFragment = new MovieListFragment();
         Bundle args = new Bundle();
-        args.putString(MovieListFragment.CHOICE, Utilities.getChoice(getApplicationContext()));
+        args.putString(MovieListFragment.CHOICE, choice);
         //Set the arguments with the previous Bundle
         movieListFragment.setArguments(args);
         isFavoriteFragment = false;
         onStart();
+    }
+
+    //get back the movie list fragment from manager
+    private void getMovieListFragment(Bundle savedInstanceState){
+        movieListFragment = (MovieListFragment) getSupportFragmentManager().getFragment(savedInstanceState, MOVIE_LIST_FRAGMENT_TAG);
+    }
+
+    //get back the favorite list fragment from manager
+    private void getFavoriteMovieListFragment(Bundle savedInstanceState){
+        favoriteListFragment = (FavoriteListFragment) getSupportFragmentManager().getFragment(savedInstanceState,
+                FAVORITE_MOVIE_LIST_FRAGMENT_TAG);
     }
 
     @Override
@@ -299,13 +302,13 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
 
         if (savedInstanceState.containsKey(MOVIE_LIST_FRAGMENT_TAG)) {
             isFavoriteFragment = false;
-            movieListFragment = (MovieListFragment) getSupportFragmentManager().getFragment(savedInstanceState, MOVIE_LIST_FRAGMENT_TAG);
+            getMovieListFragment(savedInstanceState);
         }
 
         if (savedInstanceState.containsKey(FAVORITE_MOVIE_LIST_FRAGMENT_TAG)) {
             isFavoriteFragment = true;
-            favoriteListFragment = (FavoriteListFragment) getSupportFragmentManager().getFragment(savedInstanceState,
-                    FAVORITE_MOVIE_LIST_FRAGMENT_TAG);
+            getFavoriteMovieListFragment(savedInstanceState);
+
         }
 
     }
@@ -342,7 +345,6 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                //votre code ici
                 //Create a new Object MovieListFragment
                 movieListFragment = new MovieListFragment();
                 String encodedString = null ;
