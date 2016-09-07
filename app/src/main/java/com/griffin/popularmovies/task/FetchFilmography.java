@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
-import com.bumptech.glide.util.Util;
 import com.griffin.popularmovies.BuildConfig;
 import com.griffin.popularmovies.Pojo.CastFilmography;
 import com.griffin.popularmovies.R;
@@ -23,8 +22,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class FetchFilmography extends AsyncTaskLoader<CastFilmography> {
 
-    private int mIdCast;
     private static final String LOG_TAG = FetchFilmography.class.getSimpleName();
+    private int mIdCast;
 
     public FetchFilmography(Context context, int idCast) {
         super(context);
@@ -37,14 +36,9 @@ public class FetchFilmography extends AsyncTaskLoader<CastFilmography> {
         CastFilmography castFilmography = null;
 
         try {
-
-
-
             Retrofit retrofit = new Retrofit.Builder().baseUrl(getContext().getResources().getString(R.string.BASE_URL))
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
-
-
 
             MovieService movieService = retrofit.create(MovieService.class);
 
@@ -52,11 +46,9 @@ public class FetchFilmography extends AsyncTaskLoader<CastFilmography> {
             Response responseCallCastFilmography = callCastFilmography.execute();
             castFilmography = (CastFilmography) responseCallCastFilmography.body();
 
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage());
         }
-
 
 
         return castFilmography;

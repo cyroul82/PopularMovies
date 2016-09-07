@@ -9,10 +9,10 @@
 
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/floatingButton"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/detail_background"
-        android:id="@+id/floatingButton"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
@@ -22,14 +22,14 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/textView_movieTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView_movieTitle"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:paddingTop="@dimen/activity_vertical_margin"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/colorBackgroundTitle"
                 android:textSize="26sp"/>
@@ -40,9 +40,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:paddingTop="@dimen/activity_vertical_margin"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/colorBackgroundTitle"
                 android:textSize="18sp"/>
@@ -93,8 +93,8 @@
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="2"
                                 android:layout_gravity="center"
+                                android:layout_weight="2"
 
                                 android:orientation="vertical">
 
@@ -111,10 +111,10 @@
                                     android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                                 <TextView
+                                    android:id="@+id/textView_Original_Title_Text"
                                     style="@style/titleParagraphTablet"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:id="@+id/textView_Original_Title_Text"
                                     android:text="@string/originalTitleTextView"/>
 
                                 <TextView
@@ -135,16 +135,17 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            style="@style/CardView_ContentStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            style="@style/CardView_ContentStyle"
                             android:orientation="horizontal">
 
                             <TextView
+                                style="@style/titleParagraphTablet"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/genre"
-                                style="@style/titleParagraphTablet"/>
+                                android:layout_marginRight="@dimen/spacing_large"
+                                android:text="@string/genre"/>
 
                             <TextView
                                 android:id="@+id/textView_Genre"
@@ -200,8 +201,8 @@
                         style="@style/CardView_ContentStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/spacing_medium"
                         android:layout_marginEnd="@dimen/spacing_medium"
+                        android:layout_marginStart="@dimen/spacing_medium"
                         android:orientation="vertical">
 
                         <TextView
@@ -316,16 +317,16 @@
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
-        android:layout_height="wrap_content"
+        android:id="@+id/floatingButton_favorite_tablet"
         android:layout_width="wrap_content"
-        android:id="@+id/floatingButton_favorite"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        android:src="@drawable/ic_favorite_black_24dp"
+        app:elevation="6dp"
         app:layout_anchor="@id/floatingButton"
         app:layout_anchorGravity="bottom|right|end"
-        android:src="@drawable/ic_favorite_black_24dp"
-        android:layout_margin="@dimen/fab_margin"
-        app:elevation="6dp"
-        app:pressedTranslationZ="12dp"
-        android:clickable="true"/>
+        app:pressedTranslationZ="12dp"/>
 
 
 </android.support.design.widget.CoordinatorLayout>

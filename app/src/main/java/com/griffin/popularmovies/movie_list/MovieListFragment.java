@@ -1,8 +1,8 @@
 package com.griffin.popularmovies.movie_list;
 
 import android.os.Bundle;
-
 import android.os.Parcelable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.view.LayoutInflater;
@@ -13,7 +13,6 @@ import android.widget.GridView;
 
 import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.adapter.CollectionAdapter;
 import com.griffin.popularmovies.adapter.PopularMoviesAdapter;
 import com.griffin.popularmovies.task.FetchMoviesTask;
 
@@ -26,43 +25,31 @@ import butterknife.ButterKnife;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MovieListFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Movie>> {
+public class MovieListFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Movie>>, FetchMoviesTask.CallbackFetchMoviesTask {
 
-    private PopularMoviesAdapter mMoviesAdapter = null;
-
-    private List<Movie> mMoviesList = null;
-
+    public static final String CHOICE = "choice";
+    public static final String SEARCH = "search";
     private static final int MOVIE_LOADER = 0;
 
     private static final String PAGE_KEY = "page_key";
 
     private static final String MOVIE_LIST_KEY = "movie_list_key";
-
-    public static final String CHOICE = "choice";
-    public static final String SEARCH = "search";
-
-    private String mChoice = null;
-    private String mSearch = null;
-
-    private int mPage = 1;
-
     @BindView(R.id.gridview_moviesList)
     GridView mGridView;
+    private PopularMoviesAdapter mMoviesAdapter = null;
+    private List<Movie> mMoviesList = null;
+    private String mChoice = null;
+    private String mSearch = null;
+    private int mPage = 1;
+    private View rootView;
 
     public MovieListFragment() {
 
     }
 
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface CallbackMovieListFragment {
-        /**
-         * DetailFragmentCallback for when an item has been selected.
-         */
-        void onItemSelected(int idMovie);
+    @Override
+    public void onExceptionLoadInBackground(String exception) {
+        Snackbar.make(rootView, exception, Snackbar.LENGTH_LONG).show();
     }
 
     @Override
@@ -91,7 +78,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.movie_list_fragment, container, false);
+        rootView = inflater.inflate(R.layout.movie_list_fragment, container, false);
 
         ButterKnife.bind(this, rootView);
 
@@ -166,14 +153,17 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         super.onSaveInstanceState(outState);
     }
 
-
     @Override
     public android.support.v4.content.Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
         if(mChoice != null) {
-            return new FetchMoviesTask(getContext(), mPage, mChoice);
+            FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(getContext(), mPage, mChoice);
+            fetchMoviesTask.setCallback(this);
+            return fetchMoviesTask;
         }
         if(mSearch != null){
-            return new FetchMoviesTask(getContext(), mSearch);
+            FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(getContext(), mSearch);
+            fetchMoviesTask.setCallback(this);
+            return fetchMoviesTask;
         }
         else return null;
     }
@@ -196,6 +186,18 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onLoaderReset(android.support.v4.content.Loader<List<Movie>> loader) {
         mMoviesAdapter.clear();
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface CallbackMovieListFragment {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        void onItemSelected(int idMovie);
     }
 
 

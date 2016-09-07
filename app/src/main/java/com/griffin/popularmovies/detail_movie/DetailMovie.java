@@ -1,6 +1,5 @@
 package com.griffin.popularmovies.detail_movie;
 
-import android.graphics.Movie;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -8,9 +7,9 @@ import com.griffin.popularmovies.Pojo.Collection;
 import com.griffin.popularmovies.Pojo.Credits;
 import com.griffin.popularmovies.Pojo.MovieDetail;
 import com.griffin.popularmovies.Pojo.MovieImages;
-import com.griffin.popularmovies.Pojo.Part;
 import com.griffin.popularmovies.Pojo.Reviews;
 import com.griffin.popularmovies.Pojo.TrailerDetail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +18,17 @@ import java.util.List;
  */
 public class DetailMovie implements Parcelable {
 
+    public static final Creator<DetailMovie> CREATOR = new Creator<DetailMovie>() {
+        @Override
+        public DetailMovie createFromParcel(Parcel in) {
+            return new DetailMovie(in);
+        }
+
+        @Override
+        public DetailMovie[] newArray(int size) {
+            return new DetailMovie[size];
+        }
+    };
     private MovieDetail movieDetail;
     private List<TrailerDetail> trailerDetails;
     private Credits credits;
@@ -34,7 +44,6 @@ public class DetailMovie implements Parcelable {
        collection = new Collection();
        movieImages = new MovieImages();
    }
-
     protected DetailMovie(Parcel in) {
         movieDetail = in.readParcelable(MovieDetail.class.getClassLoader());
         trailerDetails = in.createTypedArrayList(TrailerDetail.CREATOR);
@@ -43,6 +52,7 @@ public class DetailMovie implements Parcelable {
         collection = in.readParcelable(Collection.class.getClassLoader());
         movieImages = in.readParcelable(MovieImages.class.getClassLoader());
     }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(movieDetail, flags);
@@ -52,18 +62,6 @@ public class DetailMovie implements Parcelable {
         dest.writeParcelable(collection, flags);
         dest.writeParcelable(movieImages, flags);
     }
-
-    public static final Creator<DetailMovie> CREATOR = new Creator<DetailMovie>() {
-        @Override
-        public DetailMovie createFromParcel(Parcel in) {
-            return new DetailMovie(in);
-        }
-
-        @Override
-        public DetailMovie[] newArray(int size) {
-            return new DetailMovie[size];
-        }
-    };
 
     public List<Reviews> getReviewsList() {
         return reviewsList;

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.movie_list.FavoriteListFragment;
@@ -27,15 +28,6 @@ public class FavoriteMoviesAdapter extends CursorAdapter {
     private static final int VIEW_TYPE = 0;
 
     private static final String LOG_TAG = FavoriteMoviesAdapter.class.getSimpleName();
-
-    static class ViewHolder {
-        @BindView(R.id.movieItemPictureImageView) ImageView moviePicture;
-
-        public ViewHolder(View view) {
-            ButterKnife.bind(this, view);
-
-        }
-    }
 
     public FavoriteMoviesAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -61,8 +53,7 @@ public class FavoriteMoviesAdapter extends CursorAdapter {
         try {
             Bitmap bitmap = Utilities.getPoster(urlPicture, cursor.getInt(FavoriteListFragment.COLUMN_MOVIE_ID));
             viewHolder.moviePicture.setImageBitmap(bitmap);
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             Log.d(LOG_TAG, e.getMessage());
         }
 
@@ -77,5 +68,15 @@ public class FavoriteMoviesAdapter extends CursorAdapter {
     @Override
     public int getViewTypeCount() {
         return VIEW_TYPE_COUNT;
+    }
+
+    static class ViewHolder {
+        @BindView(R.id.movieItemPictureImageView)
+        ImageView moviePicture;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+
+        }
     }
 }

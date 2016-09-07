@@ -3,7 +3,6 @@ package com.griffin.popularmovies.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,12 +23,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 public class CastingAdapter extends RecyclerView.Adapter<CastingAdapter.ViewHolder> {
 
+    public static final int MAX_CASTING_TO_DISPLAY = 5;
     private List<Cast> castList;
     private Context mContext;
-    public static final int MAX_CASTING_TO_DISPLAY = 5;
 
 
-    public CastingAdapter(List<Cast> castList, Context context){
+    public CastingAdapter(List<Cast> castList, Context context) {
         this.castList = castList;
         mContext = context;
     }
@@ -47,9 +46,11 @@ public class CastingAdapter extends RecyclerView.Adapter<CastingAdapter.ViewHold
         StringBuilder casting = new StringBuilder();
         casting.append("  (").append(cast.getCharacter()).append(")");
         ViewHolder.textViewCharacter.setText(casting);
-        if(cast.getPerson() != null) {
+        if (cast.getPerson() != null) {
             Picasso.with(mContext)
                     .load(mContext.getString(R.string.IMAGE_BASE_URL) + cast.getPerson().getProfilePath())
+                    .placeholder(R.drawable.ic_wallpaper_black_48dp)
+                    .error(R.drawable.ic_wallpaper_black_48dp)
                     .fit()
                     .centerInside()
                     .into(ViewHolder.circleImageViewProfile);
@@ -68,10 +69,9 @@ public class CastingAdapter extends RecyclerView.Adapter<CastingAdapter.ViewHold
     @Override
     public int getItemCount() {
 
-        if(castList.size() < MAX_CASTING_TO_DISPLAY){
+        if (castList.size() < MAX_CASTING_TO_DISPLAY) {
             return castList.size();
-        }
-        else {
+        } else {
             return MAX_CASTING_TO_DISPLAY;
         }
     }
@@ -88,7 +88,7 @@ public class CastingAdapter extends RecyclerView.Adapter<CastingAdapter.ViewHold
             textViewCasting = (TextView) itemView.findViewById(R.id.textView_casting_adapter);
             textViewCharacter = (TextView) itemView.findViewById(R.id.textView_character_adapter);
             circleImageViewProfile = (CircleImageView) itemView.findViewById(R.id.casting_profile_image);
-            customButton = (LinearLayout)itemView.findViewById(R.id.casting_custom_button);
+            customButton = (LinearLayout) itemView.findViewById(R.id.casting_custom_button);
         }
     }
 }

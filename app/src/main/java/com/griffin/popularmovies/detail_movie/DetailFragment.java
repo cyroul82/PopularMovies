@@ -1,19 +1,14 @@
 package com.griffin.popularmovies.detail_movie;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Environment;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -34,9 +29,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 import com.griffin.popularmovies.MainActivity;
 import com.griffin.popularmovies.Pojo.Cast;
 import com.griffin.popularmovies.Pojo.Genre;
@@ -44,8 +36,8 @@ import com.griffin.popularmovies.Pojo.Part;
 import com.griffin.popularmovies.Pojo.Poster;
 import com.griffin.popularmovies.Pojo.Reviews;
 import com.griffin.popularmovies.Pojo.TrailerDetail;
-import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.R;
+import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.adapter.CastingAdapter;
 import com.griffin.popularmovies.adapter.CollectionAdapter;
 import com.griffin.popularmovies.adapter.ReviewMovieAdapter;
@@ -54,31 +46,28 @@ import com.griffin.popularmovies.task.FetchDetailMovieTask;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<DetailMovie>, OnClickListener, CollectionAdapter.CallbackCollectionAdapter {
-
-    private static final String LOG_TAG = DetailFragment.class.getSimpleName();
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<DetailMovie>, OnClickListener, CollectionAdapter
+        .CallbackCollectionAdapter {
 
     public static final String DETAIL_MOVIE = "DETAIL_MOVIE";
-    private DetailMovie mDetailMovie;
-    private ShareActionProvider mShareActionProvider;
-    private ProgressDialog mProgressDialog;
-    private int mIdMovie;
-
+    public static final String IS_DETAIL_FRAGMENT_FROM_ACTIVITY = "idffa";
+    private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     private static final int DETAIL_LOADER = 0;
-
+    private static final String SHORTBRAIN_SHARE_HASHTAG = " #Shortbrain";
     @BindView(R.id.imageView_Picture)
     ImageView mImageViewMoviePicture;
     @BindView(R.id.textView_Year)
@@ -119,63 +108,26 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     CardView mCardViewCasting;
     @BindView(R.id.cardViewTrailer)
     CardView mCardViewTrailer;
-
     @Nullable
-    @BindView(R.id.floatingButton_favorite)
+    @BindView(R.id.floatingButton_favorite_tablet)
     FloatingActionButton mFloatingButtonFavorite;
-
     @Nullable
     @BindView(R.id.textView_movieTitle)
     TextView mTextViewMovieTitle;
-
+    private DetailMovie mDetailMovie;
+    private ShareActionProvider mShareActionProvider;
+    private ProgressDialog mProgressDialog;
+    private int mIdMovie;
     private List<Reviews> mReviewsList = new ArrayList<>();
     private List<TrailerDetail> mTrailerDetailList = new ArrayList<>();
     private List<Cast> mCastList = new ArrayList<>();
     private List<Part> mPartList = new ArrayList<>();
-
     private ReviewMovieAdapter mReviewMovieAdapter;
     private TrailerMovieAdapter mTrailerMovieAdapter;
     private CastingAdapter mCastingAdapter;
     private CollectionAdapter mCollectionAdapter;
-
-    private static final String SHORTBRAIN_SHARE_HASHTAG = " #Shortbrain";
     private String mShareMovie;
-
     private boolean mIsDetailFragmentFromActivity;
-    public static final String IS_DETAIL_FRAGMENT_FROM_ACTIVITY = "idffa";
-
-    @Override
-    public void onCollectionMovieClicked(int idMovie) {
-        if (idMovie != mIdMovie) {
-
-            int stack = getActivity().getSupportFragmentManager().getBackStackEntryCount();
-            for (int i = 0; i < stack; i++) {
-                FragmentManager.BackStackEntry bse = getActivity().getSupportFragmentManager().getBackStackEntryAt(i);
-                if (bse.getName().equals(Integer.toString(idMovie))) {
-
-                    getActivity().getSupportFragmentManager().popBackStack(Integer.toString(idMovie), 0);
-                    return;
-                }
-            }
-
-            Bundle args = new Bundle();
-            args.putInt(DETAIL_MOVIE, idMovie);
-            args.putBoolean(IS_DETAIL_FRAGMENT_FROM_ACTIVITY, mIsDetailFragmentFromActivity);
-
-            DetailFragment df = new DetailFragment();
-            df.setArguments(args);
-
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.detail_movie_container, df, MainActivity.DETAIL_FRAGMENT_TAG)
-                    .addToBackStack(Integer.toString(idMovie))
-                    .commit();
-        }
-    }
-
-    public interface CallbackDetailFragment {
-        void setTitleAndPosterOnActivity(String title, String posterPath, List<Poster> posterList);
-    }
-
 
     public DetailFragment() {
         //To display the menu , do not forget !!!
@@ -225,8 +177,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
 
-
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -244,7 +194,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     }
 
-    private Intent createShareMovie(){
+    private Intent createShareMovie() {
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         shareIntent.setType("text/plain");
@@ -314,8 +264,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             @Override
             public int compare(Part p1, Part p2) {
+                try {
+                    return Utilities.getYear(p1.getReleaseDate()).compareToIgnoreCase(Utilities.getYear(p2.getReleaseDate()));
+                } catch (ParseException e) {
+                    Log.e(LOG_TAG, e.getMessage(), e);
 
-                return Utilities.getYear(p1.getReleaseDate()).compareToIgnoreCase(Utilities.getYear(p2.getReleaseDate()));
+                }
+                return 0;
             }
 
         });
@@ -361,59 +316,63 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<DetailMovie> loader, DetailMovie detailMovie) {
-        if (detailMovie.getMovieDetail().getId() != 0) {
-            mDetailMovie = detailMovie;
-        }
-        //clear the review List and add the new one to the adapter
-        if (mDetailMovie.getReviewsList() != null && !mDetailMovie.getReviewsList().isEmpty()) {
-            mReviewsList.clear();
-            mReviewsList.addAll(mDetailMovie.getReviewsList());
-            mReviewMovieAdapter.notifyDataSetChanged();
+        if (detailMovie != null) {
+            if (detailMovie.getMovieDetail().getId() != 0) {
+                mDetailMovie = detailMovie;
+            }
+            //clear the review List and add the new one to the adapter
+            if (mDetailMovie.getReviewsList() != null && !mDetailMovie.getReviewsList().isEmpty()) {
+                mReviewsList.clear();
+                mReviewsList.addAll(mDetailMovie.getReviewsList());
+                mReviewMovieAdapter.notifyDataSetChanged();
 
+            } else {
+                mCardViewReview.setVisibility(View.GONE);
+            }
+
+            //clear the trailer List and add the new one to the adapter
+            if (mDetailMovie.getTrailerDetails() != null && !mDetailMovie.getTrailerDetails().isEmpty()) {
+                mTrailerDetailList.clear();
+                mTrailerDetailList.addAll(mDetailMovie.getTrailerDetails());
+                mTrailerMovieAdapter.notifyDataSetChanged();
+
+            } else {
+                mCardViewTrailer.setVisibility(View.GONE);
+            }
+
+            //clear the Casting List and add the new one to the adapter
+            if (mDetailMovie.getCredits().getCast() != null && !mDetailMovie.getCredits().getCast().isEmpty()) {
+                mCastList.clear();
+                mCastList.addAll(mDetailMovie.getCredits().getCast());
+
+                mCastingAdapter.notifyDataSetChanged();
+            } else {
+                mCardViewCasting.setVisibility(View.GONE);
+            }
+
+            //clear the Casting List and add the new one to the adapter
+            if (mDetailMovie.getCollection() != null && !mDetailMovie.getCollection().getParts().isEmpty()) {
+                mPartList.clear();
+                mPartList.addAll(mDetailMovie.getCollection().getParts());
+
+                mCollectionAdapter.notifyDataSetChanged();
+                mTextViewCollectionMainTitle.setText(mDetailMovie.getCollection().getName());
+
+            } else {
+                mCardViewCollection.setVisibility(View.GONE);
+            }
+
+            //Display the UI with new elements
+            setUI();
+
+            mShareMovie = String.format("%s \n%s", mDetailMovie.getMovieDetail().getTitle(), mDetailMovie.getMovieDetail().getOverview());
+
+            // If onCreateOptionsMenu has already happened, we need to update the share intent now.
+            if (mShareActionProvider != null) {
+                mShareActionProvider.setShareIntent(createShareMovie());
+            }
         } else {
-            mCardViewReview.setVisibility(View.GONE);
-        }
-
-        //clear the trailer List and add the new one to the adapter
-        if (mDetailMovie.getTrailerDetails() != null && !mDetailMovie.getTrailerDetails().isEmpty()) {
-            mTrailerDetailList.clear();
-            mTrailerDetailList.addAll(mDetailMovie.getTrailerDetails());
-            mTrailerMovieAdapter.notifyDataSetChanged();
-
-        } else {
-            mCardViewTrailer.setVisibility(View.GONE);
-        }
-
-        //clear the Casting List and add the new one to the adapter
-        if (mDetailMovie.getCredits().getCast() != null && !mDetailMovie.getCredits().getCast().isEmpty()) {
-            mCastList.clear();
-            mCastList.addAll(mDetailMovie.getCredits().getCast());
-
-            mCastingAdapter.notifyDataSetChanged();
-        } else {
-            mCardViewCasting.setVisibility(View.GONE);
-        }
-
-        //clear the Casting List and add the new one to the adapter
-        if (mDetailMovie.getCollection() != null && !mDetailMovie.getCollection().getParts().isEmpty()) {
-            mPartList.clear();
-            mPartList.addAll(mDetailMovie.getCollection().getParts());
-
-            mCollectionAdapter.notifyDataSetChanged();
-            mTextViewCollectionMainTitle.setText(mDetailMovie.getCollection().getName());
-
-        } else {
-            mCardViewCollection.setVisibility(View.GONE);
-        }
-
-        //Display the UI with new elements
-        setUI();
-
-        mShareMovie = String.format("%s \n%s", mDetailMovie.getMovieDetail().getTitle(), mDetailMovie.getMovieDetail().getOverview());
-
-        // If onCreateOptionsMenu has already happened, we need to update the share intent now.
-        if (mShareActionProvider != null) {
-            mShareActionProvider.setShareIntent(createShareMovie());
+            getActivity().onBackPressed();
         }
 
         mProgressDialog.dismiss();
@@ -435,14 +394,20 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         //load the picture using picasso library
         Picasso.with(getActivity())
                 .load(getString(R.string.IMAGE_BASE_URL) + mDetailMovie.getMovieDetail().getPosterPath())
+                .placeholder(R.drawable.ic_wallpaper_black_48dp)
+                .error(R.drawable.ic_wallpaper_black_48dp)
                 .fit()
                 .centerInside()
                 .into(mImageViewMoviePicture);
 
-
         //Set the month and the year of the movie text
         String date = mDetailMovie.getMovieDetail().getReleaseDate();
-        mTextViewMovieYear.setText(Utilities.getMonthAndYear(date));
+        try {
+            mTextViewMovieYear.setText(Utilities.getMonthAndYear(date));
+        } catch (ParseException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+
+        }
 
         //set the original title text
         if (!mDetailMovie.getMovieDetail().getOriginalTitle().equals(mDetailMovie.getMovieDetail().getTitle())) {
@@ -452,7 +417,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mTextViewOriginalTitle.setVisibility(View.GONE);
             mTextViewOriginalTitleText.setVisibility(View.GONE);
         }
-
 
         //set the tagline text
         String tagLine = mDetailMovie.getMovieDetail().getTagline();
@@ -500,15 +464,40 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     .getMovieDetail()
                     .getPosterPath(), mDetailMovie.getMovieImages().getPosters());
         }
-
     }
 
+    @Override
+    public void onCollectionMovieClicked(int idMovie) {
+        if (idMovie != mIdMovie) {
 
+            int stack = getActivity().getSupportFragmentManager().getBackStackEntryCount();
+            for (int i = 0; i < stack; i++) {
+                FragmentManager.BackStackEntry bse = getActivity().getSupportFragmentManager().getBackStackEntryAt(i);
+                if (bse.getName().equals(Integer.toString(idMovie))) {
+
+                    getActivity().getSupportFragmentManager().popBackStack(Integer.toString(idMovie), 0);
+                    return;
+                }
+            }
+
+            Bundle args = new Bundle();
+            args.putInt(DETAIL_MOVIE, idMovie);
+            args.putBoolean(IS_DETAIL_FRAGMENT_FROM_ACTIVITY, mIsDetailFragmentFromActivity);
+
+            DetailFragment df = new DetailFragment();
+            df.setArguments(args);
+
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.detail_movie_container, df, MainActivity.DETAIL_FRAGMENT_TAG)
+                    .addToBackStack(Integer.toString(idMovie))
+                    .commit();
+        }
+    }
 
     @Override
     public void onClick(View v) {
 
-        if (v.getId() == R.id.floatingButton_favorite) {
+        if (v.getId() == R.id.floatingButton_favorite || v.getId() == R.id.floatingButton_favorite_tablet) {
 
             Picasso.with(getContext()).load(getString(R.string.IMAGE_BASE_URL) + mDetailMovie.getMovieDetail().getPosterPath()).into(new Target() {
                 @Override
@@ -531,14 +520,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             Utilities.addMovieToFavorite(mDetailMovie, getContext());
 
-
             Snackbar.make(v, getString(R.string.addFavorite), Snackbar.LENGTH_SHORT).show();
 
-            /*else {
-                movie.setFavorite(0);
-                Utilities.removeMovieFromFavorite(movie, getContext());
-            }*/
         }
 
+    }
+
+
+    public interface CallbackDetailFragment {
+        void setTitleAndPosterOnActivity(String title, String posterPath, List<Poster> posterList);
     }
 }

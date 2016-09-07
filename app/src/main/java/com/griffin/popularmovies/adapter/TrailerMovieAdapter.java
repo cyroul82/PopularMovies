@@ -8,11 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.griffin.popularmovies.Pojo.TrailerDetail;
 import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.detail_movie.DetailFragment;
 
 import java.util.List;
 
@@ -40,12 +39,12 @@ public class TrailerMovieAdapter extends RecyclerView.Adapter<TrailerMovieAdapte
         final TrailerDetail trailerDetail = trailerDetailList.get(position);
 
         TrailerViewHolder.buttonTrailer.setText(trailerDetail.getName());
+
         TrailerViewHolder.buttonTrailer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?";
                 final String PARAM = "v";
-
 
                 Uri uri = Uri.parse(YOUTUBE_BASE_URL).buildUpon().appendQueryParameter(PARAM, trailerDetail.getKey()).build();
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -62,11 +61,13 @@ public class TrailerMovieAdapter extends RecyclerView.Adapter<TrailerMovieAdapte
 
     public static class TrailerViewHolder extends RecyclerView.ViewHolder {
 
-        public static Button buttonTrailer;
+        static Button buttonTrailer;
+        static ImageView imageViewTrailer;
 
         public TrailerViewHolder(View itemView) {
             super(itemView);
             buttonTrailer = (Button) itemView.findViewById(R.id.button_Trailer);
+            imageViewTrailer = (ImageView) itemView.findViewById(R.id.imageView_trailer);
 
         }
     }

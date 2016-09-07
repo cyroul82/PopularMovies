@@ -8,19 +8,8 @@ import com.griffin.popularmovies.BuildConfig;
 import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.Pojo.MoviePage;
 import com.griffin.popularmovies.Service.MovieService;
-import com.griffin.popularmovies.Utilities;
-
-
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,23 +23,23 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
 
-    private List<Movie> mMovieList;
-
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
-
+    private List<Movie> mMovieList;
     private int mPage;
 
     private String mChoice = null;
     private String mSearch = null;
 
+    private CallbackFetchMoviesTask callbackFetchMoviesTask;
 
-    public FetchMoviesTask (Context context, int page, String choice){
+
+    public FetchMoviesTask(Context context, int page, String choice) {
         super(context);
         mPage = page;
         mChoice = choice;
     }
 
-    public FetchMoviesTask (Context context, String search){
+    public FetchMoviesTask(Context context, String search) {
         super(context);
         mSearch = search;
     }
@@ -71,7 +60,7 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
             deliverResult(mMovieList);
         }
 
-        if (takeContentChanged() || mMovieList == null ) {
+        if (takeContentChanged() || mMovieList == null) {
             // If the data has changed since the last time it was loaded
             // or is not currently available, start a load.
             forceLoad();
@@ -81,7 +70,8 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
     /**
      * Handles a request to stop the Loader.
      */
-    @Override protected void onStopLoading() {
+    @Override
+    protected void onStopLoading() {
         // Attempt to cancel the current load task if possible.
         cancelLoad();
     }
@@ -89,7 +79,8 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
     /**
      * Handles a request to cancel a load.
      */
-    @Override public void onCanceled(List<Movie> list) {
+    @Override
+    public void onCanceled(List<Movie> list) {
         super.onCanceled(list);
     }
 
@@ -112,19 +103,20 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
         // should be released here.
     }
 
-
-
-
     @Override
     public List<Movie> loadInBackground() {
 
         List<Movie> movieList = null;
         String BASE_URL = "https://api.themoviedb.org/3/";
 
-        if(mChoice != null) {
+        if (mChoice != null) {
             try {
 
-                Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
                 MovieService movieService = retrofit.create(MovieService.class);
                 Call<MoviePage> callMoviePojo = movieService.getMoviesPage(mChoice, BuildConfig.MOVIE_DB_API_KEY, Locale
                         .getDefault().getLanguage(), mPage);
@@ -135,14 +127,19 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
                 }
                 return movieList;
             } catch (IOException e) {
+                callbackFetchMoviesTask.onExceptionLoadInBackground(e.getMessage());
                 Log.e(LOG_TAG, e.getMessage(), e);
             }
         }
 
-        if(mSearch != null){
+        if (mSearch != null) {
             try {
 
-                Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
                 MovieService movieService = retrofit.create(MovieService.class);
                 Call<MoviePage> callMoviePojo = movieService.getSearchMovie(BuildConfig.MOVIE_DB_API_KEY, mSearch);
                 Response response = callMoviePojo.execute();
@@ -152,11 +149,21 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
                 }
                 return movieList;
             } catch (IOException e) {
+                callbackFetchMoviesTask.onExceptionLoadInBackground(e.getMessage());
                 Log.e(LOG_TAG, e.getMessage(), e);
             }
         }
 
         return null;
+    }
+
+    public void setCallback(CallbackFetchMoviesTask callbackFetchMoviesTask) {
+
+        this.callbackFetchMoviesTask = callbackFetchMoviesTask;
+    }
+
+    public interface CallbackFetchMoviesTask {
+        void onExceptionLoadInBackground(String exception);
     }
 
 }

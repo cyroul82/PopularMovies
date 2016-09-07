@@ -1,11 +1,11 @@
 package com.griffin.popularmovies.detail_movie;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -26,34 +26,56 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.griffin.popularmovies.Pojo.Cast;
 import com.griffin.popularmovies.Pojo.Genre;
+import com.griffin.popularmovies.Pojo.Part;
+import com.griffin.popularmovies.Pojo.Reviews;
 import com.griffin.popularmovies.Pojo.TrailerDetail;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
+import com.griffin.popularmovies.adapter.CastingAdapter;
+import com.griffin.popularmovies.adapter.CollectionAdapter;
+import com.griffin.popularmovies.adapter.ReviewMovieAdapter;
 import com.griffin.popularmovies.adapter.TrailerMovieAdapter;
 import com.griffin.popularmovies.data.MovieContract;
-import com.griffin.popularmovies.Pojo.Movie;
 
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
  * Created by griffin on 22/07/16.
  */
-public class DetailFavoriteFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class DetailFavoriteFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, CollectionAdapter
+        .CallbackCollectionAdapter, View.OnClickListener {
 
-    private final static String LOG_TAG = DetailFavoriteFragment.class.getSimpleName();
-
+    public static final String IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY = "idfffa";
     public static final String FAVORITE_MOVIE = "FAVORITE_MOVIE";
-    private Uri mUriMovie;
-    private DetailMovie mDetailMovie;
-    private ShareActionProvider mShareActionProvider;
-
+    // These indices are tied to DETAIL_COLUMNS.  If DETAIL_COLUMNS changes, these
+    // must change.
+    public static final int COL_FAVORITE_DETAIL_KEY = 1;
+    public static final int COL_FAVORITE_MOVIE_ID = 2;
+    public static final int COL_FAVORITE_MOVIE_PICTURE = 3;
+    public static final int COL_FAVORITE_MOVIE_TITLE = 4;
+    public static final int COL_FAVORITE_MOVIE_ORIGINAL_TITLE = 5;
+    public static final int COL_FAVORITE_MOVIE_OVERVIEW = 6;
+    public static final int COL_FAVORITE_MOVIE_DATE = 7;
+    public static final int COL_FAVORITE_MOVIE_RATING = 8;
+    public static final int COL_FAVORITE_MOVIE_DETAIL_GENRE = 9;
+    public static final int COL_FAVORITE_MOVIE_DETAIL_RUNTIME = 10;
+    public static final int COL_FAVORITE_MOVIE_DETAIL_CASTING = 11;
+    public static final int COL_FAVORITE_MOVIE_DETAIL_VIDEOS = 12;
+    public static final int COL_FAVORITE_MOVIE_DETAIL_REVIEWS = 13;
+    public static final int COL_FAVORITE_MOVIE_TAGLINE = 14;
+    private static final String LOG_TAG = DetailFavoriteFragment.class.getSimpleName();
+    private static final String SHORTBRAIN_SHARE_HASHTAG = " #Shortbrain";
     private static final int DETAIL_LOADER = 1;
-
     private static final String[] DETAIL_COLUMNS = {
             MovieContract.DetailEntry.TABLE_NAME + "." + MovieContract.DetailEntry._ID,
 
@@ -73,78 +95,80 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
             MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS,
             MovieContract.DetailEntry.COLUMN_MOVIE_TAGLINE
     };
-
-    // These indices are tied to DETAIL_COLUMNS.  If DETAIL_COLUMNS changes, these
-    // must change.
-    public static final int COL_FAVORITE_DETAIL_KEY =1;
-    public static final int COL_FAVORITE_MOVIE_ID = 2;
-    public static final int COL_FAVORITE_MOVIE_PICTURE = 3;
-    public static final int COL_FAVORITE_MOVIE_TITLE = 4;
-
-    public static final int COL_FAVORITE_MOVIE_ORIGINAL_TITLE = 5;
-    public static final int COL_FAVORITE_MOVIE_OVERVIEW = 6;
-    public static final int COL_FAVORITE_MOVIE_DATE = 7;
-    public static final int COL_FAVORITE_MOVIE_RATING = 8;
-    public static final int COL_FAVORITE_MOVIE_DETAIL_GENRE = 9;
-    public static final int COL_FAVORITE_MOVIE_DETAIL_RUNTIME = 10;
-    public static final int COL_FAVORITE_MOVIE_DETAIL_CASTING = 11;
-    public static final int COL_FAVORITE_MOVIE_DETAIL_VIDEOS = 12;
-    public static final int COL_FAVORITE_MOVIE_DETAIL_REVIEWS = 13;
-    public static final int COL_FAVORITE_MOVIE_TAGLINE = 14;
-
+    @BindView(R.id.imageView_Picture)
+    ImageView mImageViewMoviePicture;
+    @BindView(R.id.textView_Year)
+    TextView mTextViewMovieYear;
+    @BindView(R.id.textView_Original_Title_Text)
+    TextView mTextViewOriginalTitleText;
+    @BindView(R.id.textView_Original_Title)
+    TextView mTextViewOriginalTitle;
+    @BindView(R.id.textView_Overview)
+    TextView mTextViewOverview;
+    @BindView(R.id.textView_Rating)
+    TextView mTextViewMovieRating;
+    @BindView(R.id.textView_Genre)
+    TextView mTextViewGenre;
+    @BindView(R.id.textView_Runtime)
+    TextView mTextViewRuntime;
+    @BindView(R.id.linearLayout_Trailer)
+    LinearLayout mLinearLayoutTrailer;
+    @BindView(R.id.linearLayout_Review)
+    LinearLayout mLinearLayoutReview;
+    @BindView(R.id.textView_tagline)
+    TextView mTextViewTagLine;
+    @BindView(R.id.textView_Collection_main_title)
+    TextView mTextViewCollectionMainTitle;
+    @BindView(R.id.cardViewReview)
+    CardView mCardViewReview;
+    @BindView(R.id.recyclerView_review)
+    RecyclerView mRecyclerViewReview;
+    @BindView(R.id.recyclerView_trailer)
+    RecyclerView mRecyclerViewTrailer;
+    @BindView(R.id.recyclerView_casting)
+    RecyclerView mRecyclerViewCasting;
+    @BindView(R.id.recyclerView_collection)
+    RecyclerView mRecyclerViewCollection;
+    @BindView(R.id.cardViewCollection)
+    CardView mCardViewCollection;
+    @BindView(R.id.cardViewCasting)
+    CardView mCardViewCasting;
+    @BindView(R.id.cardViewTrailer)
+    CardView mCardViewTrailer;
     @Nullable
-    @BindView(R.id.textView_movieTitle) TextView mTextViewMovieTitle;
-    @BindView(R.id.textView_tagline) TextView mTextViewTagLine;
-    @BindView(R.id.imageView_Picture) ImageView mImageViewMoviePicture;
-    @BindView(R.id.textView_Year) TextView mTextViewMovieYear;
-    @BindView(R.id.textView_Original_Title) TextView mTextViewOriginalTitle;
-    @BindView(R.id.textView_Overview) TextView mTextViewOverview;
-    @BindView(R.id.textView_Rating) TextView mTextViewMovieRating;
-    @BindView(R.id.textView_Genre) TextView mTextViewGenre;
-    @BindView(R.id.textView_Runtime) TextView mTextViewRuntime;
-    @BindView(R.id.linearLayout_Trailer) LinearLayout mLinearLayoutTrailer;
-    @BindView(R.id.recyclerView_trailer) RecyclerView mRecyclerViewTrailer;
-    @BindView(R.id.cardViewTrailer) CardView mCardViewTrailer;
-
-    private List<TrailerDetail> mTrailerDetailList = new ArrayList<>();
-
-    private TrailerMovieAdapter mTrailerMovieAdapter;
-
-    private boolean mIsDetailFavoriteFragmentFromActivity;
-    public static final String IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY = "idfffa";
-
-    private static final String SHORTBRAIN_SHARE_HASHTAG = " #Shortbrain";
+    @BindView(R.id.floatingButton_favorite_tablet)
+    FloatingActionButton mFloatingButtonFavorite;
+    @Nullable
+    @BindView(R.id.textView_movieTitle)
+    TextView mTextViewMovieTitle;
+    private Uri mUriMovie;
+    private DetailMovie mDetailMovie;
+    private ShareActionProvider mShareActionProvider;
     private String mShareMovie;
-
+    private boolean mIsDetailFavoriteFragmentFromActivity;
+    private List<Reviews> mReviewsList = new ArrayList<>();
+    private List<TrailerDetail> mTrailerDetailList = new ArrayList<>();
+    private List<Cast> mCastList = new ArrayList<>();
+    private List<Part> mPartList = new ArrayList<>();
+    private ReviewMovieAdapter mReviewMovieAdapter;
+    private TrailerMovieAdapter mTrailerMovieAdapter;
+    private CastingAdapter mCastingAdapter;
+    private CollectionAdapter mCollectionAdapter;
 
     public DetailFavoriteFragment() {
         setHasOptionsMenu(true);
     }
 
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface Callback {
-        /**
-         * DetailFragmentCallback for when an item has been selected.
-         */
-        void onFavoriteMovieClick(Movie movie, Context context);
-    }
-
-    public interface CallbackDetailFavoriteFragment{
-        void setTitleAndPosterOnActivity(String title, String posterPath, int idMovie);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(savedInstanceState != null && savedInstanceState.containsKey(FAVORITE_MOVIE) && savedInstanceState.containsKey
-                (IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY)){
+        if (savedInstanceState != null && savedInstanceState.containsKey(FAVORITE_MOVIE) && savedInstanceState.containsKey
+                (IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY)) {
+
             mIsDetailFavoriteFragmentFromActivity = savedInstanceState.getBoolean(IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY);
             mDetailMovie = savedInstanceState.getParcelable(FAVORITE_MOVIE);
-            if (mDetailMovie != null){
+
+            if (mDetailMovie != null) {
                 mTrailerDetailList = mDetailMovie.getTrailerDetails();
             }
         }
@@ -173,7 +197,7 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
         }
     }
 
-    private Intent createShareMovie(){
+    private Intent createShareMovie() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         shareIntent.setType("text/plain");
@@ -188,34 +212,83 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
         ButterKnife.bind(this, rootView);
 
+        if (mFloatingButtonFavorite != null) {
+            mFloatingButtonFavorite.setOnClickListener(this);
+        }
+
         Bundle arguments = getArguments();
         if (arguments != null) {
             //content://com.griffin.popularmovies/favorite/1  -> the number represents the selected movie in the the gridView
             mUriMovie = arguments.getParcelable(FAVORITE_MOVIE);
             mIsDetailFavoriteFragmentFromActivity = arguments.getBoolean(IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY);
         }
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             setUI();
         }
 
+        //connect recyclerView to a layout manager, and attach an adapter for the data to be displayed
+        mRecyclerViewReview.setHasFixedSize(true);
         mRecyclerViewTrailer.setHasFixedSize(true);
+        mRecyclerViewCasting.setHasFixedSize(true);
+        mRecyclerViewCollection.setHasFixedSize(true);
+
+        // use a linear layout manager , create the *** REVIEWS *** adapter and set it up to the recycler View
+        LinearLayoutManager linearLayoutManagerReview = new LinearLayoutManager(getContext());
+        linearLayoutManagerReview.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerViewReview.setLayoutManager(linearLayoutManagerReview);
+
+        mReviewMovieAdapter = new ReviewMovieAdapter(mReviewsList);
+        mRecyclerViewReview.setAdapter(mReviewMovieAdapter);
+
         // use a linear layout manager , create the *** TRAILER *** adapter and set it up to the recycler View
         LinearLayoutManager linearLayoutManagerTrailer = new LinearLayoutManager(getContext());
         linearLayoutManagerTrailer.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerViewTrailer.setLayoutManager(linearLayoutManagerTrailer);
 
         mTrailerMovieAdapter = new TrailerMovieAdapter(mTrailerDetailList, getContext());
+
         mRecyclerViewTrailer.setAdapter(mTrailerMovieAdapter);
+        // use a linear layout manager , create the *** CASTING *** adapter and set it up to the recycler View
+        LinearLayoutManager linearLayoutManagerCasting = new LinearLayoutManager(getContext());
+        linearLayoutManagerCasting.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerViewCasting.setLayoutManager(linearLayoutManagerCasting);
+
+        mCastingAdapter = new CastingAdapter(mCastList, getContext());
+        mRecyclerViewCasting.setAdapter(mCastingAdapter);
+
+        // use a linear layout manager , create the *** COLLECTION *** adapter and set it up to the recycler View
+        LinearLayoutManager linearLayoutManagerCollection = new LinearLayoutManager(getContext());
+        linearLayoutManagerCollection.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerViewCollection.setLayoutManager(linearLayoutManagerCollection);
+
+        //Sort the list by Year ???
+        //TODO: doesn't seem to work !!! ? to finish
+        Collections.sort(mPartList, new Comparator<Part>() {
+
+            @Override
+            public int compare(Part p1, Part p2) {
+                try {
+                    return Utilities.getYear(p1.getReleaseDate()).compareToIgnoreCase(Utilities.getYear(p2.getReleaseDate()));
+                } catch (ParseException e) {
+                    Log.e(LOG_TAG, e.getMessage(), e);
+
+                }
+                return 0;
+            }
+
+        });
+
+        mCollectionAdapter = new CollectionAdapter(mPartList, getContext());
+        mCollectionAdapter.setCallback(this);
+        mRecyclerViewCollection.setAdapter(mCollectionAdapter);
 
         return rootView;
     }
 
-
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             getLoaderManager().initLoader(DETAIL_LOADER, null, this);
         }
 
@@ -223,7 +296,7 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if ( mUriMovie != null) {
+        if (mUriMovie != null) {
             // Now create and return a CursorLoader that will take care of
             // creating a Cursor for the data being displayed.
 
@@ -242,15 +315,27 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
             mDetailMovie = Utilities.getDetailMovieFromCursor(movieCursor);
 
             //clear the trailer List and add the new one to the adapter
-            if(mDetailMovie.getTrailerDetails() != null){
+            if (mDetailMovie.getTrailerDetails() != null && !mDetailMovie.getTrailerDetails().isEmpty()) {
                 mTrailerDetailList.clear();
                 mTrailerDetailList.addAll(mDetailMovie.getTrailerDetails());
 
                 mTrailerMovieAdapter.notifyDataSetChanged();
-            }
-            else {
+            } else {
                 mCardViewTrailer.setVisibility(View.GONE);
             }
+
+            if (mDetailMovie.getReviewsList() != null && !mDetailMovie.getReviewsList().isEmpty()) {
+                mReviewsList.clear();
+                mReviewsList.addAll(mDetailMovie.getReviewsList());
+
+                mReviewMovieAdapter.notifyDataSetChanged();
+            } else {
+                mCardViewTrailer.setVisibility(View.GONE);
+            }
+
+            mCardViewCasting.setVisibility(View.GONE);
+            mCardViewCollection.setVisibility(View.GONE);
+
             setUI();
 
             mShareMovie = String.format("%s \n%s", mDetailMovie.getMovieDetail().getTitle(), mDetailMovie.getMovieDetail().getOverview());
@@ -267,27 +352,27 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
     }
 
-    private void setUI(){
+    private void setUI() {
 
         //set the title text, only on tablet display !
         if (mTextViewMovieTitle != null) {
             mTextViewMovieTitle.setText(mDetailMovie.getMovieDetail().getTitle());
         }
 
-
         mTextViewTagLine.setText(mDetailMovie.getMovieDetail().getTagline());
 
         try {
 
             mImageViewMoviePicture.setImageBitmap(Utilities.getPoster(mDetailMovie.getMovieDetail().getPosterPath(), mDetailMovie.getMovieDetail().getId()));
-        }
-        catch(FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             Log.d(LOG_TAG, e.getMessage());
         }
+        try {
+            mTextViewMovieYear.setText(Utilities.getMonthAndYear(mDetailMovie.getMovieDetail().getReleaseDate()));
+        } catch (ParseException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
 
-        mTextViewMovieYear.setText(Utilities.getMonthAndYear(mDetailMovie.getMovieDetail().getReleaseDate()));
-
-       //mFavoriteButton.setChecked(true);
+        }
 
         mTextViewOriginalTitle.setText(mDetailMovie.getMovieDetail().getOriginalTitle());
 
@@ -300,7 +385,7 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
         List<Genre> genres = mDetailMovie.getMovieDetail().getGenres();
         StringBuilder sb = new StringBuilder();
-        for(Genre genre : genres){
+        for (Genre genre : genres) {
             sb.append(genre.getName());
 
             sb.append(" / ");
@@ -308,9 +393,37 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
         //Set genre Object and update UI
         mTextViewGenre.setText(sb.toString());
 
-        if(mIsDetailFavoriteFragmentFromActivity) {
+        if (mIsDetailFavoriteFragmentFromActivity) {
             ((CallbackDetailFavoriteFragment) getActivity()).setTitleAndPosterOnActivity(mDetailMovie.getMovieDetail().getTitle(),
                     mDetailMovie.getMovieDetail().getPosterPath(), mDetailMovie.getMovieDetail().getId());
         }
     }
+
+    @Override
+    public void onCollectionMovieClicked(int idMovie) {
+
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        if (v.getId() == R.id.floatingButton_favorite_tablet) {
+            ((CallbackFavorite) getActivity()).onClickFavoriteMovie(mDetailMovie.getMovieDetail().getId());
+        }
+        if (v.getId() == R.id.floatingButton_favorite) {
+            Utilities.removeMovieFromFavorite(mDetailMovie.getMovieDetail().getId(), getContext());
+            getActivity().onBackPressed();
+
+        }
+    }
+
+    public interface CallbackFavorite {
+        void onClickFavoriteMovie(int idMovie);
+    }
+
+    public interface CallbackDetailFavoriteFragment {
+        void setTitleAndPosterOnActivity(String title, String posterPath, int idMovie);
+    }
+
+
 }

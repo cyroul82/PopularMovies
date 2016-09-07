@@ -14,7 +14,7 @@ public class MovieContract {
     public static final String CONTENT_AUTHORITY = "com.griffin.popularmovies";
 
     //define the base content URI
-    public static final Uri BASE_CONTENT_URI= Uri.parse("content://" + CONTENT_AUTHORITY);
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     //define the path to match the table
     public static final String PATH_MOVIE = "favorite";
@@ -41,11 +41,11 @@ public class MovieContract {
         public static final String COLUMN_MOVIE_PICTURE = "movie_picture";
 
         //build the Uri upon the id
-        public static Uri buildMovieUri(long id){
+        public static Uri buildMovieUri(long id) {
             return ContentUris.withAppendedId(BASE_CONTENT_URI, id);
         }
 
-        public static Uri buildMovieUriFromDetailId(int id){
+        public static Uri buildMovieUriFromDetailId(int id) {
             return CONTENT_URI.buildUpon().appendPath(Integer.toString(id)).build();
         }
 
@@ -82,7 +82,7 @@ public class MovieContract {
         public static final String COLUMN_MOVIE_TAGLINE = "movie_tagline";
 
         //build the Uri upon the id
-        public static Uri buildMovieDetailUri(long id){
+        public static Uri buildMovieDetailUri(long id) {
             return ContentUris.withAppendedId(BASE_CONTENT_URI, id);
         }
     }

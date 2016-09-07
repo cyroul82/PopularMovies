@@ -2,9 +2,8 @@ package com.griffin.popularmovies;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
 
 public class LoadingPage extends Activity {
 
@@ -19,14 +18,13 @@ public class LoadingPage extends Activity {
         new Handler().postDelayed(new Runnable() {
 
             /*
-             * Showing splash screen with a timer. This will be useful when you
-             * want to show case your app logo / company
+             * Showing splash screen with a timer.
              */
 
             @Override
             public void run() {
                 // This method will be executed once the timer is over
-                // Start your app main activity
+                // Start the app main activity
                 Intent i = new Intent(LoadingPage.this, MainActivity.class);
                 startActivity(i);
 

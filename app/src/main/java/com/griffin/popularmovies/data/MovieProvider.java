@@ -13,17 +13,18 @@ import android.net.Uri;
  */
 public class MovieProvider extends ContentProvider {
 
-    private static final UriMatcher sUriMatcher = buildUriMatcher();
-    private MovieDbHelper mMovieDbHelper;
-
     static final int MOVIE = 100;
     static final int MOVIE_WITH_ID = 101;
     static final int DETAIL = 200;
-
-
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
     private static final SQLiteQueryBuilder sMovieByDetailQueryBuilder;
+    //detail.id = ?
+    private static final String sDetailSelection = MovieContract.FavoriteEntry.TABLE_NAME +
+            "." + MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY + " = ? ";
+    private static final String sMovieIdSelection = MovieContract.FavoriteEntry.TABLE_NAME +
+            "." + MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + " = ? ";
 
-    static{
+    static {
         sMovieByDetailQueryBuilder = new SQLiteQueryBuilder();
 
         //This is an inner join which looks like
@@ -37,7 +38,9 @@ public class MovieProvider extends ContentProvider {
                         "." + MovieContract.DetailEntry._ID);
     }
 
-    static UriMatcher buildUriMatcher (){
+    private MovieDbHelper mMovieDbHelper;
+
+    static UriMatcher buildUriMatcher() {
         //Create the default matcher
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         //get the authority from the contract
@@ -58,13 +61,6 @@ public class MovieProvider extends ContentProvider {
         mMovieDbHelper = new MovieDbHelper(getContext());
         return true;
     }
-
-    //detail.id = ?
-    private static final String sDetailSelection = MovieContract.FavoriteEntry.TABLE_NAME +
-            "." + MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY + " = ? ";
-
-    private static final String sMovieIdSelection = MovieContract.FavoriteEntry.TABLE_NAME +
-            "." + MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + " = ? ";
 
     private Cursor getMovieByDetail(Uri uri, String[] projection, String sortOrder) {
         long detailId = MovieContract.FavoriteEntry.getDetailIdFromUri(uri);
@@ -94,8 +90,7 @@ public class MovieProvider extends ContentProvider {
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
 
-            case MOVIE_WITH_ID:
-            {
+            case MOVIE_WITH_ID: {
                 retCursor = getMovieByDetail(uri, projection, sortOrder);
                 break;
             }
@@ -113,8 +108,7 @@ public class MovieProvider extends ContentProvider {
                 );
                 break;
             }
-            case DETAIL:
-            {
+            case DETAIL: {
                 retCursor = mMovieDbHelper.getReadableDatabase().query(
                         MovieContract.DetailEntry.TABLE_NAME,
                         projection,
@@ -141,15 +135,15 @@ public class MovieProvider extends ContentProvider {
 
         final int match = sUriMatcher.match(uri);
 
-        switch (match){
-            case MOVIE_WITH_ID :
+        switch (match) {
+            case MOVIE_WITH_ID:
                 return MovieContract.FavoriteEntry.CONTENT_ITEM_TYPE;
             case MOVIE:
                 return MovieContract.FavoriteEntry.CONTENT_TYPE;
             case DETAIL:
                 return MovieContract.DetailEntry.CONTENT_TYPE;
             default:
-                throw new UnsupportedOperationException("Unknow uri: " + uri );
+                throw new UnsupportedOperationException("Unknow uri: " + uri);
         }
     }
 
@@ -159,11 +153,11 @@ public class MovieProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         Uri returnUri;
 
-        switch (match){
+        switch (match) {
 
             case MOVIE: {
                 long _id = db.insert(MovieContract.FavoriteEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
+                if (_id > 0)
                     returnUri = MovieContract.FavoriteEntry.buildMovieUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -172,7 +166,7 @@ public class MovieProvider extends ContentProvider {
             }
             case DETAIL: {
                 long _id = db.insert(MovieContract.DetailEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
+                if (_id > 0)
                     returnUri = MovieContract.DetailEntry.buildMovieDetailUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -196,9 +190,9 @@ public class MovieProvider extends ContentProvider {
         int rowsDeleted;
 
         // this makes delete all rows return the number of rows deleted ??? TODO: Didn't understand
-        if(selection == null) selection="1";
+        if (selection == null) selection = "1";
 
-        switch (match){
+        switch (match) {
 
             case MOVIE: {
                 rowsDeleted = db.delete(MovieContract.FavoriteEntry.TABLE_NAME, selection + " = ?", selectionArgs);
@@ -228,9 +222,9 @@ public class MovieProvider extends ContentProvider {
         int rowsUpdated;
 
         // this makes delete all rows return the number of rows deleted
-        if(selection == null) selection="1";
+        if (selection == null) selection = "1";
 
-        switch (match){
+        switch (match) {
 
             case MOVIE: {
                 rowsUpdated = db.update(MovieContract.FavoriteEntry.TABLE_NAME, values, selection, selectionArgs);
@@ -258,19 +252,18 @@ public class MovieProvider extends ContentProvider {
     public int bulkInsert(Uri uri, ContentValues[] values) {
         final SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
-        switch (match){
+        switch (match) {
             case (MOVIE): {
                 db.beginTransaction();
                 int returnCount = 0;
                 try {
-                    for (ContentValues value : values){
+                    for (ContentValues value : values) {
                         long _id = db.insert(MovieContract.FavoriteEntry.TABLE_NAME, null, value);
                         if (_id != 1) {
                             returnCount++;
                         }
                     }
-                }
-                finally {
+                } finally {
                     db.endTransaction();
                 }
                 //notify the content resolver of the change
@@ -282,14 +275,13 @@ public class MovieProvider extends ContentProvider {
                 db.beginTransaction();
                 int returnCount = 0;
                 try {
-                    for (ContentValues value : values){
+                    for (ContentValues value : values) {
                         long _id = db.insert(MovieContract.DetailEntry.TABLE_NAME, null, value);
                         if (_id != 1) {
                             returnCount++;
                         }
                     }
-                }
-                finally {
+                } finally {
                     db.endTransaction();
                 }
                 //notify the content resolver of the change

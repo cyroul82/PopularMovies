@@ -6,7 +6,6 @@ import com.griffin.popularmovies.Pojo.Credits;
 import com.griffin.popularmovies.Pojo.MovieDetail;
 import com.griffin.popularmovies.Pojo.MovieImages;
 import com.griffin.popularmovies.Pojo.MoviePage;
-import com.griffin.popularmovies.Pojo.Part;
 import com.griffin.popularmovies.Pojo.Person;
 import com.griffin.popularmovies.Pojo.ReviewPage;
 import com.griffin.popularmovies.Pojo.Trailer;

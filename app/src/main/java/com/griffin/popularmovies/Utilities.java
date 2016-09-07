@@ -23,7 +23,6 @@ import com.griffin.popularmovies.Pojo.Cast;
 import com.griffin.popularmovies.Pojo.Collection;
 import com.griffin.popularmovies.Pojo.Credits;
 import com.griffin.popularmovies.Pojo.Genre;
-import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.Pojo.MovieDetail;
 import com.griffin.popularmovies.Pojo.MovieImages;
 import com.griffin.popularmovies.Pojo.Person;
@@ -61,19 +60,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class Utilities {
 
-    private static final String LOG_TAG = Utilities.class.getSimpleName();
-
-    private static final String TAG = Utilities.class.getSimpleName();
-    private static final String CHOICE = "choice";
-    private static final String SELECTED_CHOICE = "selected_choice";
-    private static final int POPULAR_CHOICE = 0;
-    private static final int TOP_RATED_CHOICE = 1;
-    private static final int UPCOMIG_CHOICE = 2;
-    private static final int NOw_PLAYING_CHOICE = 3;
-    private static final int FAVORITE_CHOICE = 4;
-
     public final static String LANGUAGE_SYSTEM = Locale.getDefault().getLanguage();
-
+    private static final String LOG_TAG = Utilities.class.getSimpleName();
+    private static final String ID_ITEM = "choice";
 
     public static DetailMovie getDetailMovieFromCursor(Cursor movieCursor) {
         DetailMovie detailMovie = new DetailMovie();
@@ -95,9 +84,21 @@ public class Utilities {
         Type type = new TypeToken<List<Genre>>() {
         }.getType();
         String genreJSON = movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_GENRE);
-        System.out.println(genreJSON);
         List<Genre> genres = gson.fromJson(genreJSON, type);
         detailMovie.getMovieDetail().setGenres(genres);
+
+
+        type = new TypeToken<List<TrailerDetail>>() {
+        }.getType();
+        String trailersJSON = movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_VIDEOS);
+        List<TrailerDetail> trailers = gson.fromJson(trailersJSON, type);
+        detailMovie.setTrailerDetails(trailers);
+
+        type = new TypeToken<List<Reviews>>() {
+        }.getType();
+        String reviewsJSON = movieCursor.getString(DetailFavoriteFragment.COL_FAVORITE_MOVIE_DETAIL_REVIEWS);
+        List<Reviews> reviews = gson.fromJson(reviewsJSON, type);
+        detailMovie.setReviewsList(reviews);
 
 
         type = new TypeToken<List<Cast>>() {
@@ -128,98 +129,124 @@ public class Utilities {
                 new String[]{Long.toString(detailMovie.getMovieDetail().getId())},
                 null);
 
-        if (movieCursor.moveToFirst()) {
-            int movieIdIndex = movieCursor.getColumnIndex(MovieContract.FavoriteEntry._ID);
-            //movieRowId = movieCursor.getLong(movieIdIndex);
-        } else {
+        if (movieCursor != null) {
+            if (movieCursor.moveToFirst()) {
+                int movieIdIndex = movieCursor.getColumnIndex(MovieContract.FavoriteEntry._ID);
+                //movieRowId = movieCursor.getLong(movieIdIndex);
+            } else {
 
-            ContentValues detail = new ContentValues();
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TITLE, detailMovie.getMovieDetail().getTitle());
+                ContentValues detail = new ContentValues();
+                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TITLE, detailMovie.getMovieDetail().getTitle());
 
-            Gson gson = new GsonBuilder().create();
-            String casting = gson.toJson(detailMovie.getCredits().getCast());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_CASTING, casting);
+                Gson gson = new GsonBuilder().create();
+                String casting = gson.toJson(detailMovie.getCredits().getCast());
+                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_CASTING, casting);
 
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_DATE, detailMovie.getMovieDetail().getReleaseDate());
+                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_DATE, detailMovie.getMovieDetail().getReleaseDate());
 
-            String genre = gson.toJson(detailMovie.getMovieDetail().getGenres());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_GENRE, genre);
+                String genre = gson.toJson(detailMovie.getMovieDetail().getGenres());
+                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_GENRE, genre);
 
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_ORIGINAL_TITLE, detailMovie.getMovieDetail().getOriginalTitle());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_OVERVIEW, detailMovie.getMovieDetail().getOverview());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RATING, Double.toString(detailMovie.getMovieDetail().getVoteAverage()));
-            if (detailMovie.getReviewsList() != null) {
-                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS, detailMovie.getReviewsList().toString());
+                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_ORIGINAL_TITLE, detailMovie.getMovieDetail().getOriginalTitle());
+                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_OVERVIEW, detailMovie.getMovieDetail().getOverview());
+                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RATING, Double.toString(detailMovie.getMovieDetail().getVoteAverage()));
+
+                String reviews = gson.toJson(detailMovie.getReviewsList());
+                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS, reviews);
+                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RUNTIME, detailMovie.getMovieDetail().getRuntime());
+
+                String trailers = gson.toJson(detailMovie.getTrailerDetails());
+                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER, trailers);
+                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TAGLINE, detailMovie.getMovieDetail().getTagline());
+
+                // The resulting URI contains the ID for the row.  Extract the movieId from the Uri.
+                Uri insertedDetailUri = context.getContentResolver().insert(MovieContract.DetailEntry.CONTENT_URI, detail);
+                long insertedRowId = ContentUris.parseId(insertedDetailUri);
+
+                // Now that the content provider is set up, inserting rows of data is pretty simple.
+                // First create a ContentValues object to hold the data you want to insert.
+                ContentValues values = new ContentValues();
+
+                // Then add the data, along with the corresponding name of the data type,
+                // so the content provider knows what kind of value is being inserted.
+                values.put(MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY, insertedRowId);
+                values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID, detailMovie.getMovieDetail().getId());
+
+                values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE, detailMovie.getMovieDetail().getPosterPath());
+
+                // Finally, insert movie data into the database.
+                //Uri insertedUri =
+                context.getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI, values);
+
             }
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RUNTIME, detailMovie.getMovieDetail().getRuntime());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER, detailMovie.getTrailerDetails().toString());
-            detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TAGLINE, detailMovie.getMovieDetail().getTagline());
 
-            // The resulting URI contains the ID for the row.  Extract the movieId from the Uri.
-            Uri insertedDetailUri = context.getContentResolver().insert(MovieContract.DetailEntry.CONTENT_URI, detail);
-            long insertedRowId = ContentUris.parseId(insertedDetailUri);
-
-            // Now that the content provider is set up, inserting rows of data is pretty simple.
-            // First create a ContentValues object to hold the data you want to insert.
-            ContentValues values = new ContentValues();
-
-
-            // Then add the data, along with the corresponding name of the data type,
-            // so the content provider knows what kind of value is being inserted.
-            values.put(MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY, insertedRowId);
-            values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID, detailMovie.getMovieDetail().getId());
-
-
-            values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE, detailMovie.getMovieDetail().getPosterPath());
-
-            // Finally, insert movie data into the database.
-            //Uri insertedUri =
-            context.getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI, values);
-
+            movieCursor.close();
         }
-        movieCursor.close();
     }
 
 
-    public static void removeMovieFromFavorite(Movie movie, Context context) {
+    public static void removeMovieFromFavorite(int idMovie, Context context) {
         context.getContentResolver().delete(MovieContract.FavoriteEntry.CONTENT_URI,
                 MovieContract.FavoriteEntry.COLUMN_MOVIE_ID,
-                new String[]{Integer.toString(movie.getId())});
+                new String[]{Integer.toString(idMovie)});
     }
 
 
-    public static void setChoice(Context context, String choice) {
+    public static void setIdItem(Context context, int idItem) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(CHOICE, choice);
+        editor.putInt(ID_ITEM, idItem);
         editor.apply();
     }
 
     //Get back the String choice from the mSpinner
-    public static String getChoice(Context context) {
+    public static int getIdItem(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPreferences.getString(CHOICE, context.getString(R.string.pref_movies_popular));
+        return sharedPreferences.getInt(ID_ITEM, R.id.drawer_popular);
     }
+
+    public static String getChoice(int idItem, Context context) {
+        if (idItem == R.id.drawer_popular) {
+            return context.getString(R.string.pref_movies_popular);
+        }
+        if (idItem == R.id.drawer_top_rated) {
+            return context.getString(R.string.pref_movies_top_rated);
+        }
+        if (idItem == R.id.drawer_upcoming) {
+            return context.getString(R.string.pref_movies_upcoming);
+        }
+        if (idItem == R.id.drawer_this_week) {
+            return context.getString(R.string.pref_movies_now_playing);
+        }
+        if (idItem == R.id.drawer_favorite) {
+            return context.getString(R.string.pref_movies_favorite);
+        }
+        if (idItem == R.string.search_title) {
+            return context.getString(R.string.search_title);
+        } else return null;
+    }
+
 
     public static int isMovieFavorite(int idMovie, Context context) {
         int isFavorite = 0;
         Cursor cursor = context.getContentResolver().query(MovieContract.FavoriteEntry.CONTENT_URI, null, MovieContract.FavoriteEntry
                 .COLUMN_MOVIE_ID + " = ?", new String[]{Integer.toString(idMovie)}, null);
-        if (cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()) {
             isFavorite = 1;
+            cursor.close();
         }
-        cursor.close();
+
         return isFavorite;
     }
 
     //Save picture into the mobile within the app folder (MODE PRIVATE)
     public static String savePoster(Bitmap bitmapImage, int idMovie, Context context) {
         ContextWrapper cw = new ContextWrapper(context.getApplicationContext());
-        // path to /data/data/yourapp/app_data/imageDir
+        // path to /data/data/myapp/app_data/imageDir
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
         File bitmap = new File(directory, Integer.toString(idMovie));
 
-        FileOutputStream fos = null;
+        FileOutputStream fos;
         try {
             //fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
             fos = new FileOutputStream(bitmap);
@@ -227,14 +254,15 @@ public class Utilities {
             bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.close();
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(LOG_TAG, e.getMessage());
         }
-        Log.i(TAG, directory.getAbsolutePath());
+        Log.i(LOG_TAG, directory.getAbsolutePath());
         return directory.getAbsolutePath();
     }
 
+    //get the movie picture saved in the app folder
     public static Bitmap getPoster(String path, int idMovie) throws FileNotFoundException {
-        Bitmap bitmap = null;
+        Bitmap bitmap;
         File file = new File(path, Integer.toString(idMovie));
         bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
 
@@ -242,47 +270,40 @@ public class Utilities {
 
     }
 
-    public static String getMonthAndYear(String date) {
+    public static String getMonthAndYear(String date) throws ParseException {
         // Creates the format style to match the json format
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         SimpleDateFormat month_date = new SimpleDateFormat("MMMM", Locale.getDefault());
-        String year = null;
-        try {
-            // Creates the date with the format previously created
-            Date d = format.parse(date);
-            // Instancie le calendrier
-            Calendar cal = Calendar.getInstance();
-            String month_name = month_date.format(cal.getTime());
-            // Sets up the calendar
-            cal.setTime(d);
-            // gets back the year out of the date and cast it into a string
-            year = month_name + " " + Integer.toString(cal.get(Calendar.YEAR));
-        } catch (ParseException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
+        String year;
+        // Creates the date with the format previously created
+        Date d = format.parse(date);
+        // Instancie le calendrier
+        Calendar cal = Calendar.getInstance();
+        String month_name = month_date.format(cal.getTime());
+        // Sets up the calendar
+        cal.setTime(d);
+        // gets back the year out of the date and cast it into a string
+        year = month_name + " " + Integer.toString(cal.get(Calendar.YEAR));
 
-        }
         return year;
     }
 
-    public static String getYear(String date) {
+    public static String getYear(String date) throws ParseException {
         // Creates the format style to match the json format
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        String year = null;
-        try {
-            // Creates the date with the format previously created
-            Date d = format.parse(date);
-            // Instancie le calendrier
-            Calendar cal = Calendar.getInstance();
+        String year;
 
-            //String month_name = month_date.format(cal.getTime());
-            // Sets up the calendar
-            cal.setTime(d);
-            // gets back the year out of the date and cast it into a string
-            year = Integer.toString(cal.get(Calendar.YEAR));
-        } catch (ParseException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
+        // Creates the date with the format previously created
+        Date d = format.parse(date);
+        // Instancie le calendrier
+        Calendar cal = Calendar.getInstance();
 
-        }
+        //String month_name = month_date.format(cal.getTime());
+        // Sets up the calendar
+        cal.setTime(d);
+        // gets back the year out of the date and cast it into a string
+        year = Integer.toString(cal.get(Calendar.YEAR));
+
         return year;
     }
 
@@ -306,7 +327,11 @@ public class Utilities {
 
         String MOVIE_BASE_URL = context.getResources().getString(R.string.BASE_URL);
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(MOVIE_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(MOVIE_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
         MovieService movieService = retrofit.create(MovieService.class);
 
         Call<Trailer> callTrailer = movieService.getTrailer(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
@@ -319,17 +344,14 @@ public class Utilities {
         }
         detailMovie.setTrailerDetails(trailerDetails);
 
-
         Call<MovieDetail> callMovieDetail = movieService.getMovieDetail(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
         Response responseCallMovieDetail = callMovieDetail.execute();
         MovieDetail movieDetail = (MovieDetail) responseCallMovieDetail.body();
         detailMovie.setMovieDetail(movieDetail);
 
-
         Call<Credits> callCredits = movieService.getCredits(movieId, BuildConfig.MOVIE_DB_API_KEY, LANGUAGE_SYSTEM);
         Response responseCallCredits = callCredits.execute();
         Credits credits = (Credits) responseCallCredits.body();
-
 
         if (credits != null) {
             int castingMax;
@@ -385,12 +407,12 @@ public class Utilities {
         return detailMovie;
     }
 
+    //used for the recyclerView filmography autofit column
     //http://stackoverflow.com/questions/33575731/gridlayoutmanager-how-to-auto-fit-columns  RITEN
     public static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        int noOfColumns = (int) (dpWidth / 180);
-        return noOfColumns;
+        return (int) (dpWidth / 180);
     }
 
 

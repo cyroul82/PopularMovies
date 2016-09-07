@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
-import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Pojo.Movie;
+import com.griffin.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -36,15 +36,16 @@ public class PopularMoviesAdapter extends ArrayAdapter<Movie> {
         ViewHolder viewHolder;
 
         if (view == null) {
-            view= View.inflate(mContext, R.layout.movie_item_picture, null);
+            view = View.inflate(mContext, R.layout.movie_item_picture, null);
             viewHolder = new ViewHolder(view);
             view.setTag(viewHolder);
-        }
-        else {
+        } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         Picasso.with(mContext)
                 .load(getContext().getString(R.string.IMAGE_BASE_URL) + mMoviesList.get(position).getPosterPath())
+                .placeholder(R.drawable.ic_wallpaper_black_48dp)
+                .error(R.drawable.ic_wallpaper_black_48dp)
                 .into(viewHolder.popularMoviePicture);
 
         return view;
@@ -56,7 +57,9 @@ public class PopularMoviesAdapter extends ArrayAdapter<Movie> {
     }
 
     static class ViewHolder {
-        @BindView(R.id.movieItemPictureImageView) ImageView popularMoviePicture;
+        @BindView(R.id.movieItemPictureImageView)
+        ImageView popularMoviePicture;
+
         public ViewHolder(View v) {
             ButterKnife.bind(this, v);
         }

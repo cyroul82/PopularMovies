@@ -1,7 +1,6 @@
 package com.griffin.popularmovies.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,11 +66,12 @@ public class FilmographyActorAdapter extends BaseAdapter {
 
         Picasso.with(mContext)
                 .load(mContext.getString(R.string.IMAGE_BASE_URL) + mData.get(position).getPosterPath())
+                .placeholder(R.drawable.ic_wallpaper_black_48dp)
+                .error(R.drawable.ic_wallpaper_black_48dp)
                 .fit()
                 .centerInside()
                 .into(holder.image);
 
-        //holder.image.setImageResource(mData.get(position).);
         holder.text.setText(mData.get(position).getTitle());
         holder.year.setText(mData.get(position).getReleaseDate());
 

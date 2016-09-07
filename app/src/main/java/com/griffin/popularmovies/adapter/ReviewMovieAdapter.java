@@ -18,19 +18,8 @@ public class ReviewMovieAdapter extends RecyclerView.Adapter<ReviewMovieAdapter.
 
     private List<Reviews> reviewsList;
 
-    public ReviewMovieAdapter(List<Reviews> reviewsList){
+    public ReviewMovieAdapter(List<Reviews> reviewsList) {
         this.reviewsList = reviewsList;
-    }
-
-    public static class ReviewsViewHolder extends RecyclerView.ViewHolder {
-         static  TextView textViewAuthor;
-        static TextView textViewReview;
-
-        public ReviewsViewHolder(View itemView) {
-            super(itemView);
-            textViewAuthor = (TextView) itemView.findViewById(R.id.textViewReview_author);
-            textViewReview = (TextView) itemView.findViewById(R.id.textViewReview);
-        }
     }
 
     @Override
@@ -47,10 +36,21 @@ public class ReviewMovieAdapter extends RecyclerView.Adapter<ReviewMovieAdapter.
         Reviews reviews = reviewsList.get(position);
         ReviewsViewHolder.textViewAuthor.setText(reviews.getAuthor());
         ReviewsViewHolder.textViewReview.setText(reviews.getContent());
-   }
+    }
 
     @Override
     public int getItemCount() {
         return reviewsList.size();
+    }
+
+    public static class ReviewsViewHolder extends RecyclerView.ViewHolder {
+        static TextView textViewAuthor;
+        static TextView textViewReview;
+
+        public ReviewsViewHolder(View itemView) {
+            super(itemView);
+            textViewAuthor = (TextView) itemView.findViewById(R.id.textViewReview_author);
+            textViewReview = (TextView) itemView.findViewById(R.id.textViewReview);
+        }
     }
 }

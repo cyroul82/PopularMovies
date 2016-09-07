@@ -1,29 +1,18 @@
 package com.griffin.popularmovies.detail_movie;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.griffin.popularmovies.MainActivity;
 import com.griffin.popularmovies.Pojo.Poster;
 import com.griffin.popularmovies.R;
 import com.squareup.picasso.Picasso;
-import com.synnapps.carouselview.CarouselView;
-import com.synnapps.carouselview.ImageListener;
-import com.synnapps.carouselview.ViewListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -32,9 +21,6 @@ import butterknife.ButterKnife;
 public class DetailActivity extends AppCompatActivity implements DetailFragment.CallbackDetailFragment {
 
     public static final String MOVIE_KEY = "movie";
-    public static final String DETAIL_FRAGMENT_TAG = "dft";
-
-
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout mCollapsingToolbarLayout;
     @BindView(R.id.toolbar_detail_movie)
@@ -85,7 +71,7 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
         }
 
         if (savedInstanceState != null) {
-            mDetailFragment = (DetailFragment) getSupportFragmentManager().getFragment(savedInstanceState, DETAIL_FRAGMENT_TAG);
+            mDetailFragment = (DetailFragment) getSupportFragmentManager().getFragment(savedInstanceState, MainActivity.DETAIL_FRAGMENT_TAG);
         }
 
         mFavoriteButton.setOnClickListener(mDetailFragment);
@@ -95,14 +81,14 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
     @Override
     protected void onSaveInstanceState(Bundle outState) {
 
-        getSupportFragmentManager().putFragment(outState, DETAIL_FRAGMENT_TAG, mDetailFragment);
+        getSupportFragmentManager().putFragment(outState, MainActivity.DETAIL_FRAGMENT_TAG, mDetailFragment);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        mDetailFragment = (DetailFragment) getSupportFragmentManager().getFragment(savedInstanceState, DETAIL_FRAGMENT_TAG);
+        mDetailFragment = (DetailFragment) getSupportFragmentManager().getFragment(savedInstanceState, MainActivity.DETAIL_FRAGMENT_TAG);
     }
 
 
@@ -110,44 +96,14 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
     private void loadToolbarImage(String posterPath) {
         ImageView imageView = (ImageView) findViewById(R.id.toolbar_image_detail_movie);
 
-        if(imageView != null) {
-            Picasso.with(this).load(getString(R.string.IMAGE_BASE_URL) + posterPath).fit().centerInside().into(imageView);
+        if (imageView != null) {
+            Picasso.with(this).load(getString(R.string.IMAGE_BASE_URL) + posterPath)
+                    .placeholder(R.drawable.ic_wallpaper_black_48dp)
+                    .error(R.drawable.ic_wallpaper_black_48dp)
+                    .fit()
+                    .centerInside()
+                    .into(imageView);
         }
-    }
-
-    //load the image using Picasso library
-    private void loadToolbarCarousel(final List<Poster> posterList) {
-        /*final CarouselView mCarouselView = (CarouselView) findViewById(R.id.carouselView);
-        if(mCarouselView != null) {
-            mCarouselView.setPageCount(posterList.size());
-
-
-            mCarouselView.setViewListener(new ViewListener() {
-                @Override
-                public View setViewForPosition(int position) {
-
-                    View customView = getLayoutInflater().inflate(R.layout.custom_images_movie_view, null);
-
-                    ImageView fruitImageView = (ImageView) customView.findViewById(R.id.fruitImageView);
-
-                    Picasso.with(getApplicationContext())
-                            .load(getString(R.string.IMAGE_BASE_URL) + posterList.get(position).getFilePath())
-                            .fit()
-                            .centerCrop().into
-                            (fruitImageView);
-
-                    mCarouselView.setIndicatorGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
-
-                    return customView;
-
-
-                }
-            });
-
-            mCarouselView.setSlideInterval(4000);
-
-        }*/
-
     }
 
     @Override

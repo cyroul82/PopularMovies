@@ -2,6 +2,7 @@ package com.griffin.popularmovies.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,17 +14,19 @@ import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
  * Created by griffin on 30/08/16.
  */
-public class FilmographyAdapter  extends RecyclerView.Adapter<FilmographyAdapter.ViewHolder> {
+public class FilmographyAdapter extends RecyclerView.Adapter<FilmographyAdapter.ViewHolder> {
 
+    private final static String LOG_TAG = FilmographyAdapter.class.getSimpleName();
     private List<CastFilmographyDetail> castFilmographyDetailList;
     private Context mContext;
 
-    public FilmographyAdapter(List<CastFilmographyDetail> castFilmographyDetailList, Context context){
+    public FilmographyAdapter(List<CastFilmographyDetail> castFilmographyDetailList, Context context) {
         this.castFilmographyDetailList = castFilmographyDetailList;
         mContext = context;
     }
@@ -40,15 +43,23 @@ public class FilmographyAdapter  extends RecyclerView.Adapter<FilmographyAdapter
         CastFilmographyDetail castFilmographyDetail = castFilmographyDetailList.get(position);
         Picasso.with(mContext)
                 .load(mContext.getString(R.string.IMAGE_BASE_URL) + castFilmographyDetail.getPosterPath())
+                .placeholder(R.drawable.ic_wallpaper_black_48dp)
+                .error(R.drawable.ic_wallpaper_black_48dp)
                 .fit()
                 .centerInside()
                 .into(ViewHolder.poster);
 
         ViewHolder.title.setText(castFilmographyDetail.getTitle());
-        if(castFilmographyDetail.getReleaseDate() != null) {
-            String year = Utilities.getYear(castFilmographyDetail.getReleaseDate());
+        if (castFilmographyDetail.getReleaseDate() != null) {
+            try {
+                String year = Utilities.getYear(castFilmographyDetail.getReleaseDate());
+                ViewHolder.year.setText(year);
+            } catch (ParseException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
 
-            ViewHolder.year.setText(year);
+            }
+
+
         }
 
     }

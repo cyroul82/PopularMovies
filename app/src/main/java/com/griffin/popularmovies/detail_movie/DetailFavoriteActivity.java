@@ -2,26 +2,32 @@ package com.griffin.popularmovies.detail_movie;
 
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.griffin.popularmovies.MainActivity;
 import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.Pojo.Movie;
 import com.griffin.popularmovies.Utilities;
-import com.squareup.picasso.Picasso;
+
+import java.io.FileNotFoundException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class DetailFavoriteActivity extends AppCompatActivity implements DetailFavoriteFragment.CallbackDetailFavoriteFragment {
 
+    private static final String LOG_TAG = DetailFavoriteActivity.class.getSimpleName();
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout mCollapsingToolbarLayout;
     @BindView(R.id.toolbar_detail_movie)
     Toolbar mToolbar;
+    @BindView(R.id.floatingButton_favorite)
+    FloatingActionButton mFavoriteButton;
+    private DetailFavoriteFragment mDetailFavoriteFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,14 +53,35 @@ public class DetailFavoriteActivity extends AppCompatActivity implements DetailF
             arguments.putParcelable(DetailFavoriteFragment.FAVORITE_MOVIE, getIntent().getData());
             arguments.putBoolean(DetailFavoriteFragment.IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY, true);
 
-            DetailFavoriteFragment fragment = new DetailFavoriteFragment();
-            fragment.setArguments(arguments);
+            mDetailFavoriteFragment = new DetailFavoriteFragment();
+            mDetailFavoriteFragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.detail_movie_container, fragment, MainActivity.DETAIL_FAVORITE_FRAGMENT_TAG)
+                    .add(R.id.detail_movie_container, mDetailFavoriteFragment, MainActivity.DETAIL_FAVORITE_FRAGMENT_TAG)
                     .commit();
         }
 
+        if (savedInstanceState != null) {
+            mDetailFavoriteFragment = (DetailFavoriteFragment) getSupportFragmentManager()
+                    .getFragment(savedInstanceState, MainActivity.DETAIL_FAVORITE_FRAGMENT_TAG);
+        }
+
+        mFavoriteButton.setOnClickListener(mDetailFavoriteFragment);
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        getSupportFragmentManager().putFragment(outState, MainActivity.DETAIL_FAVORITE_FRAGMENT_TAG, mDetailFavoriteFragment);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mDetailFavoriteFragment = (DetailFavoriteFragment) getSupportFragmentManager().getFragment(savedInstanceState, MainActivity
+                .DETAIL_FAVORITE_FRAGMENT_TAG);
     }
 
     @Override
@@ -74,8 +101,25 @@ public class DetailFavoriteActivity extends AppCompatActivity implements DetailF
 
         mCollapsingToolbarLayout.setTitle(title);
 
-        //ImageView imageView = (ImageView) findViewById(R.id.toolbar_image_detail_movie);
-        //imageView.setImageBitmap(Utilities.getPoster(posterPath, idMovie));
+        ImageView imageView = (ImageView) findViewById(R.id.toolbar_image_detail_movie);
+
+        try {
+            if (imageView != null) {
+                imageView.setImageBitmap(Utilities.getPoster(posterPath, idMovie));
+            }
+        } catch (FileNotFoundException e) {
+            Log.e(LOG_TAG, e.getMessage());
+        }
 
     }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
+            finish();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
 }

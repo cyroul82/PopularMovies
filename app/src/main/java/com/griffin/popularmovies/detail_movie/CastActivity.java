@@ -1,20 +1,13 @@
 package com.griffin.popularmovies.detail_movie;
 
-import android.content.Context;
-import android.content.res.TypedArray;
+import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,14 +16,11 @@ import com.griffin.popularmovies.Pojo.CastFilmography;
 import com.griffin.popularmovies.Pojo.CastFilmographyDetail;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
-import com.griffin.popularmovies.adapter.FilmographyActorAdapter;
 import com.griffin.popularmovies.adapter.FilmographyAdapter;
 import com.griffin.popularmovies.task.FetchFilmography;
-import com.martinappl.components.ui.containers.FeatureCoverFlow;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,9 +32,6 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final String MOVIE_LIST = "movie_list";
 
     private static final int LOADER = 0;
-
-    private Cast mCast;
-
     @BindView(R.id.cast_birthday)
     TextView mBirthday;
     @BindView(R.id.cast_deathday)
@@ -59,15 +46,9 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
     Toolbar mToolbar;
     @BindView(R.id.recyclerView_filmography)
     RecyclerView mRecyclerViewFilmography;
-
-    /*@BindView(R.id.coverflow)
-    FeatureCoverFlow mCoverFlow;*/
-
     private FilmographyAdapter mFilmographyAdapter;
-    private FilmographyActorAdapter adap;
-
     private ArrayList<CastFilmographyDetail> mCastMovieList = new ArrayList<>();
-
+    private Cast mCast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,9 +64,7 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
 
             getSupportLoaderManager().initLoader(LOADER, null, this).forceLoad();
 
-        }
-
-        else {
+        } else {
             mCast = savedInstanceState.getParcelable(CAST);
             mCastMovieList = savedInstanceState.getParcelableArrayList(MOVIE_LIST);
         }
@@ -100,10 +79,6 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
         mFilmographyAdapter = new FilmographyAdapter(mCastMovieList, this);
         mRecyclerViewFilmography.setAdapter(mFilmographyAdapter);
 
-       /* adap = new FilmographyActorAdapter(this);
-        adap.setData(mCastMovieList);
-        mCoverFlow.setAdapter(adap);*/
-
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -117,6 +92,8 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
         //load the picture using picasso library
         Picasso.with(this)
                 .load(getString(R.string.IMAGE_BASE_URL) + mCast.getPerson().getProfilePath())
+                .placeholder(R.drawable.ic_wallpaper_black_48dp)
+                .error(R.drawable.ic_wallpaper_black_48dp)
                 .fit()
                 .centerInside()
                 .into(mImageView);
@@ -150,13 +127,11 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<CastFilmography> loader, CastFilmography data) {
-        if(data != null) {
+        if (data != null) {
             if (data.getCast() != null) {
                 mCastMovieList.clear();
                 mCastMovieList.addAll(data.getCast());
                 mFilmographyAdapter.notifyDataSetChanged();
-                //adap.notifyDataSetChanged();
-
             }
         }
     }
