@@ -1,5 +1,5 @@
 
-package com.griffin.popularmovies.Pojo;
+package com.griffin.popularmovies.pojo;
 
 //import javax.annotation.Generated;
 import android.os.Parcel;
@@ -11,6 +11,17 @@ import com.google.gson.annotations.SerializedName;
 //@Generated("org.jsonschema2pojo")
 public class Poster implements Parcelable {
 
+    public static final Creator<Poster> CREATOR = new Creator<Poster>() {
+        @Override
+        public Poster createFromParcel(Parcel in) {
+            return new Poster(in);
+        }
+
+        @Override
+        public Poster[] newArray(int size) {
+            return new Poster[size];
+        }
+    };
     @SerializedName("file_path")
     @Expose
     private String filePath;
@@ -42,18 +53,6 @@ public class Poster implements Parcelable {
         voteAverage = in.readDouble();
         voteCount = in.readInt();
     }
-
-    public static final Creator<Poster> CREATOR = new Creator<Poster>() {
-        @Override
-        public Poster createFromParcel(Parcel in) {
-            return new Poster(in);
-        }
-
-        @Override
-        public Poster[] newArray(int size) {
-            return new Poster[size];
-        }
-    };
 
     /**
      * 

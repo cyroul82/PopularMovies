@@ -1,5 +1,5 @@
 
-package com.griffin.popularmovies.Pojo;
+package com.griffin.popularmovies.pojo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,17 +11,25 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 //@Generated("org.jsonschema2pojo")
-public class ReviewPage implements Parcelable {
+public class MoviePage implements Parcelable{
 
-    @SerializedName("id")
-    @Expose
-    private int id;
+    public static final Creator<MoviePage> CREATOR = new Creator<MoviePage>() {
+        @Override
+        public MoviePage createFromParcel(Parcel in) {
+            return new MoviePage(in);
+        }
+
+        @Override
+        public MoviePage[] newArray(int size) {
+            return new MoviePage[size];
+        }
+    };
     @SerializedName("page")
     @Expose
     private int page;
     @SerializedName("results")
     @Expose
-    private List<Reviews> results = new ArrayList<Reviews>();
+    private List<Movie> results = new ArrayList<Movie>();
     @SerializedName("total_pages")
     @Expose
     private int totalPages;
@@ -29,42 +37,32 @@ public class ReviewPage implements Parcelable {
     @Expose
     private int totalResults;
 
-    protected ReviewPage(Parcel in) {
-        id = in.readInt();
+    /**
+     * No args constructor for use in serialization
+     *
+     */
+    public MoviePage() {
+    }
+
+    /**
+     *
+     * @param results
+     * @param totalResults
+     * @param page
+     * @param totalPages
+     */
+    public MoviePage(int page, List<Movie> results, int totalPages, int totalResults) {
+        this.page = page;
+        this.results = results;
+        this.totalPages = totalPages;
+        this.totalResults = totalResults;
+    }
+
+    protected MoviePage(Parcel in) {
         page = in.readInt();
-        results = in.createTypedArrayList(Reviews.CREATOR);
+        results = in.createTypedArrayList(Movie.CREATOR);
         totalPages = in.readInt();
         totalResults = in.readInt();
-    }
-
-    public static final Creator<ReviewPage> CREATOR = new Creator<ReviewPage>() {
-        @Override
-        public ReviewPage createFromParcel(Parcel in) {
-            return new ReviewPage(in);
-        }
-
-        @Override
-        public ReviewPage[] newArray(int size) {
-            return new ReviewPage[size];
-        }
-    };
-
-    /**
-     * 
-     * @return
-     *     The id
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * 
-     * @param id
-     *     The id
-     */
-    public void setId(int id) {
-        this.id = id;
     }
 
     /**
@@ -90,7 +88,7 @@ public class ReviewPage implements Parcelable {
      * @return
      *     The results
      */
-    public List<Reviews> getResults() {
+    public List<Movie> getResults() {
         return results;
     }
 
@@ -99,7 +97,7 @@ public class ReviewPage implements Parcelable {
      * @param results
      *     The results
      */
-    public void setResults(List<Reviews> results) {
+    public void setResults(List<Movie> results) {
         this.results = results;
     }
 
@@ -146,7 +144,6 @@ public class ReviewPage implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
         dest.writeInt(page);
         dest.writeTypedList(results);
         dest.writeInt(totalPages);

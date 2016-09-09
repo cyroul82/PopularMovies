@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.griffin.popularmovies.MainActivity;
-import com.griffin.popularmovies.Pojo.Poster;
+import com.griffin.popularmovies.pojo.Poster;
 import com.griffin.popularmovies.R;
 import com.squareup.picasso.Picasso;
 

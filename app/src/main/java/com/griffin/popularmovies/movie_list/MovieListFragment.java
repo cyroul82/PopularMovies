@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import com.griffin.popularmovies.Pojo.Movie;
+import com.griffin.popularmovies.pojo.Movie;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.adapter.PopularMoviesAdapter;
 import com.griffin.popularmovies.task.FetchMoviesTask;

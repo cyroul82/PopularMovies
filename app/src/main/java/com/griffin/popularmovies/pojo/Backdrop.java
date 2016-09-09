@@ -1,5 +1,5 @@
 
-package com.griffin.popularmovies.Pojo;
+package com.griffin.popularmovies.pojo;
 
 //import javax.annotation.Generated;
 import android.os.Parcel;
@@ -11,6 +11,17 @@ import com.google.gson.annotations.SerializedName;
 //@Generated("org.jsonschema2pojo")
 public class Backdrop implements Parcelable{
 
+    public static final Creator<Backdrop> CREATOR = new Creator<Backdrop>() {
+        @Override
+        public Backdrop createFromParcel(Parcel in) {
+            return new Backdrop(in);
+        }
+
+        @Override
+        public Backdrop[] newArray(int size) {
+            return new Backdrop[size];
+        }
+    };
     @SerializedName("file_path")
     @Expose
     private String filePath;
@@ -41,18 +52,6 @@ public class Backdrop implements Parcelable{
         voteAverage = in.readDouble();
         voteCount = in.readInt();
     }
-
-    public static final Creator<Backdrop> CREATOR = new Creator<Backdrop>() {
-        @Override
-        public Backdrop createFromParcel(Parcel in) {
-            return new Backdrop(in);
-        }
-
-        @Override
-        public Backdrop[] newArray(int size) {
-            return new Backdrop[size];
-        }
-    };
 
     /**
      * 

@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.griffin.popularmovies.Pojo.Part;
+import com.griffin.popularmovies.pojo.Part;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 

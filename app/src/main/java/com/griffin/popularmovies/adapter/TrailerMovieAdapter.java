@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.griffin.popularmovies.Pojo.TrailerDetail;
+import com.griffin.popularmovies.pojo.TrailerDetail;
 import com.griffin.popularmovies.R;
 
 import java.util.List;

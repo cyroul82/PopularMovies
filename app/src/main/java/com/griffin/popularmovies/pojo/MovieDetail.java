@@ -1,5 +1,5 @@
 
-package com.griffin.popularmovies.Pojo;
+package com.griffin.popularmovies.pojo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -13,6 +13,17 @@ import com.google.gson.annotations.SerializedName;
 //@Generated("org.jsonschema2pojo")
 public class MovieDetail implements Parcelable{
 
+    public static final Creator<MovieDetail> CREATOR = new Creator<MovieDetail>() {
+        @Override
+        public MovieDetail createFromParcel(Parcel in) {
+            return new MovieDetail(in);
+        }
+
+        @Override
+        public MovieDetail[] newArray(int size) {
+            return new MovieDetail[size];
+        }
+    };
     @SerializedName("adult")
     @Expose
     private boolean adult;
@@ -88,10 +99,7 @@ public class MovieDetail implements Parcelable{
     @SerializedName("vote_count")
     @Expose
     private int voteCount;
-
     private int isFavorite ;
-
-
 
     public MovieDetail(){
 
@@ -124,18 +132,6 @@ public class MovieDetail implements Parcelable{
         voteCount = in.readInt();
         isFavorite = in.readInt();
     }
-
-    public static final Creator<MovieDetail> CREATOR = new Creator<MovieDetail>() {
-        @Override
-        public MovieDetail createFromParcel(Parcel in) {
-            return new MovieDetail(in);
-        }
-
-        @Override
-        public MovieDetail[] newArray(int size) {
-            return new MovieDetail[size];
-        }
-    };
 
     /**
      * 

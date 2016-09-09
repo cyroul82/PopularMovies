@@ -1,5 +1,5 @@
 
-package com.griffin.popularmovies.Pojo;
+package com.griffin.popularmovies.pojo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -13,6 +13,17 @@ import com.google.gson.annotations.SerializedName;
 //@Generated("org.jsonschema2pojo")
 public class MovieImages implements Parcelable {
 
+    public static final Creator<MovieImages> CREATOR = new Creator<MovieImages>() {
+        @Override
+        public MovieImages createFromParcel(Parcel in) {
+            return new MovieImages(in);
+        }
+
+        @Override
+        public MovieImages[] newArray(int size) {
+            return new MovieImages[size];
+        }
+    };
     @SerializedName("id")
     @Expose
     private int id;
@@ -28,18 +39,6 @@ public class MovieImages implements Parcelable {
         backdrops = in.createTypedArrayList(Backdrop.CREATOR);
         posters = in.createTypedArrayList(Poster.CREATOR);
     }
-
-    public static final Creator<MovieImages> CREATOR = new Creator<MovieImages>() {
-        @Override
-        public MovieImages createFromParcel(Parcel in) {
-            return new MovieImages(in);
-        }
-
-        @Override
-        public MovieImages[] newArray(int size) {
-            return new MovieImages[size];
-        }
-    };
 
     public MovieImages() {
     }

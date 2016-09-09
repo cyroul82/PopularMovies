@@ -1,5 +1,5 @@
 
-package com.griffin.popularmovies.Pojo;
+package com.griffin.popularmovies.pojo;
 
 //import javax.annotation.Generated;
 import android.os.Parcel;
@@ -11,6 +11,17 @@ import com.google.gson.annotations.SerializedName;
 //@Generated("org.jsonschema2pojo")
 public class Reviews implements Parcelable {
 
+    public static final Creator<Reviews> CREATOR = new Creator<Reviews>() {
+        @Override
+        public Reviews createFromParcel(Parcel in) {
+            return new Reviews(in);
+        }
+
+        @Override
+        public Reviews[] newArray(int size) {
+            return new Reviews[size];
+        }
+    };
     @SerializedName("id")
     @Expose
     private String id;
@@ -30,18 +41,6 @@ public class Reviews implements Parcelable {
         content = in.readString();
         url = in.readString();
     }
-
-    public static final Creator<Reviews> CREATOR = new Creator<Reviews>() {
-        @Override
-        public Reviews createFromParcel(Parcel in) {
-            return new Reviews(in);
-        }
-
-        @Override
-        public Reviews[] newArray(int size) {
-            return new Reviews[size];
-        }
-    };
 
     /**
      * 

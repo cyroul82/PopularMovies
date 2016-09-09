@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.griffin.popularmovies.Pojo.Reviews;
+import com.griffin.popularmovies.pojo.Reviews;
 import com.griffin.popularmovies.R;
 
 import java.util.List;

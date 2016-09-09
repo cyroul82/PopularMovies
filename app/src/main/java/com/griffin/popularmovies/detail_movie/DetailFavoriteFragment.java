@@ -26,11 +26,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.griffin.popularmovies.Pojo.Cast;
-import com.griffin.popularmovies.Pojo.Genre;
-import com.griffin.popularmovies.Pojo.Part;
-import com.griffin.popularmovies.Pojo.Reviews;
-import com.griffin.popularmovies.Pojo.TrailerDetail;
+import com.griffin.popularmovies.pojo.Cast;
+import com.griffin.popularmovies.pojo.Genre;
+import com.griffin.popularmovies.pojo.Part;
+import com.griffin.popularmovies.pojo.Reviews;
+import com.griffin.popularmovies.pojo.TrailerDetail;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.adapter.CastingAdapter;

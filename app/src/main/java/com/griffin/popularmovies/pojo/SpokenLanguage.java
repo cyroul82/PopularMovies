@@ -1,5 +1,5 @@
 
-package com.griffin.popularmovies.Pojo;
+package com.griffin.popularmovies.pojo;
 
 //import javax.annotation.Generated;
 import android.os.Parcel;
@@ -9,52 +9,47 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 //@Generated("org.jsonschema2pojo")
-public class Genre implements Parcelable{
+public class SpokenLanguage implements Parcelable {
 
-    @SerializedName("id")
+    public static final Creator<SpokenLanguage> CREATOR = new Creator<SpokenLanguage>() {
+        @Override
+        public SpokenLanguage createFromParcel(Parcel in) {
+            return new SpokenLanguage(in);
+        }
+
+        @Override
+        public SpokenLanguage[] newArray(int size) {
+            return new SpokenLanguage[size];
+        }
+    };
+    @SerializedName("iso_639_1")
     @Expose
-    private int id;
+    private String iso6391;
     @SerializedName("name")
     @Expose
     private String name;
 
-    public Genre(){
-
-    }
-
-    protected Genre(Parcel in) {
-        id = in.readInt();
+    protected SpokenLanguage(Parcel in) {
+        iso6391 = in.readString();
         name = in.readString();
     }
-
-    public static final Creator<Genre> CREATOR = new Creator<Genre>() {
-        @Override
-        public Genre createFromParcel(Parcel in) {
-            return new Genre(in);
-        }
-
-        @Override
-        public Genre[] newArray(int size) {
-            return new Genre[size];
-        }
-    };
 
     /**
      * 
      * @return
-     *     The id
+     *     The iso6391
      */
-    public int getId() {
-        return id;
+    public String getIso6391() {
+        return iso6391;
     }
 
     /**
      * 
-     * @param id
-     *     The id
+     * @param iso6391
+     *     The iso_639_1
      */
-    public void setId(int id) {
-        this.id = id;
+    public void setIso6391(String iso6391) {
+        this.iso6391 = iso6391;
     }
 
     /**
@@ -82,7 +77,7 @@ public class Genre implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
+        dest.writeString(iso6391);
         dest.writeString(name);
     }
 }
