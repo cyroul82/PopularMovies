@@ -1,5 +1,5 @@
 
-package com.griffin.popularmovies.Pojo;
+package com.griffin.popularmovies.pojo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -13,18 +13,6 @@ import com.google.gson.annotations.SerializedName;
 //@Generated("org.jsonschema2pojo")
 public class Trailer implements Parcelable{
 
-    @SerializedName("id")
-    @Expose
-    private int id;
-    @SerializedName("results")
-    @Expose
-    private List<TrailerDetail> results = new ArrayList<TrailerDetail>();
-
-    protected Trailer(Parcel in) {
-        id = in.readInt();
-        results = in.createTypedArrayList(TrailerDetail.CREATOR);
-    }
-
     public static final Creator<Trailer> CREATOR = new Creator<Trailer>() {
         @Override
         public Trailer createFromParcel(Parcel in) {
@@ -36,6 +24,17 @@ public class Trailer implements Parcelable{
             return new Trailer[size];
         }
     };
+    @SerializedName("id")
+    @Expose
+    private int id;
+    @SerializedName("results")
+    @Expose
+    private List<TrailerDetail> results = new ArrayList<TrailerDetail>();
+
+    protected Trailer(Parcel in) {
+        id = in.readInt();
+        results = in.createTypedArrayList(TrailerDetail.CREATOR);
+    }
 
     /**
      * 

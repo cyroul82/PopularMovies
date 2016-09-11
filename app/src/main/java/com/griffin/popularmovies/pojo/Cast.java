@@ -1,5 +1,5 @@
 
-package com.griffin.popularmovies.Pojo;
+package com.griffin.popularmovies.pojo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,6 +11,17 @@ import com.google.gson.annotations.SerializedName;
 //@Generated("org.jsonschema2pojo")
 public class Cast implements Parcelable{
 
+    public static final Creator<Cast> CREATOR = new Creator<Cast>() {
+        @Override
+        public Cast createFromParcel(Parcel in) {
+            return new Cast(in);
+        }
+
+        @Override
+        public Cast[] newArray(int size) {
+            return new Cast[size];
+        }
+    };
     @SerializedName("cast_id")
     @Expose
     private int castId;
@@ -32,13 +43,12 @@ public class Cast implements Parcelable{
     @SerializedName("profile_path")
     @Expose
     private String profilePath;
-
     private Person person;
+
 
     public Cast(){
 
     }
-
 
     protected Cast(Parcel in) {
         castId = in.readInt();
@@ -50,18 +60,6 @@ public class Cast implements Parcelable{
         profilePath = in.readString();
         person = in.readParcelable(Person.class.getClassLoader());
     }
-
-    public static final Creator<Cast> CREATOR = new Creator<Cast>() {
-        @Override
-        public Cast createFromParcel(Parcel in) {
-            return new Cast(in);
-        }
-
-        @Override
-        public Cast[] newArray(int size) {
-            return new Cast[size];
-        }
-    };
 
     /**
      * 

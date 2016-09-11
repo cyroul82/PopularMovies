@@ -28,11 +28,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.griffin.popularmovies.Pojo.Cast;
-import com.griffin.popularmovies.Pojo.Genre;
-import com.griffin.popularmovies.Pojo.Part;
-import com.griffin.popularmovies.Pojo.Reviews;
-import com.griffin.popularmovies.Pojo.TrailerDetail;
+import com.griffin.popularmovies.pojo.Cast;
+import com.griffin.popularmovies.pojo.Genre;
+import com.griffin.popularmovies.pojo.Part;
+import com.griffin.popularmovies.pojo.Reviews;
+import com.griffin.popularmovies.pojo.TrailerDetail;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.adapter.CastingAdapter;
@@ -45,8 +45,6 @@ import com.griffin.popularmovies.task.MovieToFavoriteTask;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;

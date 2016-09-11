@@ -1,5 +1,5 @@
 
-package com.griffin.popularmovies.Pojo;
+package com.griffin.popularmovies.pojo;
 
 //import javax.annotation.Generated;
 import android.os.Parcel;
@@ -11,6 +11,17 @@ import com.google.gson.annotations.SerializedName;
 //@Generated("org.jsonschema2pojo")
 public class CastFilmographyDetail implements Parcelable {
 
+    public static final Creator<CastFilmographyDetail> CREATOR = new Creator<CastFilmographyDetail>() {
+        @Override
+        public CastFilmographyDetail createFromParcel(Parcel in) {
+            return new CastFilmographyDetail(in);
+        }
+
+        @Override
+        public CastFilmographyDetail[] newArray(int size) {
+            return new CastFilmographyDetail[size];
+        }
+    };
     @SerializedName("adult")
     @Expose
     private boolean adult;
@@ -35,8 +46,6 @@ public class CastFilmographyDetail implements Parcelable {
     @SerializedName("title")
     @Expose
     private String title;
-
-
 
     protected CastFilmographyDetail(Parcel in) {
         adult = in.readByte() != 0;
@@ -65,18 +74,6 @@ public class CastFilmographyDetail implements Parcelable {
     public int describeContents() {
         return 0;
     }
-
-    public static final Creator<CastFilmographyDetail> CREATOR = new Creator<CastFilmographyDetail>() {
-        @Override
-        public CastFilmographyDetail createFromParcel(Parcel in) {
-            return new CastFilmographyDetail(in);
-        }
-
-        @Override
-        public CastFilmographyDetail[] newArray(int size) {
-            return new CastFilmographyDetail[size];
-        }
-    };
 
     /**
      * 

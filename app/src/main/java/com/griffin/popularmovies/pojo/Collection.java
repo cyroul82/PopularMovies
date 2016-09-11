@@ -1,5 +1,5 @@
 
-package com.griffin.popularmovies.Pojo;
+package com.griffin.popularmovies.pojo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -13,6 +13,17 @@ import com.google.gson.annotations.SerializedName;
 //@Generated("org.jsonschema2pojo")
 public class Collection implements Parcelable {
 
+    public static final Creator<Collection> CREATOR = new Creator<Collection>() {
+        @Override
+        public Collection createFromParcel(Parcel in) {
+            return new Collection(in);
+        }
+
+        @Override
+        public Collection[] newArray(int size) {
+            return new Collection[size];
+        }
+    };
     @SerializedName("backdrop_path")
     @Expose
     private String backdropPath;
@@ -36,18 +47,6 @@ public class Collection implements Parcelable {
         parts = in.createTypedArrayList(Part.CREATOR);
         posterPath = in.readString();
     }
-
-    public static final Creator<Collection> CREATOR = new Creator<Collection>() {
-        @Override
-        public Collection createFromParcel(Parcel in) {
-            return new Collection(in);
-        }
-
-        @Override
-        public Collection[] newArray(int size) {
-            return new Collection[size];
-        }
-    };
 
     public Collection() {
 

@@ -5,9 +5,9 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.griffin.popularmovies.BuildConfig;
-import com.griffin.popularmovies.Pojo.CastFilmography;
+import com.griffin.popularmovies.pojo.CastFilmography;
 import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.Service.MovieService;
+import com.griffin.popularmovies.service.MovieService;
 import com.griffin.popularmovies.Utilities;
 
 import java.io.IOException;

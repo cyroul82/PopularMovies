@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.griffin.popularmovies.Pojo.CastFilmographyDetail;
+import com.griffin.popularmovies.pojo.CastFilmographyDetail;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.squareup.picasso.Picasso;

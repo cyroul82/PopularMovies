@@ -4,20 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 
-import com.griffin.popularmovies.Pojo.TrailerDetail;
+import com.griffin.popularmovies.pojo.TrailerDetail;
 import com.griffin.popularmovies.R;
 import com.squareup.picasso.Picasso;
 

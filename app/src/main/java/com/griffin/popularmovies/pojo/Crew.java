@@ -1,5 +1,5 @@
 
-package com.griffin.popularmovies.Pojo;
+package com.griffin.popularmovies.pojo;
 
 //import javax.annotation.Generated;
 import android.os.Parcel;
@@ -11,6 +11,17 @@ import com.google.gson.annotations.SerializedName;
 //@Generated("org.jsonschema2pojo")
 public class Crew implements Parcelable {
 
+    public static final Creator<Crew> CREATOR = new Creator<Crew>() {
+        @Override
+        public Crew createFromParcel(Parcel in) {
+            return new Crew(in);
+        }
+
+        @Override
+        public Crew[] newArray(int size) {
+            return new Crew[size];
+        }
+    };
     @SerializedName("adult")
     @Expose
     private boolean adult;
@@ -50,18 +61,6 @@ public class Crew implements Parcelable {
         releaseDate = in.readString();
         title = in.readString();
     }
-
-    public static final Creator<Crew> CREATOR = new Creator<Crew>() {
-        @Override
-        public Crew createFromParcel(Parcel in) {
-            return new Crew(in);
-        }
-
-        @Override
-        public Crew[] newArray(int size) {
-            return new Crew[size];
-        }
-    };
 
     /**
      * 

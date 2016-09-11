@@ -3,12 +3,12 @@ package com.griffin.popularmovies.detail_movie;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.griffin.popularmovies.Pojo.Collection;
-import com.griffin.popularmovies.Pojo.Credits;
-import com.griffin.popularmovies.Pojo.MovieDetail;
-import com.griffin.popularmovies.Pojo.MovieImages;
-import com.griffin.popularmovies.Pojo.Reviews;
-import com.griffin.popularmovies.Pojo.TrailerDetail;
+import com.griffin.popularmovies.pojo.Collection;
+import com.griffin.popularmovies.pojo.Credits;
+import com.griffin.popularmovies.pojo.MovieDetail;
+import com.griffin.popularmovies.pojo.MovieImages;
+import com.griffin.popularmovies.pojo.Reviews;
+import com.griffin.popularmovies.pojo.TrailerDetail;
 
 import java.util.ArrayList;
 import java.util.List;

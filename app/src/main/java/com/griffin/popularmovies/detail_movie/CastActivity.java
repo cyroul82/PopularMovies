@@ -11,9 +11,9 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.griffin.popularmovies.Pojo.Cast;
-import com.griffin.popularmovies.Pojo.CastFilmography;
-import com.griffin.popularmovies.Pojo.CastFilmographyDetail;
+import com.griffin.popularmovies.pojo.Cast;
+import com.griffin.popularmovies.pojo.CastFilmography;
+import com.griffin.popularmovies.pojo.CastFilmographyDetail;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.adapter.FilmographyAdapter;

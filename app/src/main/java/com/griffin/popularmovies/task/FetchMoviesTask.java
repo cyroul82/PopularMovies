@@ -2,12 +2,11 @@ package com.griffin.popularmovies.task;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
 
 import com.griffin.popularmovies.BuildConfig;
-import com.griffin.popularmovies.Pojo.Movie;
-import com.griffin.popularmovies.Pojo.MoviePage;
-import com.griffin.popularmovies.Service.MovieService;
+import com.griffin.popularmovies.pojo.Movie;
+import com.griffin.popularmovies.pojo.MoviePage;
+import com.griffin.popularmovies.service.MovieService;
 
 import java.io.IOException;
 import java.util.List;

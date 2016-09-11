@@ -1,14 +1,14 @@
-package com.griffin.popularmovies.Service;
+package com.griffin.popularmovies.service;
 
-import com.griffin.popularmovies.Pojo.CastFilmography;
-import com.griffin.popularmovies.Pojo.Collection;
-import com.griffin.popularmovies.Pojo.Credits;
-import com.griffin.popularmovies.Pojo.MovieDetail;
-import com.griffin.popularmovies.Pojo.MovieImages;
-import com.griffin.popularmovies.Pojo.MoviePage;
-import com.griffin.popularmovies.Pojo.Person;
-import com.griffin.popularmovies.Pojo.ReviewPage;
-import com.griffin.popularmovies.Pojo.Trailer;
+import com.griffin.popularmovies.pojo.CastFilmography;
+import com.griffin.popularmovies.pojo.Collection;
+import com.griffin.popularmovies.pojo.Credits;
+import com.griffin.popularmovies.pojo.MovieDetail;
+import com.griffin.popularmovies.pojo.MovieImages;
+import com.griffin.popularmovies.pojo.MoviePage;
+import com.griffin.popularmovies.pojo.Person;
+import com.griffin.popularmovies.pojo.ReviewPage;
+import com.griffin.popularmovies.pojo.Trailer;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

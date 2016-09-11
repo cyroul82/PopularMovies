@@ -1,5 +1,5 @@
 
-package com.griffin.popularmovies.Pojo;
+package com.griffin.popularmovies.pojo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -13,6 +13,17 @@ import com.google.gson.annotations.SerializedName;
 //@Generated("org.jsonschema2pojo")
 public class Person implements Parcelable {
 
+    public static final Creator<Person> CREATOR = new Creator<Person>() {
+        @Override
+        public Person createFromParcel(Parcel in) {
+            return new Person(in);
+        }
+
+        @Override
+        public Person[] newArray(int size) {
+            return new Person[size];
+        }
+    };
     @SerializedName("adult")
     @Expose
     private boolean adult;
@@ -55,18 +66,6 @@ public class Person implements Parcelable {
         placeOfBirth = in.readString();
         profilePath = in.readString();
     }
-
-    public static final Creator<Person> CREATOR = new Creator<Person>() {
-        @Override
-        public Person createFromParcel(Parcel in) {
-            return new Person(in);
-        }
-
-        @Override
-        public Person[] newArray(int size) {
-            return new Person[size];
-        }
-    };
 
     /**
      * 
