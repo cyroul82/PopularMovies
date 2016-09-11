@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/spacing_medium"
-    android:orientation="horizontal">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="@dimen/spacing_medium">
 
-    <Button
-        android:id="@+id/button_Trailer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/spacing_medium"
-        android:paddingEnd="@dimen/spacing_medium"
-        android:background="@drawable/button_selector"
-        android:drawableLeft="@drawable/ic_play_circle_outline_white_24dp"/>
+    <ImageButton
+        android:id="@+id/imageView_trailer"
+        android:layout_width="120dp"
+        android:layout_height="100dp"/>
 
-</LinearLayout>
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="35dp"
+        android:layout_marginTop="25dp"
+        android:src="@drawable/ic_play_circle_outline_white_24dp"
+        />
+
+</RelativeLayout>

@@ -128,7 +128,6 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
                 return movieList;
             } catch (IOException e) {
                 callbackFetchMoviesTask.onExceptionLoadInBackground(e.getMessage());
-                Log.e(LOG_TAG, e.getMessage(), e);
             }
         }
 
@@ -150,7 +149,6 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
                 return movieList;
             } catch (IOException e) {
                 callbackFetchMoviesTask.onExceptionLoadInBackground(e.getMessage());
-                Log.e(LOG_TAG, e.getMessage(), e);
             }
         }
 
@@ -158,7 +156,6 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
     }
 
     public void setCallback(CallbackFetchMoviesTask callbackFetchMoviesTask) {
-
         this.callbackFetchMoviesTask = callbackFetchMoviesTask;
     }
 

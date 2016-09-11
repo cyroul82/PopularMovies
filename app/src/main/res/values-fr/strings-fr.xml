@@ -45,4 +45,8 @@
     <string name="search_hint">Recherche un film ? </string>
 
     <string name="contentDescription_poster">Poster</string>
+
+    <string name="error_loading">Erreur chargement du film !</string>
+
+    <string name="share_movie">Partager via</string>
 </resources>

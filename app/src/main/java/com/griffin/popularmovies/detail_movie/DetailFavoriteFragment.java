@@ -2,6 +2,8 @@ package com.griffin.popularmovies.detail_movie;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -38,6 +40,7 @@ import com.griffin.popularmovies.adapter.CollectionAdapter;
 import com.griffin.popularmovies.adapter.ReviewMovieAdapter;
 import com.griffin.popularmovies.adapter.TrailerMovieAdapter;
 import com.griffin.popularmovies.data.MovieContract;
+import com.griffin.popularmovies.task.MovieToFavoriteTask;
 
 import java.io.FileNotFoundException;
 import java.text.ParseException;
@@ -53,36 +56,34 @@ import butterknife.ButterKnife;
  * Created by griffin on 22/07/16.
  */
 public class DetailFavoriteFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, CollectionAdapter
-        .CallbackCollectionAdapter, View.OnClickListener {
+        .CallbackCollectionAdapter, View.OnClickListener, MovieToFavoriteTask.OnQueryCompleteListener {
 
     public static final String IS_DETAIL_FAVORITE_FRAGMENT_FROM_ACTIVITY = "idfffa";
     public static final String FAVORITE_MOVIE = "FAVORITE_MOVIE";
     // These indices are tied to DETAIL_COLUMNS.  If DETAIL_COLUMNS changes, these
     // must change.
-    public static final int COL_FAVORITE_DETAIL_KEY = 1;
-    public static final int COL_FAVORITE_MOVIE_ID = 2;
-    public static final int COL_FAVORITE_MOVIE_PICTURE = 3;
-    public static final int COL_FAVORITE_MOVIE_TITLE = 4;
-    public static final int COL_FAVORITE_MOVIE_ORIGINAL_TITLE = 5;
-    public static final int COL_FAVORITE_MOVIE_OVERVIEW = 6;
-    public static final int COL_FAVORITE_MOVIE_DATE = 7;
-    public static final int COL_FAVORITE_MOVIE_RATING = 8;
-    public static final int COL_FAVORITE_MOVIE_DETAIL_GENRE = 9;
-    public static final int COL_FAVORITE_MOVIE_DETAIL_RUNTIME = 10;
-    public static final int COL_FAVORITE_MOVIE_DETAIL_CASTING = 11;
-    public static final int COL_FAVORITE_MOVIE_DETAIL_VIDEOS = 12;
-    public static final int COL_FAVORITE_MOVIE_DETAIL_REVIEWS = 13;
-    public static final int COL_FAVORITE_MOVIE_TAGLINE = 14;
+    public static final int COL_FAVORITE_MOVIE_ID = 1;
+    public static final int COL_FAVORITE_MOVIE_PICTURE = 2;
+    public static final int COL_FAVORITE_MOVIE_TITLE = 3;
+    public static final int COL_FAVORITE_MOVIE_ORIGINAL_TITLE = 4;
+    public static final int COL_FAVORITE_MOVIE_OVERVIEW = 5;
+    public static final int COL_FAVORITE_MOVIE_DATE = 6;
+    public static final int COL_FAVORITE_MOVIE_RATING = 7;
+    public static final int COL_FAVORITE_MOVIE_DETAIL_GENRE = 8;
+    public static final int COL_FAVORITE_MOVIE_DETAIL_RUNTIME = 9;
+    public static final int COL_FAVORITE_MOVIE_DETAIL_CASTING = 10;
+    public static final int COL_FAVORITE_MOVIE_DETAIL_VIDEOS = 11;
+    public static final int COL_FAVORITE_MOVIE_DETAIL_REVIEWS = 12;
+    public static final int COL_FAVORITE_MOVIE_TAGLINE = 13;
     private static final String LOG_TAG = DetailFavoriteFragment.class.getSimpleName();
     private static final String SHORTBRAIN_SHARE_HASHTAG = " #Shortbrain";
-    private static final int DETAIL_LOADER = 1;
+    private static final int DETAIL_LOADER = 0;
+
     private static final String[] DETAIL_COLUMNS = {
             MovieContract.DetailEntry.TABLE_NAME + "." + MovieContract.DetailEntry._ID,
 
-            MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY,
-            MovieContract.FavoriteEntry.COLUMN_MOVIE_ID,
-            MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE,
-
+            MovieContract.DetailEntry.COLUMN_MOVIE_ID,
+            MovieContract.DetailEntry.COLUMN_MOVIE_PICTURE,
             MovieContract.DetailEntry.COLUMN_MOVIE_TITLE,
             MovieContract.DetailEntry.COLUMN_MOVIE_ORIGINAL_TITLE,
             MovieContract.DetailEntry.COLUMN_MOVIE_OVERVIEW,
@@ -214,6 +215,8 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
         if (mFloatingButtonFavorite != null) {
             mFloatingButtonFavorite.setOnClickListener(this);
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_unfavorite_black_24dp);
+            mFloatingButtonFavorite.setImageBitmap(bitmap);
         }
 
         Bundle arguments = getArguments();
@@ -242,7 +245,7 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
         // use a linear layout manager , create the *** TRAILER *** adapter and set it up to the recycler View
         LinearLayoutManager linearLayoutManagerTrailer = new LinearLayoutManager(getContext());
-        linearLayoutManagerTrailer.setOrientation(LinearLayoutManager.VERTICAL);
+        linearLayoutManagerTrailer.setOrientation(LinearLayoutManager.HORIZONTAL);
         mRecyclerViewTrailer.setLayoutManager(linearLayoutManagerTrailer);
 
         mTrailerMovieAdapter = new TrailerMovieAdapter(mTrailerDetailList, getContext());
@@ -260,23 +263,6 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
         LinearLayoutManager linearLayoutManagerCollection = new LinearLayoutManager(getContext());
         linearLayoutManagerCollection.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerViewCollection.setLayoutManager(linearLayoutManagerCollection);
-
-        //Sort the list by Year ???
-        //TODO: doesn't seem to work !!! ? to finish
-        Collections.sort(mPartList, new Comparator<Part>() {
-
-            @Override
-            public int compare(Part p1, Part p2) {
-                try {
-                    return Utilities.getYear(p1.getReleaseDate()).compareToIgnoreCase(Utilities.getYear(p2.getReleaseDate()));
-                } catch (ParseException e) {
-                    Log.e(LOG_TAG, e.getMessage(), e);
-
-                }
-                return 0;
-            }
-
-        });
 
         mCollectionAdapter = new CollectionAdapter(mPartList, getContext());
         mCollectionAdapter.setCallback(this);
@@ -407,18 +393,37 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onClick(View v) {
 
+        MovieToFavoriteTask movieToFavoriteTask = new MovieToFavoriteTask(getContext().getContentResolver(), this);
+        movieToFavoriteTask.startDelete(-1, null, MovieContract.DetailEntry.CONTENT_URI,
+                MovieContract.DetailEntry.COLUMN_MOVIE_ID,
+                new String[]{Integer.toString(mDetailMovie.getMovieDetail().getId())});
+
         if (v.getId() == R.id.floatingButton_favorite_tablet) {
-            ((CallbackFavorite) getActivity()).onClickFavoriteMovie(mDetailMovie.getMovieDetail().getId());
+            ((CallbackFavorite) getActivity()).onClickFavoriteMovie();
         }
         if (v.getId() == R.id.floatingButton_favorite) {
-            Utilities.removeMovieFromFavorite(mDetailMovie.getMovieDetail().getId(), getContext());
             getActivity().onBackPressed();
 
         }
     }
 
+    @Override
+    public void onQueryComplete(Cursor data, int token) {
+
+    }
+
+    @Override
+    public void onInsertComplete(Uri uri) {
+
+    }
+
+    @Override
+    public void onDeleteComplete(int result) {
+
+    }
+
     public interface CallbackFavorite {
-        void onClickFavoriteMovie(int idMovie);
+        void onClickFavoriteMovie();
     }
 
     public interface CallbackDetailFavoriteFragment {
