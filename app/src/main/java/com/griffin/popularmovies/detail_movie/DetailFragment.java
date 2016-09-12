@@ -1,13 +1,19 @@
 package com.griffin.popularmovies.detail_movie;
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
@@ -28,28 +34,32 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.griffin.popularmovies.MainActivity;
-import com.griffin.popularmovies.Pojo.Cast;
-import com.griffin.popularmovies.Pojo.Genre;
-import com.griffin.popularmovies.Pojo.Part;
-import com.griffin.popularmovies.Pojo.Poster;
-import com.griffin.popularmovies.Pojo.Reviews;
-import com.griffin.popularmovies.Pojo.TrailerDetail;
+import com.griffin.popularmovies.pojo.Backdrop;
+import com.griffin.popularmovies.pojo.Cast;
+import com.griffin.popularmovies.pojo.Genre;
+import com.griffin.popularmovies.pojo.Part;
+import com.griffin.popularmovies.pojo.Reviews;
+import com.griffin.popularmovies.pojo.TrailerDetail;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.adapter.CastingAdapter;
 import com.griffin.popularmovies.adapter.CollectionAdapter;
 import com.griffin.popularmovies.adapter.ReviewMovieAdapter;
 import com.griffin.popularmovies.adapter.TrailerMovieAdapter;
+import com.griffin.popularmovies.data.MovieContract;
+import com.griffin.popularmovies.movie_list.BlankFragment;
+import com.griffin.popularmovies.task.MovieToFavoriteTask;
 import com.griffin.popularmovies.task.FetchDetailMovieTask;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -61,13 +71,13 @@ import butterknife.ButterKnife;
  * A placeholder fragment containing a simple view.
  */
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<DetailMovie>, OnClickListener, CollectionAdapter
-        .CallbackCollectionAdapter {
+        .CallbackCollectionAdapter, MovieToFavoriteTask.OnQueryCompleteListener {
 
     public static final String DETAIL_MOVIE = "DETAIL_MOVIE";
     public static final String IS_DETAIL_FRAGMENT_FROM_ACTIVITY = "idffa";
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     private static final int DETAIL_LOADER = 0;
-    private static final String SHORTBRAIN_SHARE_HASHTAG = " #Shortbrain";
+    private static final String SHORTBRAIN_SHARE_HASHTAG = "#Shortbrain";
     @BindView(R.id.imageView_Picture)
     ImageView mImageViewMoviePicture;
     @BindView(R.id.textView_Year)
@@ -114,6 +124,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Nullable
     @BindView(R.id.textView_movieTitle)
     TextView mTextViewMovieTitle;
+    private MovieToFavoriteTask movieToFavoriteTask;
     private DetailMovie mDetailMovie;
     private ShareActionProvider mShareActionProvider;
     private ProgressDialog mProgressDialog;
@@ -128,6 +139,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private CollectionAdapter mCollectionAdapter;
     private String mShareMovie;
     private boolean mIsDetailFragmentFromActivity;
+    private String posterPath;
 
     public DetailFragment() {
         //To display the menu , do not forget !!!
@@ -190,6 +202,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         if (mShareMovie != null) {
             mShareActionProvider.setShareIntent(createShareMovie());
+
         }
 
     }
@@ -199,191 +212,214 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, "\n" + mShareMovie + "\n" + SHORTBRAIN_SHARE_HASHTAG);
-        return shareIntent;
+
+        // Always use string resources for UI text.
+        String title = getResources().getString(R.string.share_movie);
+        // Create intent to show chooser
+        return Intent.createChooser(shareIntent, title);
     }
 
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.detail_movie_fragment, container, false);
+        @Override
+        public View onCreateView (LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState){
+            View rootView = inflater.inflate(R.layout.detail_movie_fragment, container, false);
 
-        ButterKnife.bind(this, rootView);
+            ButterKnife.bind(this, rootView);
 
-        if (mFloatingButtonFavorite != null) {
-            mFloatingButtonFavorite.setOnClickListener(this);
-        }
-
-        Bundle arguments = getArguments();
-        if (arguments != null && savedInstanceState == null) {
-            mIdMovie = arguments.getInt(DETAIL_MOVIE);
-            mIsDetailFragmentFromActivity = arguments.getBoolean(IS_DETAIL_FRAGMENT_FROM_ACTIVITY);
-        }
-        if (savedInstanceState != null) {
-            setUI();
-        }
-
-        //connect recyclerView to a layout manager, and attach an adapter for the data to be displayed
-        mRecyclerViewReview.setHasFixedSize(true);
-        mRecyclerViewTrailer.setHasFixedSize(true);
-        mRecyclerViewCasting.setHasFixedSize(true);
-        mRecyclerViewCollection.setHasFixedSize(true);
-
-        // use a linear layout manager , create the *** REVIEWS *** adapter and set it up to the recycler View
-        LinearLayoutManager linearLayoutManagerReview = new LinearLayoutManager(getContext());
-        linearLayoutManagerReview.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecyclerViewReview.setLayoutManager(linearLayoutManagerReview);
-
-        mReviewMovieAdapter = new ReviewMovieAdapter(mReviewsList);
-        mRecyclerViewReview.setAdapter(mReviewMovieAdapter);
-
-        // use a linear layout manager , create the *** TRAILER *** adapter and set it up to the recycler View
-        LinearLayoutManager linearLayoutManagerTrailer = new LinearLayoutManager(getContext());
-        linearLayoutManagerTrailer.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecyclerViewTrailer.setLayoutManager(linearLayoutManagerTrailer);
-
-        mTrailerMovieAdapter = new TrailerMovieAdapter(mTrailerDetailList, getContext());
-
-        mRecyclerViewTrailer.setAdapter(mTrailerMovieAdapter);
-        // use a linear layout manager , create the *** CASTING *** adapter and set it up to the recycler View
-        LinearLayoutManager linearLayoutManagerCasting = new LinearLayoutManager(getContext());
-        linearLayoutManagerCasting.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecyclerViewCasting.setLayoutManager(linearLayoutManagerCasting);
-
-        mCastingAdapter = new CastingAdapter(mCastList, getContext());
-        mRecyclerViewCasting.setAdapter(mCastingAdapter);
-
-        // use a linear layout manager , create the *** COLLECTION *** adapter and set it up to the recycler View
-        LinearLayoutManager linearLayoutManagerCollection = new LinearLayoutManager(getContext());
-        linearLayoutManagerCollection.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecyclerViewCollection.setLayoutManager(linearLayoutManagerCollection);
-
-        //Sort the list by Year ???
-        //TODO: doesn't seem to work !!! ? to finish
-        Collections.sort(mPartList, new Comparator<Part>() {
-
-            @Override
-            public int compare(Part p1, Part p2) {
-                try {
-                    return Utilities.getYear(p1.getReleaseDate()).compareToIgnoreCase(Utilities.getYear(p2.getReleaseDate()));
-                } catch (ParseException e) {
-                    Log.e(LOG_TAG, e.getMessage(), e);
-
-                }
-                return 0;
+            if (mFloatingButtonFavorite != null) {
+                mFloatingButtonFavorite.setOnClickListener(this);
             }
 
-        });
+            Bundle arguments = getArguments();
+            if (arguments != null && savedInstanceState == null) {
+                mIdMovie = arguments.getInt(DETAIL_MOVIE);
+                mIsDetailFragmentFromActivity = arguments.getBoolean(IS_DETAIL_FRAGMENT_FROM_ACTIVITY);
+            }
+            if (savedInstanceState != null) {
+                setUI();
+            }
 
-        mCollectionAdapter = new CollectionAdapter(mPartList, getContext());
-        mCollectionAdapter.setCallback(this);
-        mRecyclerViewCollection.setAdapter(mCollectionAdapter);
+            //connect recyclerView to a layout manager, and attach an adapter for the data to be displayed
+            mRecyclerViewReview.setHasFixedSize(true);
+            mRecyclerViewTrailer.setHasFixedSize(true);
+            mRecyclerViewCasting.setHasFixedSize(true);
+            mRecyclerViewCollection.setHasFixedSize(true);
 
-        return rootView;
-    }
+            // use a linear layout manager , create the *** REVIEWS *** adapter and set it up to the recycler View
+            LinearLayoutManager linearLayoutManagerReview = new LinearLayoutManager(getContext());
+            linearLayoutManagerReview.setOrientation(LinearLayoutManager.VERTICAL);
+            mRecyclerViewReview.setLayoutManager(linearLayoutManagerReview);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+            mReviewMovieAdapter = new ReviewMovieAdapter(mReviewsList);
+            mRecyclerViewReview.setAdapter(mReviewMovieAdapter);
 
-            case android.R.id.home:
-                getActivity().onBackPressed();
-                return true;
+            // use a linear layout manager , create the *** TRAILER *** adapter and set it up to the recycler View
+            LinearLayoutManager linearLayoutManagerTrailer = new LinearLayoutManager(getContext());
+            linearLayoutManagerTrailer.setOrientation(LinearLayoutManager.HORIZONTAL);
+            mRecyclerViewTrailer.setLayoutManager(linearLayoutManagerTrailer);
+
+            mTrailerMovieAdapter = new TrailerMovieAdapter(mTrailerDetailList, getContext());
+
+            mRecyclerViewTrailer.setAdapter(mTrailerMovieAdapter);
+            // use a linear layout manager , create the *** CASTING *** adapter and set it up to the recycler View
+            LinearLayoutManager linearLayoutManagerCasting = new LinearLayoutManager(getContext());
+            linearLayoutManagerCasting.setOrientation(LinearLayoutManager.VERTICAL);
+            mRecyclerViewCasting.setLayoutManager(linearLayoutManagerCasting);
+
+            mCastingAdapter = new CastingAdapter(mCastList, getContext());
+            mRecyclerViewCasting.setAdapter(mCastingAdapter);
+
+            // use a linear layout manager , create the *** COLLECTION *** adapter and set it up to the recycler View
+            LinearLayoutManager linearLayoutManagerCollection = new LinearLayoutManager(getContext());
+            linearLayoutManagerCollection.setOrientation(LinearLayoutManager.VERTICAL);
+            mRecyclerViewCollection.setLayoutManager(linearLayoutManagerCollection);
+
+            mCollectionAdapter = new CollectionAdapter(mPartList, getContext());
+            mCollectionAdapter.setCallback(this);
+            mRecyclerViewCollection.setAdapter(mCollectionAdapter);
+
+            return rootView;
         }
 
-        return super.onOptionsItemSelected(item);
-    }
+        @Override
+        public boolean onOptionsItemSelected (MenuItem item){
+            switch (item.getItemId()) {
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState == null) {
+                case android.R.id.home:
+                    getActivity().onBackPressed();
+                    return true;
+            }
+
+            return super.onOptionsItemSelected(item);
+        }
+
+        @Override
+        public void onActivityCreated (Bundle savedInstanceState){
+            super.onActivityCreated(savedInstanceState);
+            if (savedInstanceState == null) {
+                getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+            }
+
+        }
+
+        @Override
+        public Loader<DetailMovie> onCreateLoader (int id, Bundle args){
+            // show ProgressDialog
             mProgressDialog = new ProgressDialog(getContext(), R.style.ProgressDialog);
             mProgressDialog.setTitle("Connecting to themovieDB.org");
             mProgressDialog.setMessage("Loading data...");
-
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mProgressDialog.dismiss();
+                }
+            });
             mProgressDialog.show();
-
-            getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+            return new FetchDetailMovieTask(getActivity(), mIdMovie);
         }
 
-    }
+        @Override
+        public void onLoadFinished (Loader < DetailMovie > loader, DetailMovie detailMovie){
+            if (detailMovie != null) {
+                if (detailMovie.getMovieDetail().getId() != 0) {
+                    mDetailMovie = detailMovie;
+                }
+                //clear the review List and add the new one to the adapter
+                if (mDetailMovie.getReviewsList() != null && !mDetailMovie.getReviewsList().isEmpty()) {
+                    mReviewsList.clear();
+                    mReviewsList.addAll(mDetailMovie.getReviewsList());
+                    mReviewMovieAdapter.notifyDataSetChanged();
 
-    @Override
-    public Loader<DetailMovie> onCreateLoader(int id, Bundle args) {
-        return new FetchDetailMovieTask(getActivity(), mIdMovie);
-    }
+                } else {
+                    mCardViewReview.setVisibility(View.GONE);
+                }
 
-    @Override
-    public void onLoadFinished(Loader<DetailMovie> loader, DetailMovie detailMovie) {
-        if (detailMovie != null) {
-            if (detailMovie.getMovieDetail().getId() != 0) {
-                mDetailMovie = detailMovie;
-            }
-            //clear the review List and add the new one to the adapter
-            if (mDetailMovie.getReviewsList() != null && !mDetailMovie.getReviewsList().isEmpty()) {
-                mReviewsList.clear();
-                mReviewsList.addAll(mDetailMovie.getReviewsList());
-                mReviewMovieAdapter.notifyDataSetChanged();
+                //clear the trailer List and add the new one to the adapter
+                if (mDetailMovie.getTrailerDetails() != null && !mDetailMovie.getTrailerDetails().isEmpty()) {
+                    mTrailerDetailList.clear();
+                    mTrailerDetailList.addAll(mDetailMovie.getTrailerDetails());
+                    mTrailerMovieAdapter.notifyDataSetChanged();
 
+                } else {
+                    mCardViewTrailer.setVisibility(View.GONE);
+                }
+
+                //clear the Casting List and add the new one to the adapter
+                if (mDetailMovie.getCredits().getCast() != null && !mDetailMovie.getCredits().getCast().isEmpty()) {
+                    mCastList.clear();
+                    mCastList.addAll(mDetailMovie.getCredits().getCast());
+
+                    mCastingAdapter.notifyDataSetChanged();
+                } else {
+                    mCardViewCasting.setVisibility(View.GONE);
+                }
+
+                //clear the Casting List and add the new one to the adapter
+                if (mDetailMovie.getCollection() != null && !mDetailMovie.getCollection().getParts().isEmpty()) {
+                    mPartList.clear();
+                    mPartList.addAll(mDetailMovie.getCollection().getParts());
+
+                    mCollectionAdapter.notifyDataSetChanged();
+                    mTextViewCollectionMainTitle.setText(mDetailMovie.getCollection().getName());
+
+                } else {
+                    mCardViewCollection.setVisibility(View.GONE);
+                }
+
+                //Display the UI with new elements
+                setUI();
+
+                mShareMovie = String.format("%s \n%s", mDetailMovie.getMovieDetail().getTitle(), mDetailMovie.getMovieDetail().getOverview());
+
+                // If onCreateOptionsMenu has already happened, we need to update the share intent now.
+                if (mShareActionProvider != null) {
+                    mShareActionProvider.setShareIntent(createShareMovie());
+                }
             } else {
-                mCardViewReview.setVisibility(View.GONE);
+                if (mIsDetailFragmentFromActivity) {
+
+                    getActivity().onBackPressed();
+                } else {
+                    final int WHAT = 1;
+                    Handler handler = new Handler() {
+                        @Override
+                        public void handleMessage(Message msg) {
+                            if (msg.what == WHAT) {
+                                Bundle b = new Bundle();
+                                b.putString(MainActivity.TITLE_BLANK_FRAGMENT_KEY, getString(R.string.error_loading));
+                                BlankFragment blankFragment = new BlankFragment();
+                                blankFragment.setArguments(b);
+                                getActivity().getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.detail_movie_container, blankFragment, MainActivity.BLANK_FRAGMENT_TAG)
+                                        .addToBackStack(null)
+                                        .commit();
+                            }
+                        }
+                    };
+                    handler.sendEmptyMessage(WHAT);
+
+                }
             }
 
-            //clear the trailer List and add the new one to the adapter
-            if (mDetailMovie.getTrailerDetails() != null && !mDetailMovie.getTrailerDetails().isEmpty()) {
-                mTrailerDetailList.clear();
-                mTrailerDetailList.addAll(mDetailMovie.getTrailerDetails());
-                mTrailerMovieAdapter.notifyDataSetChanged();
-
-            } else {
-                mCardViewTrailer.setVisibility(View.GONE);
+            // close ProgressDialog
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
             }
-
-            //clear the Casting List and add the new one to the adapter
-            if (mDetailMovie.getCredits().getCast() != null && !mDetailMovie.getCredits().getCast().isEmpty()) {
-                mCastList.clear();
-                mCastList.addAll(mDetailMovie.getCredits().getCast());
-
-                mCastingAdapter.notifyDataSetChanged();
-            } else {
-                mCardViewCasting.setVisibility(View.GONE);
-            }
-
-            //clear the Casting List and add the new one to the adapter
-            if (mDetailMovie.getCollection() != null && !mDetailMovie.getCollection().getParts().isEmpty()) {
-                mPartList.clear();
-                mPartList.addAll(mDetailMovie.getCollection().getParts());
-
-                mCollectionAdapter.notifyDataSetChanged();
-                mTextViewCollectionMainTitle.setText(mDetailMovie.getCollection().getName());
-
-            } else {
-                mCardViewCollection.setVisibility(View.GONE);
-            }
-
-            //Display the UI with new elements
-            setUI();
-
-            mShareMovie = String.format("%s \n%s", mDetailMovie.getMovieDetail().getTitle(), mDetailMovie.getMovieDetail().getOverview());
-
-            // If onCreateOptionsMenu has already happened, we need to update the share intent now.
-            if (mShareActionProvider != null) {
-                mShareActionProvider.setShareIntent(createShareMovie());
-            }
-        } else {
-            getActivity().onBackPressed();
         }
 
-        mProgressDialog.dismiss();
-    }
+        @Override
+        public void onLoaderReset (Loader < DetailMovie > loader) {
+            // close ProgressDialog
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+            }
+        }
 
-    @Override
-    public void onLoaderReset(Loader<DetailMovie> loader) {
-        Log.d(LOG_TAG, "onLoadReset");
-    }
+        //set the UI elements
 
-    //set the UI elements
     private void setUI() {
 
         //set the title text, only on tablet display !
@@ -399,6 +435,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 .fit()
                 .centerInside()
                 .into(mImageViewMoviePicture);
+
 
         //Set the month and the year of the movie text
         String date = mDetailMovie.getMovieDetail().getReleaseDate();
@@ -462,21 +499,36 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if (mIsDetailFragmentFromActivity) {
             ((CallbackDetailFragment) getActivity()).setTitleAndPosterOnActivity(mDetailMovie.getMovieDetail().getTitle(), mDetailMovie
                     .getMovieDetail()
-                    .getPosterPath(), mDetailMovie.getMovieImages().getPosters());
+                    .getPosterPath(), mDetailMovie.getMovieImages().getBackdrops());
         }
+
+        movieToFavoriteTask = new MovieToFavoriteTask(getContext().getContentResolver(), this);
+        movieToFavoriteTask.startQuery(MovieToFavoriteTask.IS_MOVIE_FAVORITE_TOKEN, null,
+                //The URI content://com.griffin.popularmovies :
+                MovieContract.DetailEntry.CONTENT_URI,
+                //The list of which columns to return, in this case only the _ID column
+                new String[]{MovieContract.DetailEntry._ID},
+                    /* The filter returning only the row COLUMN_MOVIE_ID with the clause ? = movie_id(declared in the next parameter (selectionArgs)) */
+                MovieContract.DetailEntry.COLUMN_MOVIE_ID + " = ?",
+                //only one clause movie_id
+                new String[]{Long.toString(mDetailMovie.getMovieDetail().getId())},
+                null);
+
+
     }
 
     @Override
     public void onCollectionMovieClicked(int idMovie) {
         if (idMovie != mIdMovie) {
 
-            int stack = getActivity().getSupportFragmentManager().getBackStackEntryCount();
-            for (int i = 0; i < stack; i++) {
-                FragmentManager.BackStackEntry bse = getActivity().getSupportFragmentManager().getBackStackEntryAt(i);
-                if (bse.getName().equals(Integer.toString(idMovie))) {
-
-                    getActivity().getSupportFragmentManager().popBackStack(Integer.toString(idMovie), 0);
-                    return;
+            if(mIsDetailFragmentFromActivity) {
+                int stack = getActivity().getSupportFragmentManager().getBackStackEntryCount();
+                for (int i = 0; i < stack; i++) {
+                    FragmentManager.BackStackEntry bse = getActivity().getSupportFragmentManager().getBackStackEntryAt(i);
+                    if (bse.getName().equals(Integer.toString(idMovie))) {
+                        getActivity().getSupportFragmentManager().popBackStack(Integer.toString(idMovie), 0);
+                        return;
+                    }
                 }
             }
 
@@ -495,16 +547,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
 
         if (v.getId() == R.id.floatingButton_favorite || v.getId() == R.id.floatingButton_favorite_tablet) {
 
             Picasso.with(getContext()).load(getString(R.string.IMAGE_BASE_URL) + mDetailMovie.getMovieDetail().getPosterPath()).into(new Target() {
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    String localUrl = Utilities.savePoster(bitmap, mDetailMovie.getMovieDetail().getId(), getActivity().getApplicationContext());
-                    mDetailMovie.getMovieDetail().setPosterPath(localUrl);
-                    mDetailMovie.getMovieDetail().setFavorite(1);
+                    posterPath = Utilities.savePoster(bitmap, mDetailMovie.getMovieDetail().getId(),
+                            getActivity().getApplicationContext());
                 }
 
                 @Override
@@ -518,16 +569,116 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 }
             });
 
-            Utilities.addMovieToFavorite(mDetailMovie, getContext());
-
-            Snackbar.make(v, getString(R.string.addFavorite), Snackbar.LENGTH_SHORT).show();
+            movieToFavoriteTask.startQuery(MovieToFavoriteTask.ON_CLICK_FAVORITE_TOKEN, null,
+                    //The URI content://com.griffin.popularmovies
+                    MovieContract.DetailEntry.CONTENT_URI,
+                    //The list of which columns to return, in this case only the _ID column
+                    new String[]{MovieContract.DetailEntry._ID},
+                    /* The filter returning only the row COLUMN_MOVIE_ID with the clause ? = movie_id(declared in the next parameter (selectionArgs)) */
+                    MovieContract.DetailEntry.COLUMN_MOVIE_ID + " = ?",
+                    //only one clause movie_id
+                    new String[]{Long.toString(mDetailMovie.getMovieDetail().getId())},
+                    null);
 
         }
 
     }
 
+    @Override
+    public void onQueryComplete(Cursor data, int token) {
+        if(token == MovieToFavoriteTask.ON_CLICK_FAVORITE_TOKEN) {
+            if (data != null) {
+                if (!data.moveToFirst()) {
+                    ContentValues detail = new ContentValues();
+                    detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_ID, mDetailMovie.getMovieDetail().getId());
+
+                    detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_PICTURE, posterPath);
+
+                    detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TITLE, mDetailMovie.getMovieDetail().getTitle());
+
+                    Gson gson = new GsonBuilder().create();
+                    String casting = gson.toJson(mDetailMovie.getCredits().getCast());
+                    detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_CASTING, casting);
+
+                    detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_DATE, mDetailMovie.getMovieDetail().getReleaseDate());
+
+                    String genre = gson.toJson(mDetailMovie.getMovieDetail().getGenres());
+                    detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_GENRE, genre);
+
+                    detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_ORIGINAL_TITLE, mDetailMovie.getMovieDetail().getOriginalTitle());
+                    detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_OVERVIEW, mDetailMovie.getMovieDetail().getOverview());
+                    detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RATING, Double.toString(mDetailMovie.getMovieDetail().getVoteAverage()));
+
+                    String reviews = gson.toJson(mDetailMovie.getReviewsList());
+                    detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS, reviews);
+                    detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RUNTIME, mDetailMovie.getMovieDetail().getRuntime());
+
+                    String trailers = gson.toJson(mDetailMovie.getTrailerDetails());
+                    detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER, trailers);
+                    detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TAGLINE, mDetailMovie.getMovieDetail().getTagline());
+
+                    movieToFavoriteTask.startInsert(-1, null, MovieContract.DetailEntry.CONTENT_URI, detail);
+                } else {
+                    movieToFavoriteTask.startDelete(-1, null, MovieContract.DetailEntry.CONTENT_URI,
+                            MovieContract.DetailEntry.COLUMN_MOVIE_ID,
+                            new String[]{Integer.toString(mDetailMovie.getMovieDetail().getId())});
+                }
+            }
+        }
+        if(token == MovieToFavoriteTask.IS_MOVIE_FAVORITE_TOKEN){
+            if(data != null){
+                if(data.moveToFirst()){
+                    Bitmap bitmap= BitmapFactory.decodeResource(getContext().getResources(),
+                            R.drawable.ic_unfavorite_black_24dp);
+                    if(mFloatingButtonFavorite != null) {
+                        mFloatingButtonFavorite.setImageBitmap(bitmap);
+                    }
+                    if (mFloatingButtonFavorite == null) {
+                        ((CallbackDetailFragment) getActivity()).setFloatingButtonFavorite(true);
+                    }
+                }
+                else {
+                    Bitmap bitmap= BitmapFactory.decodeResource(getContext().getResources(),
+                            R.drawable.ic_favorite_black_24dp);
+                    if(mFloatingButtonFavorite != null) {
+                        mFloatingButtonFavorite.setImageBitmap(bitmap);
+                    }
+                    if (mFloatingButtonFavorite == null) {
+                        ((CallbackDetailFragment) getActivity()).setFloatingButtonFavorite(false);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onInsertComplete(Uri uri) {
+        Bitmap bitmap= BitmapFactory.decodeResource(getContext().getResources(),
+                R.drawable.ic_unfavorite_black_24dp);
+        if(mFloatingButtonFavorite != null) {
+            mFloatingButtonFavorite.setImageBitmap(bitmap);
+        }else {
+            ((CallbackDetailFragment) getActivity()).setFloatingButtonFavorite(true);
+        }
+        Toast.makeText(getContext(), "Added to your favorite", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDeleteComplete(int result) {
+        Bitmap bitmap= BitmapFactory.decodeResource(getContext().getResources(),
+                R.drawable.ic_favorite_black_24dp);
+        if(mFloatingButtonFavorite != null) {
+            mFloatingButtonFavorite.setImageBitmap(bitmap);
+        }else {
+            ((CallbackDetailFragment) getActivity()).setFloatingButtonFavorite(false);
+        }
+        Toast.makeText(getContext(), "Deleted form your favorite", Toast.LENGTH_SHORT).show();
+    }
+
 
     public interface CallbackDetailFragment {
-        void setTitleAndPosterOnActivity(String title, String posterPath, List<Poster> posterList);
+        void setTitleAndPosterOnActivity(String title, String posterPath, List<Backdrop> posterList);
+
+        void setFloatingButtonFavorite(boolean b);
     }
 }
