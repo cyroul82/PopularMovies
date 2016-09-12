@@ -17,7 +17,7 @@ import com.griffin.popularmovies.pojo.CastFilmographyDetail;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.adapter.FilmographyAdapter;
-import com.griffin.popularmovies.task.FetchFilmography;
+import com.griffin.popularmovies.task.FetchFilmographyTask;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public Loader<CastFilmography> onCreateLoader(int id, Bundle args) {
-        return new FetchFilmography(getApplicationContext(), mCast.getPerson().getId());
+        return new FetchFilmographyTask(getApplicationContext(), mCast.getPerson().getId());
     }
 
     @Override

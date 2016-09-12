@@ -21,38 +21,20 @@ import com.griffin.popularmovies.data.MovieContract;
  */
 public class FavoriteListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private FavoriteMoviesAdapter mFavoriteAdapter = null;
-
-    //Loader ID
-    private static final int FAVORITE_LOADER = 1;
-
-    private String[] MOVIE_COLUMNS = {
-            MovieContract.FavoriteEntry.TABLE_NAME + "." + MovieContract.FavoriteEntry._ID,
-            MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY,
-            MovieContract.FavoriteEntry.COLUMN_MOVIE_ID,
-            MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE,
-
-    };
-
     // These indices are tied to MOVIES_COLUMNS.  If MOVIES_COLUMNS changes, these
     // must change.
     public static final int COLUMN_INDEX_MOVIE = 0;
-    public static final int COLUMN_DETAIL_KEY = 1;
-    public static final int COLUMN_MOVIE_ID = 2;
-    public static final int COLUMN_MOVIE_PICTURE = 3;
+    public static final int COLUMN_MOVIE_ID = 1;
+    public static final int COLUMN_MOVIE_PICTURE = 2;
+    //Loader ID
+    private static final int FAVORITE_LOADER = 1;
+    private FavoriteMoviesAdapter mFavoriteAdapter = null;
+    private String[] MOVIE_COLUMNS = {
+            MovieContract.DetailEntry.TABLE_NAME + "." + MovieContract.DetailEntry._ID,
+            MovieContract.DetailEntry.COLUMN_MOVIE_ID,
+            MovieContract.DetailEntry.COLUMN_MOVIE_PICTURE,
 
-
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface Callback {
-        /**
-         * DetailFragmentCallback for when an item has been selected.
-         */
-        void onItemSelected(Uri movieUri);
-    }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,8 +60,8 @@ public class FavoriteListFragment extends Fragment implements LoaderManager.Load
                 Cursor movieCursor = (Cursor)mFavoriteAdapter.getItem(position);
 
                 if (movieCursor != null) {
-                    ((Callback) getActivity()).onItemSelected(MovieContract.FavoriteEntry.buildMovieUriFromDetailId(movieCursor.getInt
-                            (COLUMN_DETAIL_KEY)));
+                    ((Callback) getActivity()).onItemSelected(MovieContract.DetailEntry.buildUriFromMovieId(movieCursor.getInt
+                            (COLUMN_MOVIE_ID)));
                 }
             }
         });
@@ -104,7 +86,7 @@ public class FavoriteListFragment extends Fragment implements LoaderManager.Load
     // onCreateLoader is derived from AsyncTask, therefore do the process in doInBackground
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), MovieContract.FavoriteEntry.CONTENT_URI, MOVIE_COLUMNS, null, null, null);
+        return new CursorLoader(getActivity(), MovieContract.DetailEntry.CONTENT_URI, MOVIE_COLUMNS, null, null, null);
     }
 
     // this method is called when the onCreateLoader has finished and then swap the actual cursor (null by default) to the new cursor created in
@@ -119,6 +101,18 @@ public class FavoriteListFragment extends Fragment implements LoaderManager.Load
     public void onLoaderReset(Loader<Cursor> loader) {
         //Release any resources that might be using
         mFavoriteAdapter.swapCursor(null);
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        void onItemSelected(Uri movieUri);
     }
 
 

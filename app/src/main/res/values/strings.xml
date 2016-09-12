@@ -88,4 +88,8 @@
     <string name="search_title">Search</string>
     <string name="search_hint">look for a movie ?</string>
 
+    <string name="error_loading">Error while loading movie !</string>
+
+    <string name="share_movie">Share Movie via</string>
+
 </resources>

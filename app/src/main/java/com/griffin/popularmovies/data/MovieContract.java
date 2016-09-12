@@ -17,11 +17,11 @@ public class MovieContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     //define the path to match the table
-    public static final String PATH_MOVIE = "favorite";
-    public static final String PATH_DETAIL = "detail";
+    public static final String PATH_MOVIE = "movie";
+    //public static final String PATH_DETAIL = "detail";
 
 
-    //Database table column Names
+    /*//Database table column Names
     public static final class FavoriteEntry implements BaseColumns {
 
         //build uri
@@ -49,26 +49,28 @@ public class MovieContract {
             return CONTENT_URI.buildUpon().appendPath(Integer.toString(id)).build();
         }
 
-        public static Long getDetailIdFromUri(Uri uri) {
+        public static Long getMovieIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(1));
         }
 
-    }
+    }*/
 
     //Database table column Names
     public static final class DetailEntry implements BaseColumns {
         //build uri
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_DETAIL).build();
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIE).build();
 
         public static final String CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_DETAIL;
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
         public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_DETAIL;
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
 
         //Table Name
         public static final String TABLE_NAME = "favorite_detail";
 
         //Table's Column names
+        public static final String COLUMN_MOVIE_ID = "movie_id";
+        public static final String COLUMN_MOVIE_PICTURE = "movie_picture";
         public static final String COLUMN_MOVIE_TITLE = "movie_title";
         public static final String COLUMN_MOVIE_ORIGINAL_TITLE = "movie_original_title";
         public static final String COLUMN_MOVIE_OVERVIEW = "movie_overview";
@@ -81,9 +83,17 @@ public class MovieContract {
         public static final String COLUMN_MOVIE_REVIEWS = "movie_reviews";
         public static final String COLUMN_MOVIE_TAGLINE = "movie_tagline";
 
+        public static Long getMovieIdFromUri(Uri uri) {
+            return Long.parseLong(uri.getPathSegments().get(1));
+        }
+
         //build the Uri upon the id
-        public static Uri buildMovieDetailUri(long id) {
+        public static Uri buildMovieUri(long id) {
             return ContentUris.withAppendedId(BASE_CONTENT_URI, id);
+        }
+
+        public static Uri buildUriFromMovieId(int id) {
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(id)).build();
         }
     }
 

@@ -41,8 +41,9 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     public static final String MOVIE_LIST_FRAGMENT_TAG = "MLFTAG";
     public static final String FAVORITE_MOVIE_LIST_FRAGMENT_TAG = "FMFTAG";
     public static final String TITLE_BLANK_FRAGMENT_KEY = "title";
+    public static final String BLANK_FRAGMENT_TAG = "BFTAG";
+
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
-    private static final String BLANK_FRAGMENT_TAG = "BFTAG";
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
     @BindView(R.id.toolbar)
@@ -416,8 +417,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     }
 
     @Override
-    public void onClickFavoriteMovie(int idMovie) {
-        Utilities.removeMovieFromFavorite(idMovie, getApplicationContext());
+    public void onClickFavoriteMovie() {
         if (mTwoPane) {
             setBlankFragment(R.id.drawer_favorite);
         }

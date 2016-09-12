@@ -1,14 +1,9 @@
 package com.griffin.popularmovies.detail_movie;
 
 import android.app.ProgressDialog;
-import android.content.AsyncQueryHandler;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -34,16 +29,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.griffin.popularmovies.MainActivity;
-import com.griffin.popularmovies.data.MovieContract;
-import com.griffin.popularmovies.pojo.Cast;
-import com.griffin.popularmovies.pojo.Genre;
-import com.griffin.popularmovies.pojo.Part;
-import com.griffin.popularmovies.pojo.Poster;
-import com.griffin.popularmovies.pojo.Reviews;
-import com.griffin.popularmovies.pojo.TrailerDetail;
+import com.griffin.popularmovies.Pojo.Cast;
+import com.griffin.popularmovies.Pojo.Genre;
+import com.griffin.popularmovies.Pojo.Part;
+import com.griffin.popularmovies.Pojo.Poster;
+import com.griffin.popularmovies.Pojo.Reviews;
+import com.griffin.popularmovies.Pojo.TrailerDetail;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.adapter.CastingAdapter;
@@ -526,12 +518,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 }
             });
 
+            Utilities.addMovieToFavorite(mDetailMovie, getContext());
 
-
-
-            Utilities.saveMovie(mDetailMovie, getActivity().getContentResolver());
-
-            //Utilities.addMovieToFavorite(mDetailMovie, getContext());
             Snackbar.make(v, getString(R.string.addFavorite), Snackbar.LENGTH_SHORT).show();
 
         }

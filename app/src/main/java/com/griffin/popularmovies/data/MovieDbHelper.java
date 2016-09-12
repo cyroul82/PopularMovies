@@ -23,7 +23,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         //Creates the table favorite
-        final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieContract.FavoriteEntry.TABLE_NAME + " (" +
+        /*final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieContract.FavoriteEntry.TABLE_NAME + " (" +
                 MovieContract.FavoriteEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY + " TEXT NOT NULL, " +
                 MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
@@ -34,11 +34,13 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.DetailEntry.TABLE_NAME + " (" + MovieContract.DetailEntry._ID + "), " +
 
                 // Make sure that only one movie and not duplicate it
-                " UNIQUE (" + MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
+                " UNIQUE (" + MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";*/
 
 
         final String SQL_CREATE_DETAIL_TABLE = "CREATE TABLE " + MovieContract.DetailEntry.TABLE_NAME + " (" +
                 MovieContract.DetailEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                MovieContract.DetailEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
+                MovieContract.DetailEntry.COLUMN_MOVIE_PICTURE + " TEXT NOT NULL, " +
                 MovieContract.DetailEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " +
                 MovieContract.DetailEntry.COLUMN_MOVIE_ORIGINAL_TITLE + " TEXT NOT NULL, " +
                 MovieContract.DetailEntry.COLUMN_MOVIE_OVERVIEW + " TEXT, " +
@@ -49,10 +51,13 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.DetailEntry.COLUMN_MOVIE_CASTING + " TEXT, " +
                 MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER + " TEXT, " +
                 MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS + " TEXT, " +
-                MovieContract.DetailEntry.COLUMN_MOVIE_TAGLINE + " TEXT" +
-                " );";
+                MovieContract.DetailEntry.COLUMN_MOVIE_TAGLINE + " TEXT, " +
 
-        db.execSQL(SQL_CREATE_MOVIE_TABLE);
+                // Make sure that only one movie and not duplicate it
+                " UNIQUE (" + MovieContract.DetailEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
+
+
+        //db.execSQL(SQL_CREATE_MOVIE_TABLE);
         db.execSQL(SQL_CREATE_DETAIL_TABLE);
 
     }
@@ -61,7 +66,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         //this method is called when the db has been already created but the version has changed
         //Drops the table it exists and then call onCreate() method to recreate the DB
-        db.execSQL("DROP TABLE IF EXISTS " + MovieContract.FavoriteEntry.TABLE_NAME);
+        //db.execSQL("DROP TABLE IF EXISTS " + MovieContract.FavoriteEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + MovieContract.DetailEntry.TABLE_NAME);
         onCreate(db);
 

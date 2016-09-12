@@ -1,7 +1,5 @@
 package com.griffin.popularmovies;
 
-import android.content.AsyncQueryHandler;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -21,18 +19,18 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.griffin.popularmovies.pojo.Cast;
-import com.griffin.popularmovies.pojo.Collection;
-import com.griffin.popularmovies.pojo.Credits;
-import com.griffin.popularmovies.pojo.Genre;
-import com.griffin.popularmovies.pojo.MovieDetail;
-import com.griffin.popularmovies.pojo.MovieImages;
-import com.griffin.popularmovies.pojo.Person;
-import com.griffin.popularmovies.pojo.ReviewPage;
-import com.griffin.popularmovies.pojo.Reviews;
-import com.griffin.popularmovies.pojo.Trailer;
-import com.griffin.popularmovies.pojo.TrailerDetail;
-import com.griffin.popularmovies.service.MovieService;
+import com.griffin.popularmovies.Pojo.Cast;
+import com.griffin.popularmovies.Pojo.Collection;
+import com.griffin.popularmovies.Pojo.Credits;
+import com.griffin.popularmovies.Pojo.Genre;
+import com.griffin.popularmovies.Pojo.MovieDetail;
+import com.griffin.popularmovies.Pojo.MovieImages;
+import com.griffin.popularmovies.Pojo.Person;
+import com.griffin.popularmovies.Pojo.ReviewPage;
+import com.griffin.popularmovies.Pojo.Reviews;
+import com.griffin.popularmovies.Pojo.Trailer;
+import com.griffin.popularmovies.Pojo.TrailerDetail;
+import com.griffin.popularmovies.Service.MovieService;
 import com.griffin.popularmovies.adapter.CastingAdapter;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
@@ -114,71 +112,9 @@ public class Utilities {
         return detailMovie;
     }
 
-    public static void saveMovie (final DetailMovie mDetailMovie, final ContentResolver contentResolver){
-        AsyncQueryHandler asyncQueryHandler = new AsyncQueryHandler(contentResolver) {
-            @Override
-            protected void onInsertComplete(int token, Object cookie, Uri uri) {
-
-                long insertedRowId = ContentUris.parseId(uri);
-                // First create a ContentValues object to hold the data you want to insert.
-
-                AsyncQueryHandler asyncQueryHandler1= new AsyncQueryHandler(contentResolver) {};
-                ContentValues values = new ContentValues();
-
-                // Then add the data, along with the corresponding name of the data type,
-                // so the content provider knows what kind of value is being inserted.
-                values.put(MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY, insertedRowId);
-                values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID, mDetailMovie.getMovieDetail().getId());
-
-                values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE, mDetailMovie.getMovieDetail().getPosterPath());
-
-                asyncQueryHandler1.startInsert(-1, null, MovieContract.FavoriteEntry.CONTENT_URI, values );
-            }
-        };
-        ContentValues detail = new ContentValues();
-        detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TITLE, mDetailMovie.getMovieDetail().getTitle());
-
-        Gson gson = new GsonBuilder().create();
-        String casting = gson.toJson(mDetailMovie.getCredits().getCast());
-        detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_CASTING, casting);
-
-        detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_DATE, mDetailMovie.getMovieDetail().getReleaseDate());
-
-        String genre = gson.toJson(mDetailMovie.getMovieDetail().getGenres());
-        detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_GENRE, genre);
-
-        detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_ORIGINAL_TITLE, mDetailMovie.getMovieDetail().getOriginalTitle());
-        detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_OVERVIEW, mDetailMovie.getMovieDetail().getOverview());
-        detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RATING, Double.toString(mDetailMovie.getMovieDetail().getVoteAverage()));
-
-        String reviews = gson.toJson(mDetailMovie.getReviewsList());
-        detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS, reviews);
-        detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RUNTIME, mDetailMovie.getMovieDetail().getRuntime());
-
-        String trailers = gson.toJson(mDetailMovie.getTrailerDetails());
-        detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER, trailers);
-        detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TAGLINE, mDetailMovie.getMovieDetail().getTagline());
-
-        asyncQueryHandler.startInsert(-1, null, MovieContract.DetailEntry.CONTENT_URI, detail);
-
-        // The resulting URI contains the ID for the row.  Extract the movieId from the Uri.
-        //Uri insertedDetailUri = contentResolver.insert(MovieContract.DetailEntry.CONTENT_URI, detail);
-        //long insertedRowId = ContentUris.parseId(insertedDetailUri);
-
-
-
-        // Finally, insert movie data into the database.
-        //Uri insertedUri =
-        //getActivity().getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI, values);
-
-
-        //asyncQueryHandler.startInsert(-1, null, MovieContract.FavoriteEntry.CONTENT_URI, values );
-    }
-
 
     public static void addMovieToFavorite(DetailMovie detailMovie, Context context) {
 
-        ContentValues detail = null;
         //long movieRowId;
 
         // First, check if the mMovie with this id already exists in the db
@@ -199,7 +135,7 @@ public class Utilities {
                 //movieRowId = movieCursor.getLong(movieIdIndex);
             } else {
 
-                detail = new ContentValues();
+                ContentValues detail = new ContentValues();
                 detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TITLE, detailMovie.getMovieDetail().getTitle());
 
                 Gson gson = new GsonBuilder().create();

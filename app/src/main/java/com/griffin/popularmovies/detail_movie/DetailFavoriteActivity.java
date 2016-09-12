@@ -1,5 +1,7 @@
 package com.griffin.popularmovies.detail_movie;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -35,6 +37,11 @@ public class DetailFavoriteActivity extends AppCompatActivity implements DetailF
         setContentView(R.layout.activity_detail_movie);
 
         ButterKnife.bind(this);
+
+        if(mFavoriteButton != null){
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_unfavorite_black_24dp);
+            mFavoriteButton.setImageBitmap(bitmap);
+        }
 
         //Get back the movie from the intent
         //Movie movie = getIntent().getParcelableExtra(MOVIE_KEY);

@@ -3,7 +3,9 @@ package com.griffin.popularmovies.task;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.Utilities;
 import com.griffin.popularmovies.detail_movie.DetailMovie;
 
@@ -14,10 +16,9 @@ import java.io.IOException;
  */
 public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
 
+    private final String LOG_TAG = FetchDetailMovieTask.class.getSimpleName();
     private int mIdMovie;
     private DetailMovie mDetailMovie;
-
-    private final String LOG_TAG = FetchDetailMovieTask.class.getSimpleName();
 
     public FetchDetailMovieTask(Context context, int idMovie) {
         super(context);
@@ -44,7 +45,6 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
         if (takeContentChanged() || mDetailMovie == null) {
             // If the data has changed since the last time it was loaded
             // or is not currently available, start a load.
-            mDetailMovie = new DetailMovie();
             forceLoad();
         }
     }
@@ -96,9 +96,9 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
     @Override
     public DetailMovie loadInBackground() {
         try {
-            return Utilities.getMovieDetail(mIdMovie, mDetailMovie, getContext());
+            return Utilities.getMovieDetail(mIdMovie, getContext());
         } catch (IOException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
+            Log.e(LOG_TAG, e.getMessage());
         }
         return null;
     }

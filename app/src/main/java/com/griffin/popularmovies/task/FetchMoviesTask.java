@@ -2,7 +2,6 @@ package com.griffin.popularmovies.task;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
 
 import com.griffin.popularmovies.BuildConfig;
 import com.griffin.popularmovies.pojo.Movie;
@@ -128,7 +127,6 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
                 return movieList;
             } catch (IOException e) {
                 callbackFetchMoviesTask.onExceptionLoadInBackground(e.getMessage());
-                Log.e(LOG_TAG, e.getMessage(), e);
             }
         }
 
@@ -150,7 +148,6 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
                 return movieList;
             } catch (IOException e) {
                 callbackFetchMoviesTask.onExceptionLoadInBackground(e.getMessage());
-                Log.e(LOG_TAG, e.getMessage(), e);
             }
         }
 
@@ -158,7 +155,6 @@ public class FetchMoviesTask extends AsyncTaskLoader<List<Movie>> {
     }
 
     public void setCallback(CallbackFetchMoviesTask callbackFetchMoviesTask) {
-
         this.callbackFetchMoviesTask = callbackFetchMoviesTask;
     }
 

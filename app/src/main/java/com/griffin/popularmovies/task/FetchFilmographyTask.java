@@ -20,12 +20,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * Created by griffin on 30/08/16.
  */
-public class FetchFilmography extends AsyncTaskLoader<CastFilmography> {
+public class FetchFilmographyTask extends AsyncTaskLoader<CastFilmography> {
 
-    private static final String LOG_TAG = FetchFilmography.class.getSimpleName();
+    private static final String LOG_TAG = FetchFilmographyTask.class.getSimpleName();
     private int mIdCast;
 
-    public FetchFilmography(Context context, int idCast) {
+    public FetchFilmographyTask(Context context, int idCast) {
         super(context);
         mIdCast = idCast;
     }

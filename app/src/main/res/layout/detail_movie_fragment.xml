@@ -10,6 +10,18 @@
     tools:context=".detail_movie.DetailFragment">
 
     <TextView
+        android:id="@+id/textView_movieTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/colorBackgroundTitle"
+        android:textSize="26sp"/>
+
+    <TextView
         android:id="@+id/textView_tagline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
