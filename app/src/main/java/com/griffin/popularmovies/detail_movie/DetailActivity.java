@@ -1,5 +1,7 @@
 package com.griffin.popularmovies.detail_movie;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -9,7 +11,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.griffin.popularmovies.MainActivity;
-import com.griffin.popularmovies.Pojo.Poster;
+import com.griffin.popularmovies.pojo.Backdrop;
 import com.griffin.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
@@ -97,7 +99,7 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
         ImageView imageView = (ImageView) findViewById(R.id.toolbar_image_detail_movie);
 
         if (imageView != null) {
-            Picasso.with(this).load(getString(R.string.IMAGE_BASE_URL) + posterPath)
+            Picasso.with(this).load(getString(R.string.IMAGE_BASE_URL_HIGH_QUALITY) + posterPath)
                     .placeholder(R.drawable.ic_wallpaper_black_48dp)
                     .error(R.drawable.ic_wallpaper_black_48dp)
                     .fit()
@@ -128,12 +130,25 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
     }
 
     @Override
-    public void setTitleAndPosterOnActivity(String title, String posterPath, List<Poster> posterList) {
+    public void setTitleAndPosterOnActivity(String title, String posterPath, List<Backdrop> posterList) {
 
         mCollapsingToolbarLayout.setTitle(title);
         //run the loadToolbarImage method to display the view, outside the main thread
         loadToolbarImage(posterList.get(0).getFilePath());
         //loadToolbarCarousel(posterList);
+    }
+
+    @Override
+    public void setFloatingButtonFavorite(boolean b) {
+        if(b){
+            Bitmap bitmap= BitmapFactory.decodeResource(getResources(),
+                    R.drawable.ic_unfavorite_black_24dp);
+            mFavoriteButton.setImageBitmap(bitmap);
+        }else {
+            Bitmap bitmap= BitmapFactory.decodeResource(getResources(),
+                    R.drawable.ic_favorite_black_24dp);
+            mFavoriteButton.setImageBitmap(bitmap);
+        }
     }
 
 }

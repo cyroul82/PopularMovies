@@ -1,7 +1,7 @@
 package com.griffin.popularmovies;
 
-import android.content.ContentUris;
-import android.content.ContentValues;
+import android.content.AsyncQueryHandler;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -19,18 +18,18 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.griffin.popularmovies.Pojo.Cast;
-import com.griffin.popularmovies.Pojo.Collection;
-import com.griffin.popularmovies.Pojo.Credits;
-import com.griffin.popularmovies.Pojo.Genre;
-import com.griffin.popularmovies.Pojo.MovieDetail;
-import com.griffin.popularmovies.Pojo.MovieImages;
-import com.griffin.popularmovies.Pojo.Person;
-import com.griffin.popularmovies.Pojo.ReviewPage;
-import com.griffin.popularmovies.Pojo.Reviews;
-import com.griffin.popularmovies.Pojo.Trailer;
-import com.griffin.popularmovies.Pojo.TrailerDetail;
-import com.griffin.popularmovies.Service.MovieService;
+import com.griffin.popularmovies.pojo.Cast;
+import com.griffin.popularmovies.pojo.Collection;
+import com.griffin.popularmovies.pojo.Credits;
+import com.griffin.popularmovies.pojo.Genre;
+import com.griffin.popularmovies.pojo.MovieDetail;
+import com.griffin.popularmovies.pojo.MovieImages;
+import com.griffin.popularmovies.pojo.Person;
+import com.griffin.popularmovies.pojo.ReviewPage;
+import com.griffin.popularmovies.pojo.Reviews;
+import com.griffin.popularmovies.pojo.Trailer;
+import com.griffin.popularmovies.pojo.TrailerDetail;
+import com.griffin.popularmovies.service.MovieService;
 import com.griffin.popularmovies.adapter.CastingAdapter;
 import com.griffin.popularmovies.data.MovieContract;
 import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
@@ -113,81 +112,9 @@ public class Utilities {
     }
 
 
-    public static void addMovieToFavorite(DetailMovie detailMovie, Context context) {
-
-        //long movieRowId;
-
-        // First, check if the mMovie with this id already exists in the db
-        Cursor movieCursor = context.getContentResolver().query(
-                //The URI content://com.griffin.popularmovies :
-                MovieContract.FavoriteEntry.CONTENT_URI,
-                //The list of which columns to return, in this case only the _ID column
-                new String[]{MovieContract.FavoriteEntry._ID},
-                /* The filter returning only the row COLUMN_MOVIE_ID with the clause ? = movie_id(declared in the next parameter (selectionArgs)) */
-                MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + " = ?",
-                //only one clause movie_id
-                new String[]{Long.toString(detailMovie.getMovieDetail().getId())},
-                null);
-
-        if (movieCursor != null) {
-            if (movieCursor.moveToFirst()) {
-                int movieIdIndex = movieCursor.getColumnIndex(MovieContract.FavoriteEntry._ID);
-                //movieRowId = movieCursor.getLong(movieIdIndex);
-            } else {
-
-                ContentValues detail = new ContentValues();
-                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TITLE, detailMovie.getMovieDetail().getTitle());
-
-                Gson gson = new GsonBuilder().create();
-                String casting = gson.toJson(detailMovie.getCredits().getCast());
-                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_CASTING, casting);
-
-                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_DATE, detailMovie.getMovieDetail().getReleaseDate());
-
-                String genre = gson.toJson(detailMovie.getMovieDetail().getGenres());
-                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_GENRE, genre);
-
-                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_ORIGINAL_TITLE, detailMovie.getMovieDetail().getOriginalTitle());
-                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_OVERVIEW, detailMovie.getMovieDetail().getOverview());
-                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RATING, Double.toString(detailMovie.getMovieDetail().getVoteAverage()));
-
-                String reviews = gson.toJson(detailMovie.getReviewsList());
-                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_REVIEWS, reviews);
-                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_RUNTIME, detailMovie.getMovieDetail().getRuntime());
-
-                String trailers = gson.toJson(detailMovie.getTrailerDetails());
-                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TRAILER, trailers);
-                detail.put(MovieContract.DetailEntry.COLUMN_MOVIE_TAGLINE, detailMovie.getMovieDetail().getTagline());
-
-                // The resulting URI contains the ID for the row.  Extract the movieId from the Uri.
-                Uri insertedDetailUri = context.getContentResolver().insert(MovieContract.DetailEntry.CONTENT_URI, detail);
-                long insertedRowId = ContentUris.parseId(insertedDetailUri);
-
-                // Now that the content provider is set up, inserting rows of data is pretty simple.
-                // First create a ContentValues object to hold the data you want to insert.
-                ContentValues values = new ContentValues();
-
-                // Then add the data, along with the corresponding name of the data type,
-                // so the content provider knows what kind of value is being inserted.
-                values.put(MovieContract.FavoriteEntry.COLUMN_DETAIL_KEY, insertedRowId);
-                values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID, detailMovie.getMovieDetail().getId());
-
-                values.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_PICTURE, detailMovie.getMovieDetail().getPosterPath());
-
-                // Finally, insert movie data into the database.
-                //Uri insertedUri =
-                context.getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI, values);
-
-            }
-
-            movieCursor.close();
-        }
-    }
-
-
     public static void removeMovieFromFavorite(int idMovie, Context context) {
-        context.getContentResolver().delete(MovieContract.FavoriteEntry.CONTENT_URI,
-                MovieContract.FavoriteEntry.COLUMN_MOVIE_ID,
+        context.getContentResolver().delete(MovieContract.DetailEntry.CONTENT_URI,
+                MovieContract.DetailEntry.COLUMN_MOVIE_ID,
                 new String[]{Integer.toString(idMovie)});
     }
 
@@ -226,17 +153,12 @@ public class Utilities {
         } else return null;
     }
 
-
-    public static int isMovieFavorite(int idMovie, Context context) {
-        int isFavorite = 0;
-        Cursor cursor = context.getContentResolver().query(MovieContract.FavoriteEntry.CONTENT_URI, null, MovieContract.FavoriteEntry
+    public static boolean isMovieFavorite(int idMovie, Context context) {
+        IsMovieFavorite s = new IsMovieFavorite(context.getContentResolver());
+        s.startQuery(-1, null, MovieContract.DetailEntry.CONTENT_URI, null, MovieContract.DetailEntry
                 .COLUMN_MOVIE_ID + " = ?", new String[]{Integer.toString(idMovie)}, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            isFavorite = 1;
-            cursor.close();
-        }
 
-        return isFavorite;
+        return s.isFavorite;
     }
 
     //Save picture into the mobile within the app folder (MODE PRIVATE)
@@ -322,8 +244,9 @@ public class Utilities {
         }
     }
 
+    public static DetailMovie getMovieDetail(int movieId, Context context) throws IOException {
 
-    public static DetailMovie getMovieDetail(int movieId, DetailMovie detailMovie, Context context) throws IOException {
+        DetailMovie detailMovie = new DetailMovie();
 
         String MOVIE_BASE_URL = context.getResources().getString(R.string.BASE_URL);
 
@@ -413,6 +336,27 @@ public class Utilities {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         return (int) (dpWidth / 180);
+    }
+
+    static class IsMovieFavorite extends AsyncQueryHandler {
+
+        boolean isFavorite;
+
+        public IsMovieFavorite(ContentResolver cr) {
+            super(cr);
+        }
+
+
+        @Override
+        protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
+            if (cursor != null && cursor.moveToFirst()) {
+                isFavorite = true;
+                cursor.close();
+            } else {
+                isFavorite = false;
+            }
+        }
+
     }
 
 
