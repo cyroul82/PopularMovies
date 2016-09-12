@@ -116,7 +116,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
             mGridView.setOnScrollListener(new EndlessScrolling(12) {
                 @Override
                 public void loadMore(int page, int totalItemsCount) {
-                    mPage = page;
+                    mPage++;
                     getLoaderManager().restartLoader(MOVIE_LOADER, null, MovieListFragment.this);
 
                 }
