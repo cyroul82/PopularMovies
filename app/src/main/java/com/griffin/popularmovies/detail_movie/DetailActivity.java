@@ -11,8 +11,8 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.griffin.popularmovies.MainActivity;
-import com.griffin.popularmovies.pojo.Backdrop;
 import com.griffin.popularmovies.R;
+import com.griffin.popularmovies.pojo.Backdrop;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -150,5 +150,6 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
             mFavoriteButton.setImageBitmap(bitmap);
         }
     }
+
 
 }

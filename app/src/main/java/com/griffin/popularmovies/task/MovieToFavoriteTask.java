@@ -5,8 +5,6 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 
-import com.griffin.popularmovies.detail_movie.DetailMovie;
-
 import java.lang.ref.WeakReference;
 
 /**
@@ -14,8 +12,9 @@ import java.lang.ref.WeakReference;
  */
 public class MovieToFavoriteTask extends AsyncQueryHandler{
 
-    public static final int ON_CLICK_FAVORITE_TOKEN = 0;
+    public static final int ON_ADD_FAVORITE_TOKEN = 0;
     public static final int IS_MOVIE_FAVORITE_TOKEN = 1;
+    public static final int ON_DELETE_FAVORITE_TOKEN = 2;
     private WeakReference<OnQueryCompleteListener> mListener;
 
     public MovieToFavoriteTask(ContentResolver cr, OnQueryCompleteListener listener) {

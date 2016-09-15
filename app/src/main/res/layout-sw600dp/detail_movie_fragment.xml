@@ -225,13 +225,15 @@
                     style="@style/CardViewStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     app:cardBackgroundColor="@color/cardview_dark_background">
 
                     <LinearLayout
                         style="@style/CardView_ContentStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:visibility="gone">
 
                         <TextView
                             android:id="@+id/textView_Collection_main_title"
@@ -239,7 +241,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="5dp"
-                            android:text="@string/textView_collection_title"/>
+                            android:text="@string/textView_collection_title"
+                            android:visibility="gone"/>
 
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/recyclerView_collection"

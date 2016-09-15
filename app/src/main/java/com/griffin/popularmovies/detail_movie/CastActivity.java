@@ -11,12 +11,12 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.griffin.popularmovies.R;
+import com.griffin.popularmovies.Utility;
+import com.griffin.popularmovies.adapter.FilmographyAdapter;
 import com.griffin.popularmovies.pojo.Cast;
 import com.griffin.popularmovies.pojo.CastFilmography;
 import com.griffin.popularmovies.pojo.CastFilmographyDetail;
-import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.Utilities;
-import com.griffin.popularmovies.adapter.FilmographyAdapter;
 import com.griffin.popularmovies.task.FetchFilmographyTask;
 import com.squareup.picasso.Picasso;
 
@@ -72,7 +72,7 @@ public class CastActivity extends AppCompatActivity implements LoaderManager.Loa
         mRecyclerViewFilmography.setHasFixedSize(true);
 
         // use a grid layout manager , create the *** REVIEWS *** adapter and set it up to the recycler View
-        GridLayoutManager gridLayoutManagerFilmography = new GridLayoutManager(this, Utilities.calculateNoOfColumns(getApplicationContext()));
+        GridLayoutManager gridLayoutManagerFilmography = new GridLayoutManager(this, Utility.calculateNoOfColumns(getApplicationContext()));
         gridLayoutManagerFilmography.setOrientation(GridLayoutManager.VERTICAL);
         mRecyclerViewFilmography.setLayoutManager(gridLayoutManagerFilmography);
 

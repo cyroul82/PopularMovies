@@ -3,10 +3,8 @@ package com.griffin.popularmovies.task;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.Utilities;
+import com.griffin.popularmovies.Utility;
 import com.griffin.popularmovies.detail_movie.DetailMovie;
 
 import java.io.IOException;
@@ -96,7 +94,7 @@ public class FetchDetailMovieTask extends AsyncTaskLoader<DetailMovie> {
     @Override
     public DetailMovie loadInBackground() {
         try {
-            return Utilities.getMovieDetail(mIdMovie, getContext());
+            return Utility.getMovieDetail(mIdMovie, getContext());
         } catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage());
         }

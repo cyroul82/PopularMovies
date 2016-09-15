@@ -28,18 +28,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.griffin.popularmovies.pojo.Cast;
-import com.griffin.popularmovies.pojo.Genre;
-import com.griffin.popularmovies.pojo.Part;
-import com.griffin.popularmovies.pojo.Reviews;
-import com.griffin.popularmovies.pojo.TrailerDetail;
 import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.Utilities;
+import com.griffin.popularmovies.Utility;
 import com.griffin.popularmovies.adapter.CastingAdapter;
 import com.griffin.popularmovies.adapter.CollectionAdapter;
 import com.griffin.popularmovies.adapter.ReviewMovieAdapter;
 import com.griffin.popularmovies.adapter.TrailerMovieAdapter;
 import com.griffin.popularmovies.data.MovieContract;
+import com.griffin.popularmovies.pojo.Cast;
+import com.griffin.popularmovies.pojo.Genre;
+import com.griffin.popularmovies.pojo.Part;
+import com.griffin.popularmovies.pojo.Reviews;
+import com.griffin.popularmovies.pojo.TrailerDetail;
 import com.griffin.popularmovies.task.MovieToFavoriteTask;
 
 import java.io.FileNotFoundException;
@@ -296,7 +296,7 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor movieCursor) {
         if (movieCursor != null && movieCursor.moveToFirst()) {
-            mDetailMovie = Utilities.getDetailMovieFromCursor(movieCursor);
+            mDetailMovie = Utility.getDetailMovieFromCursor(movieCursor);
 
             //clear the trailer List and add the new one to the adapter
             if (mDetailMovie.getTrailerDetails() != null && !mDetailMovie.getTrailerDetails().isEmpty()) {
@@ -347,12 +347,12 @@ public class DetailFavoriteFragment extends Fragment implements LoaderManager.Lo
 
         try {
 
-            mImageViewMoviePicture.setImageBitmap(Utilities.getPoster(mDetailMovie.getMovieDetail().getPosterPath(), mDetailMovie.getMovieDetail().getId()));
+            mImageViewMoviePicture.setImageBitmap(Utility.getPoster(mDetailMovie.getMovieDetail().getPosterPath(), mDetailMovie.getMovieDetail().getId()));
         } catch (FileNotFoundException e) {
             Log.d(LOG_TAG, e.getMessage());
         }
         try {
-            mTextViewMovieYear.setText(Utilities.getMonthAndYear(mDetailMovie.getMovieDetail().getReleaseDate()));
+            mTextViewMovieYear.setText(Utility.getMonthAndYear(mDetailMovie.getMovieDetail().getReleaseDate()));
         } catch (ParseException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
 

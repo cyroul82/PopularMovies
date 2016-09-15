@@ -11,9 +11,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import com.griffin.popularmovies.pojo.Movie;
 import com.griffin.popularmovies.R;
 import com.griffin.popularmovies.adapter.PopularMoviesAdapter;
+import com.griffin.popularmovies.pojo.Movie;
 import com.griffin.popularmovies.task.FetchMoviesTask;
 
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
             }
             if(savedInstanceState.containsKey(CHOICE)){
                 mChoice = savedInstanceState.getString(CHOICE);
-                mPage = savedInstanceState.getInt(PAGE_KEY);
+                mPage = savedInstanceState.getInt(PAGE_KEY)+1;
             }
 
         }
@@ -95,8 +95,6 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
                 }
             }
         }
-
-
 
         mMoviesAdapter = new PopularMoviesAdapter(getActivity(), R.layout.movie_item_picture, R.id.movieItemPictureImageView, mMoviesList);
         mGridView.setAdapter(mMoviesAdapter);
@@ -153,19 +151,21 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         super.onSaveInstanceState(outState);
     }
 
+
     @Override
     public android.support.v4.content.Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
+        FetchMoviesTask fetchMoviesTask = null;
         if(mChoice != null) {
-            FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(getContext(), mPage, mChoice);
+            fetchMoviesTask = new FetchMoviesTask(getContext(), mPage, mChoice);
             fetchMoviesTask.setCallback(this);
-            return fetchMoviesTask;
         }
         if(mSearch != null){
-            FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(getContext(), mSearch);
+            fetchMoviesTask = new FetchMoviesTask(getContext(), mSearch);
             fetchMoviesTask.setCallback(this);
-            return fetchMoviesTask;
         }
-        else return null;
+
+        return fetchMoviesTask;
+
     }
 
     @Override
@@ -179,13 +179,15 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
             for (Movie movie : data) {
                 mMoviesAdapter.add(movie);
             }
+            mMoviesAdapter.notifyDataSetChanged();
         }
-        mMoviesAdapter.notifyDataSetChanged();
+
+        getLoaderManager().destroyLoader(MOVIE_LOADER);
+
     }
 
     @Override
     public void onLoaderReset(android.support.v4.content.Loader<List<Movie>> loader) {
-        mMoviesAdapter.clear();
     }
 
     /**

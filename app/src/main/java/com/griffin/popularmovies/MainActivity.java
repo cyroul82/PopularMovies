@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
         }
 
         //get back the choice
-        int idItem = Utilities.getIdItem(this);
+        int idItem = Utility.getIdItem(this);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                     switch (itemId) {
                         case R.id.drawer_popular: {
                             //Save the choice to the preferences
-                            Utilities.setIdItem(getApplicationContext(), R.id.drawer_popular);
+                            Utility.setIdItem(getApplicationContext(), R.id.drawer_popular);
                             setMovieListFragment(itemId);
 
                             menuItem.setChecked(true);
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                         }
                         case R.id.drawer_top_rated: {
                             //Save the choice to the preferences
-                            Utilities.setIdItem(getApplicationContext(), R.id.drawer_top_rated);
+                            Utility.setIdItem(getApplicationContext(), R.id.drawer_top_rated);
                             setMovieListFragment(itemId);
 
                             menuItem.setChecked(true);
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                         }
                         case R.id.drawer_upcoming: {
                             //Save the choice to the preferences
-                            Utilities.setIdItem(getApplicationContext(), R.id.drawer_upcoming);
+                            Utility.setIdItem(getApplicationContext(), R.id.drawer_upcoming);
                             setMovieListFragment(itemId);
 
                             menuItem.setChecked(true);
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                         }
                         case R.id.drawer_this_week: {
                             //Save the choice to the preferences
-                            Utilities.setIdItem(getApplicationContext(), R.id.drawer_this_week);
+                            Utility.setIdItem(getApplicationContext(), R.id.drawer_this_week);
                             setMovieListFragment(itemId);
 
                             menuItem.setChecked(true);
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
                         case R.id.drawer_favorite: {
                             //Save the choice to the preferences
 
-                            Utilities.setIdItem(getApplicationContext(), R.id.drawer_favorite);
+                            Utility.setIdItem(getApplicationContext(), R.id.drawer_favorite);
 
                             setFavoriteMovieListFragment(itemId);
                             menuItem.setChecked(true);
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
             // adding or replacing the detail fragment using a
             // fragment transaction.
             if (savedInstanceState == null) {
-                setBlankFragment(Utilities.getIdItem(this));
+                setBlankFragment(Utility.getIdItem(this));
             }
         } else {
             mTwoPane = false;
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     private void setMovieListFragment(int idItem) {
         //Create a new Object MovieListFragment
         movieListFragment = new MovieListFragment();
-        String choice = Utilities.getChoice(idItem, this);
+        String choice = Utility.getChoice(idItem, this);
         Bundle args = new Bundle();
         args.putString(MovieListFragment.CHOICE, choice);
         //Set the arguments with the previous Bundle
@@ -400,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements FavoriteListFragm
     }
 
     private void setBlankFragment(int idItem) {
-        String choice = Utilities.getChoice(idItem, this);
+        String choice = Utility.getChoice(idItem, this);
         Bundle b = new Bundle();
         b.putString(TITLE_BLANK_FRAGMENT_KEY, choice);
         BlankFragment blankFragment = new BlankFragment();

@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.griffin.popularmovies.pojo.Part;
 import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.Utilities;
+import com.griffin.popularmovies.Utility;
+import com.griffin.popularmovies.pojo.Part;
 
 import java.text.ParseException;
 import java.util.List;
@@ -51,7 +51,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Vi
         ViewHolder.textViewTitle.setText(part.getTitle());
         if (part.getReleaseDate() != null) {
             try {
-                String year = Utilities.getYear(part.getReleaseDate());
+                String year = Utility.getYear(part.getReleaseDate());
                 ViewHolder.textViewYear.setText(year);
             } catch (ParseException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);

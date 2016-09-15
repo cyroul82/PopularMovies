@@ -18,6 +18,10 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.griffin.popularmovies.adapter.CastingAdapter;
+import com.griffin.popularmovies.data.MovieContract;
+import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
+import com.griffin.popularmovies.detail_movie.DetailMovie;
 import com.griffin.popularmovies.pojo.Cast;
 import com.griffin.popularmovies.pojo.Collection;
 import com.griffin.popularmovies.pojo.Credits;
@@ -30,10 +34,6 @@ import com.griffin.popularmovies.pojo.Reviews;
 import com.griffin.popularmovies.pojo.Trailer;
 import com.griffin.popularmovies.pojo.TrailerDetail;
 import com.griffin.popularmovies.service.MovieService;
-import com.griffin.popularmovies.adapter.CastingAdapter;
-import com.griffin.popularmovies.data.MovieContract;
-import com.griffin.popularmovies.detail_movie.DetailFavoriteFragment;
-import com.griffin.popularmovies.detail_movie.DetailMovie;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,10 +57,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * Created by griffin on 18/07/16.
  */
-public class Utilities {
+public class Utility {
 
     public final static String LANGUAGE_SYSTEM = Locale.getDefault().getLanguage();
-    private static final String LOG_TAG = Utilities.class.getSimpleName();
+    private static final String LOG_TAG = Utility.class.getSimpleName();
     private static final String ID_ITEM = "choice";
 
     public static DetailMovie getDetailMovieFromCursor(Cursor movieCursor) {
@@ -180,6 +180,19 @@ public class Utilities {
         }
         Log.i(LOG_TAG, directory.getAbsolutePath());
         return directory.getAbsolutePath();
+    }
+
+    public static void deletePoster(int idMovie, Context context){
+        ContextWrapper cw = new ContextWrapper(context.getApplicationContext());
+        // path to /data/data/myapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        File[] listFile = directory.listFiles();
+        for(File file : listFile){
+                if (file.getName().equals(Integer.toString(idMovie))){
+                    file.delete();
+                }
+        }
+
     }
 
     //get the movie picture saved in the app folder

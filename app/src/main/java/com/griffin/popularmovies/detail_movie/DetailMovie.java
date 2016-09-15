@@ -35,15 +35,18 @@ public class DetailMovie implements Parcelable {
     private List<Reviews> reviewsList;
     private Collection collection;
     private MovieImages movieImages;
+    private boolean isFavorite;
 
-    public DetailMovie(){
-       movieDetail = new MovieDetail();
-       credits = new Credits();
-       trailerDetails = new ArrayList<>();
-       reviewsList = new ArrayList<>();
-       collection = new Collection();
-       movieImages = new MovieImages();
-   }
+    public DetailMovie() {
+        movieDetail = new MovieDetail();
+        credits = new Credits();
+        trailerDetails = new ArrayList<>();
+        reviewsList = new ArrayList<>();
+        collection = new Collection();
+        movieImages = new MovieImages();
+        isFavorite = false;
+    }
+
     protected DetailMovie(Parcel in) {
         movieDetail = in.readParcelable(MovieDetail.class.getClassLoader());
         trailerDetails = in.createTypedArrayList(TrailerDetail.CREATOR);
@@ -51,6 +54,7 @@ public class DetailMovie implements Parcelable {
         reviewsList = in.createTypedArrayList(Reviews.CREATOR);
         collection = in.readParcelable(Collection.class.getClassLoader());
         movieImages = in.readParcelable(MovieImages.class.getClassLoader());
+        isFavorite = in.readByte() != 0;
     }
 
     @Override
@@ -61,6 +65,7 @@ public class DetailMovie implements Parcelable {
         dest.writeTypedList(reviewsList);
         dest.writeParcelable(collection, flags);
         dest.writeParcelable(movieImages, flags);
+        dest.writeByte((byte) (isFavorite ? 1 : 0));
     }
 
     public List<Reviews> getReviewsList() {
@@ -117,4 +122,11 @@ public class DetailMovie implements Parcelable {
     }
 
 
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
 }

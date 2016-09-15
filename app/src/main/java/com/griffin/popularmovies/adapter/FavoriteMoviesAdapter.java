@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.Utilities;
+import com.griffin.popularmovies.Utility;
 import com.griffin.popularmovies.movie_list.FavoriteListFragment;
 
 import java.io.FileNotFoundException;
@@ -51,7 +51,7 @@ public class FavoriteMoviesAdapter extends CursorAdapter {
         String urlPicture = cursor.getString(FavoriteListFragment.COLUMN_MOVIE_PICTURE);
 
         try {
-            Bitmap bitmap = Utilities.getPoster(urlPicture, cursor.getInt(FavoriteListFragment.COLUMN_MOVIE_ID));
+            Bitmap bitmap = Utility.getPoster(urlPicture, cursor.getInt(FavoriteListFragment.COLUMN_MOVIE_ID));
             viewHolder.moviePicture.setImageBitmap(bitmap);
         } catch (FileNotFoundException e) {
             Log.d(LOG_TAG, e.getMessage());

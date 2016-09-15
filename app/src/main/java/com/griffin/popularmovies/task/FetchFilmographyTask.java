@@ -5,10 +5,10 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.griffin.popularmovies.BuildConfig;
-import com.griffin.popularmovies.pojo.CastFilmography;
 import com.griffin.popularmovies.R;
+import com.griffin.popularmovies.Utility;
+import com.griffin.popularmovies.pojo.CastFilmography;
 import com.griffin.popularmovies.service.MovieService;
-import com.griffin.popularmovies.Utilities;
 
 import java.io.IOException;
 
@@ -42,7 +42,7 @@ public class FetchFilmographyTask extends AsyncTaskLoader<CastFilmography> {
 
             MovieService movieService = retrofit.create(MovieService.class);
 
-            Call<CastFilmography> callCastFilmography = movieService.getFilmography(mIdCast, BuildConfig.MOVIE_DB_API_KEY, Utilities.LANGUAGE_SYSTEM);
+            Call<CastFilmography> callCastFilmography = movieService.getFilmography(mIdCast, BuildConfig.MOVIE_DB_API_KEY, Utility.LANGUAGE_SYSTEM);
             Response responseCallCastFilmography = callCastFilmography.execute();
             castFilmography = (CastFilmography) responseCallCastFilmography.body();
 

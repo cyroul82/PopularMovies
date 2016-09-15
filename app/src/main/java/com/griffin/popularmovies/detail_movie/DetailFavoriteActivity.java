@@ -13,7 +13,7 @@ import android.widget.ImageView;
 
 import com.griffin.popularmovies.MainActivity;
 import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.Utilities;
+import com.griffin.popularmovies.Utility;
 
 import java.io.FileNotFoundException;
 
@@ -112,7 +112,7 @@ public class DetailFavoriteActivity extends AppCompatActivity implements DetailF
 
         try {
             if (imageView != null) {
-                imageView.setImageBitmap(Utilities.getPoster(posterPath, idMovie));
+                imageView.setImageBitmap(Utility.getPoster(posterPath, idMovie));
             }
         } catch (FileNotFoundException e) {
             Log.e(LOG_TAG, e.getMessage());

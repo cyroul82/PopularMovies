@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.griffin.popularmovies.pojo.CastFilmographyDetail;
 import com.griffin.popularmovies.R;
-import com.griffin.popularmovies.Utilities;
+import com.griffin.popularmovies.Utility;
+import com.griffin.popularmovies.pojo.CastFilmographyDetail;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -52,7 +52,7 @@ public class FilmographyAdapter extends RecyclerView.Adapter<FilmographyAdapter.
         ViewHolder.title.setText(castFilmographyDetail.getTitle());
         if (castFilmographyDetail.getReleaseDate() != null) {
             try {
-                String year = Utilities.getYear(castFilmographyDetail.getReleaseDate());
+                String year = Utility.getYear(castFilmographyDetail.getReleaseDate());
                 ViewHolder.year.setText(year);
             } catch (ParseException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
